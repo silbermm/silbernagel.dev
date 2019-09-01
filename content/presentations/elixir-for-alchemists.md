@@ -2,13 +2,15 @@
 title: 'Elixir for Alchemists'
 date: "2019-09-01"
 url: "presentations/elixir-for-alchemists"
-description: ""
+ratio: "16:9"
+description: "Elixir for alchemists"
 ---
 class: center, middle, inverse
 
 # Elixir for Alchemists
 
 ---
+class: left
 
 ### A (brief) history of Elixir
 
@@ -20,6 +22,7 @@ class: center, middle, inverse
 * Estimated 90% of all internet traffic passes through Erlang controlled nodes
 
 ---
+class: left
 
 ### A (brief) history of Elixir (cont)
 
@@ -36,6 +39,7 @@ class: center, middle, inverse
 
 
 ---
+class: left
 
 ### A (non-exhasitve) list of companies using Elixir
 
@@ -53,6 +57,7 @@ class: center, middle, inverse
 A list of established companies to indicate that Elixir is not a fringe language and is used by mainstream companies.
 
 ---
+class: left
 
 ### Elixir paradigm
 
@@ -74,6 +79,7 @@ Higher-Order Function - function that takes another function as an argument or r
 Expression - combination of variables, functions, operators that produce a value.
 
 ---
+class: left
 
 ### Elixir Building Blocks
 
@@ -108,6 +114,7 @@ defmodule Numbers do
 end
 ```
 ---
+class: left
 
 ### Composability (and the Pipe operator)
 
@@ -139,6 +146,7 @@ odd? = &(rem(&1, 2) != 0) end
 ```
 
 ---
+class: left
 
 ### Pattern Matching
 
@@ -169,6 +177,7 @@ end
 
 ```
 ---
+class: left
 
 ### Built in documentation with testing
 
@@ -196,6 +205,7 @@ end
 
 
 ---
+class: left
 
 ### The REPL
 
@@ -207,6 +217,7 @@ end
 #####Example
 
 ---
+class: left
 
 ### Elixir Concurrency
 
@@ -217,12 +228,14 @@ Processes are isolated from each other, run concurrent to one another and commun
 Processes are very lightweight and it's not uncommon for Elixir programs to run tens or hundreds of thousands of processes at any given time.
 
 ---
+class: left
 
 ### Distrubuted Elixir
 
 Building upon the isolated process (Actor) model, the BEAM (Erlang Virtual Machine) can run easliy processes on seperate machines and the message passing happens similar to rabbit etc.
 
 ---
+class: left
 
 
 ### What I don't like about Elixir
@@ -247,6 +260,7 @@ end
 and then use the static analysis tool Dialyzer to find issues, but this does not take the place of a strongly typed language
 
 ---
+class: left
 
 ### What I don't like about Elixir (cont)
 
@@ -262,6 +276,3 @@ anon.(2)
 ```elixir
 apply(anon, [2])
 ```
-
-
-
