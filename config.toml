@@ -1,3 +1,44 @@
-baseURL = "http://example.org/"
+baseURL = "https://silbernagel.dev/"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "silbernagel.dev"
+theme = "pulp"
+pygmentsCodefences = true
+pygmentsUseClasses = true
+
+
+[params]
+    author = "Matt Silbernagel"
+    avatar = "avatar.png"
+    description = """
+
+    """
+    publicationYear = "2019"
+
+[[menu.main]]
+    identifier = "blog"
+    # name = "Blog" #If display text link, cancel comment out
+    pre = "<i class='fa fa-book-open fa-lg'></i>" #Choose your favorite font from Font Awesome
+    url = "/blog/"
+    weight = 10
+
+[[menu.main]]
+    identifier = "linkedin"
+    # name = "Linked In"
+    pre = "<i class='fa fa-file-powerpoint fa-lg'></i>"
+    url = "/presentations/"
+    weight = 20
+
+[[menu.main]]
+    identifier = "twitter"
+    # name = "Twitter"
+    pre = "<i class='fab fa-twitter fa-lg'></i>"
+    url = "https://twitter.com/username"
+    weight = 30
+
+[[menu.main]]
+    identifier = "github"
+    # name = "GitHub"
+    pre = "<i class='fab fa-github fa-lg'></i>"
+    url = "https://github.com/username"
+    weight = 40
+

@@ -1,0 +1,25 @@
+{{ define "title"}}
+  {{(.Title | markdownify) }}
+{{ end }}
+
+{{ define "header" }}
+
+{{ end }}
+
+{{ define "main" }}
+  <textarea id="source">
+    {{- .RawContent -}}
+  </textarea>
+  <script src="{{ "js/remark.js" | absURL }}"></script>
+  <script>
+          var slideshow = remark.create({
+         navigation: {
+            scroll: false
+         },
+         countIncrementalSlides: false,
+         slideNumberFormat: '%current%',
+			highlightLanguage: "xaprb",
+			placeholder: "dummy value to end the list without a comma"
+      });
+  </script>
+{{ end }}
