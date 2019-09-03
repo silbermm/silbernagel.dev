@@ -12,6 +12,7 @@ class: center, middle, inverse
 ---
 class: left
 
+
 ### A (brief) history of Elixir
 
 #### Erlang
