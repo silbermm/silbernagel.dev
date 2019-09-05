@@ -1,17 +1,21 @@
-baseURL = "https://silbernagel.dev/"
-languageCode = "en-us"
-title = "silbernagel.dev"
-theme = "pulp"
-pygmentsCodefences = true
-pygmentsUseClasses = true
+baseURL                  = "https://silbernagel.dev/"
+languageCode             = "en-us"
+defaultContentLanguage   = "en"
+isMultilingual           = false
+title                    = "silbernagel.dev"
+theme                    = "sam"
+pygmentsStyle            = "monokai"
+pygmentsCodefences       = true
+pygmentsUseClasses       = true
 
 [params]
-    author = "Matt Silbernagel"
-    avatar = "avatar.png"
-    description = """
-
-    """
-    publicationYear = "2019"
+    author               = "Matt Silbernagel"
+    dateform             = "Mon Jan 02, 2006"
+    avatar               = "avatar.png"
+    homepage             = "main"
+    description          = "Presentations and Posts"
+    title                = "silbernagel.dev"
+    publicationYear      = "2019"
 
 [[menu.main]]
     identifier = "blog"
@@ -41,3 +45,13 @@ pygmentsUseClasses = true
     url = "https://github.com/username"
     weight = 40
 
+[[params.mainMenu]]
+    link = "/posts"
+    text = "posts"
+
+[[params.mainMenu]]
+    link = "/presentations"
+    text = "presentations"
+
+[imaging]
+    quality = 75

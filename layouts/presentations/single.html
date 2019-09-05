@@ -10,7 +10,7 @@
     color: #777872;
     text-shadow: 0 0 20px #333;
   }
-  body { text-align: left; }
+  body { text-align: left; color: black;}
 </style>
 {{ end }}
 
@@ -27,7 +27,13 @@
       color: #777872;
       text-shadow: 0 0 20px #333;
     }
-    .body { text-align: left; }
+    .black {
+      color: black;
+    }
+    .list li {
+      padding: unset;
+      list-style-type: disc;
+    }
   </style>
   <textarea id="source">
     {{- .RawContent -}}
