@@ -7,6 +7,7 @@ theme                    = "sam"
 pygmentsStyle            = "monokai"
 pygmentsCodefences       = true
 pygmentsUseClasses       = true
+relativeURLs             = true
 
 [params]
     author               = "Matt Silbernagel"
