@@ -3,7 +3,7 @@ languageCode             = "en-us"
 defaultContentLanguage   = "en"
 isMultilingual           = false
 title                    = "silbernagel.dev"
-theme                    = "sam"
+theme                    = "pulp"
 pygmentsStyle            = "monokai"
 pygmentsCodefences       = true
 pygmentsUseClasses       = true
@@ -12,7 +12,7 @@ relativeURLs             = true
 [params]
     author               = "Matt Silbernagel"
     dateform             = "Mon Jan 02, 2006"
-    avatar               = "avatar.png"
+    avatar               = "avatar.jpg"
     homepage             = "main"
     description          = "Presentations and Posts"
     title                = "silbernagel.dev"
