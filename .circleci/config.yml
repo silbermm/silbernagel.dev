@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: cibuilds/hugo:0.58
+    working_directory: ~/project
+    steps:
+      - checkout
+      - run:
+          name: "Run Hugo"
+          command: HUGO_ENV=production hugo -v --gc --minify
+      - run:
+          name: "Test Website"
+          command: htmlproofer public --allow-hash-href --check-html --empty-alt-ignore --disable-external
+      - persist_to_workspace:
+          root: .
+          paths:
+            - public
+  deploy:
+    docker:
+      - image: circleci/node:10
+        environment:
+          IPFS_DEPLOY_CLOUDFLARE__ZONE: silbernagel.dev
+          IPFS_DEPLOY_CLOUDFLARE__RECORD: _dnslink.silbernagel.dev
+          BUILD_DIR: public
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Pin website, post notification for PRs or update DNS on master
+          command: |
+            if [ "$CIRCLE_BRANCH" == "master" ] ; then
+              npx ipfs-deploy /tmp/workspace/$BUILD_DIR -C -O -d cloudflare
+            fi
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy:
+          context: ipfs-deploy
+          requires:
+            - build
