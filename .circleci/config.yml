@@ -38,7 +38,7 @@ jobs:
           name: Pin website, post notification for PRs or update DNS on master
           command: |
             if [ "$CIRCLE_BRANCH" == "master" ] ; then
-              npx ipfs-deploy /tmp/workspace/$BUILD_DIR -C -O -d cloudflare
+              ipfs-deploy /tmp/workspace/$BUILD_DIR -C -O -d cloudflare
             fi
 workflows:
   version: 2
@@ -46,6 +46,5 @@ workflows:
     jobs:
       - build
       - deploy:
-          context: ipfs-deploy
           requires:
             - build
