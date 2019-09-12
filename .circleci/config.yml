@@ -33,7 +33,7 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Install IPFS DEPLOY
-          command: npm install -g ipfs-deploy
+          command: sudo npm install -g ipfs-deploy
       - run:
           name: Pin website, post notification for PRs or update DNS on master
           command: |
