@@ -3,15 +3,7 @@
 {{ end }}
 
 {{ define "layout" }}
-<style type="text/css">
-  .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
-  .inverse {
-    background: #272822;
-    color: #777872;
-    text-shadow: 0 0 20px #333;
-  }
-  body { text-align: left; color: black;}
-</style>
+
 {{ end }}
 
 {{ define "header" }}
@@ -33,6 +25,14 @@
     .list li {
       padding: unset;
       list-style-type: disc;
+    }
+    .left-column-big {
+      float: left;
+      width: 65%;
+    }
+    .right-column-small {
+      float: right;
+      width: 35%;
     }
   </style>
   <textarea id="source">
