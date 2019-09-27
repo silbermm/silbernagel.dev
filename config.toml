@@ -37,14 +37,14 @@ relativeURLs             = true
     identifier = "twitter"
     # name = "Twitter"
     pre = "<i class='fab fa-twitter fa-lg'></i>"
-    url = "https://twitter.com/username"
+    url = "https://twitter.com/silbermm"
     weight = 30
 
 [[menu.main]]
     identifier = "github"
     # name = "GitHub"
     pre = "<i class='fab fa-github fa-lg'></i>"
-    url = "https://github.com/username"
+    url = "https://github.com/silbermm"
     weight = 40
 
 [[params.mainMenu]]
