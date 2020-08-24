@@ -8,6 +8,7 @@ pygmentsStyle            = "monokai"
 pygmentsCodefences       = true
 pygmentsUseClasses       = true
 relativeURLs             = true
+disqusShortName          = "silbernagel-dev"
 
 [params]
     author               = "Matt Silbernagel"
