@@ -8,12 +8,12 @@ draft: true
 
 I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clusting. [Gigalixir](https://www.gigalixir.com/) has sovled that issue and is probably my plaform of choice... given I have the choice.
 
-At work I am limited to using AWS. So for deployment my options seemed limited to EC2 instances or ECS. I opted for ECS with Fargate (managed servers instead of having to manage EC2). But, it wasn't (at least for me) straight forward to get up and running, inparticularly with clustering. Hopefully this guide will help others that are using AWS to run there Elixir services.
+At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to elixir, imparticularly connecting nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
 
-# Part 1 - The Infrastructure
-The hardest part of all of this is builing the infrastructure correctly, in a reproducable way and in the right order. To help with this, we use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console is so hard to work with.
+# The Infrastructure
+In order to help build the infrastructure correctly, in a reproducable way and in the right order, we use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console can be frustrating to work with and often limits the functionality of services.
 
-Below you'll see step-by-step how to build the terraform that will build the required infrastructure. If you prefer, you can [skip ahead to the final file](#the-final-file)
+Below I've split the terraform into sections and talk through each one, or if you prefer, feel free to  [skip ahead to the final file](#the-final-file). Installing and configuring terraform for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
 
 ## Initialize Terraform
 To start with, you'll need to tell terraform that you want to use the AWS provider. Add this to a file called `main.tf` and run `terraform init`.
@@ -197,7 +197,7 @@ resource aws_ecs_service service {
   # note, you will need to subsitute your_account_id with your actual aws account id
   # I have not found an easier way to get the full task_definition ARN
   task_definition = "arn:aws:ecs:us-east-1:your_account_id:task-definition/${aws_ecs_task_definition.task_definition.family}:1"
-  desired_count   = 1
+  desired_count   = 2
   launch_type     = "FARGATE"
   network_configuration {
     security_groups   = [aws_security_group.security_group.id]
@@ -342,7 +342,7 @@ resource "aws_service_discovery_service" service_discovery {
 ```
 
 ## The final file
-Assuming you have the permission, you should be able `terraform plan` and `terraform apply` the following file
+Assuming you have the permission, you should be able `terraform plan` and `terraform apply` the following file. Also note that I configured the DNS manually through Route53, although I'm sure there is a way to use terraform for that as well.
 
 {{< gist silbermm 8f5f08389c23a84325259118a47dd22d >}}
 

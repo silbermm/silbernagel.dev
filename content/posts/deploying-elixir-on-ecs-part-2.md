@@ -6,7 +6,141 @@ keywords: "elixir,terraform,aws,ecs"
 draft: true
 ---
 
-In [part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) of this series, we built a terraform file that will build all of our required infrastructure in AWS. Now we need to actually build an image, push it to our image repo and tell ECS to run it. This is pretty easy in most CI/CD services, but we'll use Github Actions.
+In [part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) of this series, we used terraform to build all of our required infrastructure in AWS. Now we need to actually build an image, push it to our image repo and tell ECS to run it. This is pretty easy in most CI/CD services, we use Github Actions, but a similar solution can be used in CircleCI or TravisCI.
 
-# Part 2 - CONTAINERS and CI/CD
+# Containers and CI
+
+## A simple project
+Lets start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
+
+```bash
+$ mix phx.new ecs_app --no-ecto --live
+```
+
+Now we can add a health controller that has a single endpoint that the ALB will use to determine the health of the service. Make a new file at `lib/ecs_app_web/controllers/health_controller.ex` and add the following content:
+```elixir
+defmodule EcsAppWeb.HealthController do
+  use EcsAppWeb, :controller
+
+  def index(conn, _params) do
+    {:ok, vsn} = :application.get_key(:ecs_app, :vsn)
+
+    conn
+    |> put_status(200)
+    |> json(%{healhy: true, version: List.to_string(vsn), node_name: node()})
+  end
+end
+```
+
+and in `lib/ecs_app_web/router.ex`
+```elixir
+scope "/", EcsAppWeb do
+  get "/health", HealthController, :index
+end
+
+```
+
+> This is a pattern I add to a lot of my services so I can verify the version that's deployed and the node name.
+
+Like I said - A very simple web service.
+ 
+
+## Release configuration and the Dockerfile
+The [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content) does a great job of describing how to build an Elixir release. The one difference is that I run `mix release.init` to generate the template files we'll need later when clustering our nodes.
+
+I also add a releases section in my `mix.exs` file.
+
+```elixir
+  releases: [
+    ecs_app: [
+      include_executables_for: [:unix],
+       applications: [ runtime_tools: :permanent ],
+       steps: [:assemble, :tar]
+    ]
+  ]
+```
+
+The Dockerfile is rather simple to start with - and is taken almost directly from the Phoenix documentation.
+```Dockerfile
+FROM elixir:1.10.0-alpine AS build
+
+ARG MIX_ENV
+
+RUN apk add --no-cache build-base git npm python
+
+WORKDIR /app
+
+# install hex + rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+ENV MIX_ENV=${MIX_ENV}
+
+COPY mix.exs mix.lock ./
+COPY config config
+RUN mix do deps.get, deps.compile
+
+COPY assets/package.json assets/package-lock.json ./assets/
+RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
+
+COPY priv priv
+COPY assets assets
+RUN npm run --prefix ./assets deploy
+RUN mix phx.digest
+
+COPY lib lib
+
+COPY rel rel
+RUN mix do compile, release
+
+FROM alpine:3.9 AS app
+
+ARG MIX_ENV
+
+RUN apk add --no-cache openssl ncurses-libs
+
+WORKDIR /app
+
+RUN chown nobody:nobody /app
+
+USER nobody:nobody
+
+COPY --from=build --chown=nobody:nobody /app/_build/${MIX_ENV}/rel/ecs_app ./
+
+ENV HOME=/app
+
+CMD ["bin/ecs_app", "start"]
+```
+
+
+## Build Configuraton
+
+I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}).
+
+```makefile
+APP_NAME ?= `grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g'`
+APP_VSN ?= `grep 'version:' mix.exs | cut -d '"' -f2`
+BUILD ?= `git rev-parse --short HEAD`
+
+build_local:
+  docker build --build-arg APP_VSN=$(APP_VSN) \
+    --build-arg MIX_ENV=dev \
+    -t $(APP_NAME):$(APP_VSN) .
+
+build:
+  docker build --build-arg APP_VSN=$(APP_VSN) \
+    --build-arg MIX_ENV=prod \
+    -t your_ecr_url:$(APP_VSN)-$(BUILD) \
+    -t your_ecr_url:latest .
+
+push:
+  eval `aws ecr get-login --no-include-email --region us-east-1`
+  docker push your_ecr_url:$(APP_VSN)-$(BUILD)
+  docker push your_ecr_url:latest
+
+```
+
+The `push` task will require that you have your AWS access_key and secret setup correctly. In the next section, we'll talk through getting it setup correctly for Github Actions.
+
+## Github Actions
 
