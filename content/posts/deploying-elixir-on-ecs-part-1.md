@@ -10,7 +10,7 @@ I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple 
 
 At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to elixir, imparticularly connecting nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
 
-# TLDR
+# TL;DR
 * Install and configure Terraform
 * Add the contents of [this terraform file](https://gist.github.com/silbermm/8f5f08389c23a84325259118a47dd22d#file-main-tf) to a file named `main.tf` in an infrastruture folder in your project and adjust default values.
 * Run `terraform init`
