@@ -10,6 +10,14 @@ I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple 
 
 At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to elixir, imparticularly connecting nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
 
+# TLDR
+* Install and configure Terraform
+* Add the contents of [this terraform file](https://gist.github.com/silbermm/8f5f08389c23a84325259118a47dd22d#file-main-tf) to a file named `main.tf` in an infrastruture folder in your project and adjust default values.
+* Run `terraform init`
+* Run `terraform import aws_vpc.main your_vpc_id`
+* Run `terraform apply -target aws_vpc.main`
+* Run `terraform apply`
+
 # The Infrastructure
 In order to help build the infrastructure correctly, in a reproducable way and in the right order, we use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console can be frustrating to work with and often limits the functionality of services.
 
@@ -36,8 +44,18 @@ resource aws_vpc main {
     Name = "Default VPC"
   }
 }
+
+data aws_subnet_ids vpc_subnets {
+  vpc_id = aws_vpc.main.id
+}
+
+data aws_subnet default_subnet {
+  count = "${length(data.aws_subnet_ids.vpc_subnets.ids)}"
+  id    = "${tolist(data.aws_subnet_ids.vpc_subnets.ids)[count.index]}"
+}
+
 ```
-Save and run `terraform import aws_vpc.main your_vpc_id`
+Save and run `terraform import aws_vpc.main your_vpc_id` and then `terraform apply` to pull all of the subnets which are needed for subsequent tasks.
 
 This should import the current state of your default VPC and allow you to pass it around to other terraform modules.
 
@@ -54,23 +72,14 @@ resource "aws_ecr_repository" "repo" {
     scan_on_push = true
   }
 }
+
+output repo_url {
+  value = aws_ecr_repository.repo.repository_url
+}
 ```
 
 ## Build the ALB (Application Load Balancer)
 This will be the public entry point to your web service, and will direct traffic to one of your many containers.
-
-In order to build our ALB, we need to know which subnets to include from our VPC - the following will choose them all, which works fine for our use case.
-```terraform
-data aws_subnet_ids vpc_subnets {
-  vpc_id = aws_vpc.main.id
-}
-
-data aws_subnet default_subnet {
-  count = "${length(data.aws_subnet_ids.vpc_subnets.ids)}"
-  id    = "${tolist(data.aws_subnet_ids.vpc_subnets.ids)[count.index]}"
-}
-```
-Now the rather long ALB configuration.
 
 > If you want an SSL ALB, you will need to generate a certificate for your domain name. If you manage your domain with Route53, this is easy enough to do in AWS Certificate Manager. Once you have the certificate provisioned, grab the ARN for use in the below terraform.
 
@@ -121,7 +130,7 @@ resource aws_lb load_balancer {
 resource aws_security_group lb_security_group {
   name        = "lb_security_group"
   description = "Allow all outbound traffic and https inbound"
-  vpc_id      = var.vpc.id
+  vpc_id      = aws_vpc.main.id
 
   ingress {
     description = "HTTPS"
@@ -145,7 +154,7 @@ And now finally our ECS configuration. ECS has the concept of Clusters which are
 
 ```terraform
 resource aws_ecs_cluster ecs_cluster {
-  name = "your_app_clister"
+  name = "your_app_cluster"
 }
 
 resource aws_ecs_task_definition task_definition {
@@ -162,7 +171,7 @@ resource aws_ecs_task_definition task_definition {
   [
     {
       "cpu": 0,
-      "image": "${aws_ecr_repository.repository_url}:latest",
+      "image": "${aws_ecr_repository.repo.repository_url}:latest",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -178,7 +187,6 @@ resource aws_ecs_task_definition task_definition {
           "containerPort": 4000
         }
       ],
-      # define any enviroment variables you app needs at runtime
       "environment": [],
       "mountPoints": [],
       "volumesFrom": [],
