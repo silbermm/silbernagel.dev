@@ -6,18 +6,18 @@ keywords: "elixir,terraform,aws,ecs"
 draft: true
 ---
 
-In [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) of this series, we used terraform to build all of our required infrastructure in AWS. Now we need to actually build an image, push it to our image repo and tell ECS to run it. This is pretty easy in most CI/CD services, we use Github Actions, but a similar solution can be used in CircleCI or TravisCI.
+In [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) I described how to use terraform to build all of the required infrastructure in AWS. Next I'll build an image, push it to the image repo and tell ECS to run it. This is pretty easy in most CI/CD services, we use Github Actions, but a similar solution can be used in CircleCI or TravisCI.
 
 # Containers and CI
 
 ## A simple project
-Lets start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
+Start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
 
 ```bash
 $ mix phx.new ecs_app --no-ecto --live
 ```
 
-Now we can add a health controller that has a single endpoint that the ALB will use to determine the health of the service. Make a new file at `lib/ecs_app_web/controllers/health_controller.ex` and add the following content:
+Add a health controller that has a single endpoint that the ALB will use to determine the health of the service. Make a new file at `lib/ecs_app_web/controllers/health_controller.ex` and add the following content:
 ```elixir
 defmodule EcsAppWeb.HealthController do
   use EcsAppWeb, :controller
@@ -43,11 +43,10 @@ end
 
 > This is a pattern I add to a lot of my web services so I can verify the version that's deployed and the node name.
 
-Like I said - very simple.
- 
-
 ## Dockerfile
-The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content).
+The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content). 
+
+Create the file `Dockerfile` and add the following:
 
 ```docker
 FROM elixir:1.10.0-alpine AS build
@@ -100,9 +99,8 @@ ENV HOME=/app
 CMD ["bin/ecs_app", "start"]
 ```
 
-
 ## Build Configuraton
-I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}).
+I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md#build-the-container-repo" >}}).
 
 ```makefile
 APP_NAME ?= `grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g'`
@@ -202,6 +200,8 @@ jobs:
 
     - name: Build Docker Image
       run: make build
+      env:
+        SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
 
     - name: Push Docker Image
       run: make push
@@ -224,5 +224,17 @@ jobs:
     - name: Deploy
       run: make deploy
 ```
+
+You'll notice that there are references to three different ${{secrets}}. You can set these in your Github repos Settings page. There is section there call secrets, just add the three secrets and this build will have access.
+
+Now push your code the the repo and your `ci` action should test, build and deploy your code to ECS.
+
+Verify this by going to `your-lb-url.com/health` to see the version and node name of your app.
+
+## Wrap Up
+
+Now there is a reproducable infrastructure definition, and its being deployed on a push to repository. Most projects would probably be done at this point.
+
+In Part 3, I'll show you how I went about building a distributed cluster on ECS using the built in Service Discovery tools.
 
 
