@@ -6,9 +6,9 @@ keywords: "elixir,terraform,aws,ecs"
 draft: true
 ---
 
-I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clusting. [Gigalixir](https://www.gigalixir.com/) has sovled that issue and is probably my plaform of choice... given I have the choice.
+I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clusting. [Gigalixir](https://www.gigalixir.com/) has sovled that issue and is probably my plaform of choice... given I have the choice.
 
-At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to elixir, imparticularly connecting nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
+At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to Elixir, imparticularly builing a cluster of nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
 
 # TL;DR
 * Install and configure Terraform
@@ -18,8 +18,10 @@ At work I am limited to using AWS. So for deployment my options are usig EC2 ins
 * Run `terraform apply -target aws_vpc.main`
 * Run `terraform apply`
 
+This will give you the infrastructure needed to deploy and run a container with an Elixir service.
+
 # The Infrastructure
-In order to help build the infrastructure correctly, in a reproducable way and in the right order, we use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console can be frustrating to work with and often limits the functionality of services.
+In order to help build the infrastructure correctly, in a reproducable way and in the right order, I'll use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console can be frustrating to work with and often limits the functionality of services.
 
 Below I've split the terraform into sections and talk through each one, or if you prefer, feel free to  [skip ahead to the final file](#the-final-file). Installing and configuring terraform for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
 
@@ -34,9 +36,10 @@ provider aws {
 
 ```
 
-The other thing we'll need is a VPC. Most likely, you'll want to build your own VPC and use that, but for brevity, we'll just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and the CIDR block.
+The other requirment is a VPC. Most likely, you'll want to build your own VPC and use that, but for brevity you can just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and also find the CIDR block.
 
 Add to your terraform file:
+
 ```terraform
 resource aws_vpc main {
   cidr_block = "your_vpc_CIDR_block"
@@ -88,7 +91,7 @@ This will be the public entry point to your web service, and will direct traffic
 # configure the ALB target group
 resource aws_lb_target_group lb_target_group {
   name        = "your-app-tg" # choose a name that makes sense
-  port        = 4000          # We expose port 4000 from our container
+  port        = 4000          # Expose port 4000 from our container
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id # our default vpc id
   target_type = "ip"
@@ -150,7 +153,7 @@ resource aws_security_group lb_security_group {
 
 ```
 ## Configure ECS
-And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run 1 or more instances of your container. Here we'll build 1 cluster that has 1 service that runs 2 instances of a container (defined by a Task Definition).
+And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run 1 or more instances of your container. This will build 1 cluster that has 1 service that runs 2 instances of a container (defined by a Task Definition).
 
 ```terraform
 resource aws_ecs_cluster ecs_cluster {
@@ -218,7 +221,7 @@ resource aws_ecs_service service {
     container_port   = "4000"
   }
 
-  # this will come into play when we talk about distributed clustering
+  # this will come into play later for distributed clustering
   service_registries {
     registry_arn =  aws_service_discovery_service.service_discovery.arn
     container_name = "your_app"
@@ -357,7 +360,7 @@ Assuming you have the permission, you should be able `terraform plan` and `terra
 # Wrap up
 With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail. 
 
-In Part 2 we'll push an Elixir container to our private image repo and instruct ECS to pull and run it.
+In Part 2 we'll push an Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
 
 
 
