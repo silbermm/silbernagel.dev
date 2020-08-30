@@ -6,7 +6,7 @@ keywords: "elixir,terraform,aws,ecs"
 draft: true
 ---
 
-In [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) I described how to use terraform to build all of the required infrastructure in AWS. Next I'll build an image, push it to the image repo and tell ECS to run it. This is pretty easy in most CI/CD services, we use Github Actions, but a similar solution can be used in CircleCI or TravisCI.
+In [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it. 
 
 # Containers and CI
 
@@ -43,6 +43,26 @@ end
 
 > This is a pattern I add to a lot of my web services so I can verify the version that's deployed and the node name.
 
+## Configuration
+There's a few things we'll need to update in the default phoenix configuration. 
+
+First update the `prod.exs` by changeing the host to your load balancer url. This was one of the terraform outputs when we built the infrastructure, or it can also be found in the AWS web console:
+```elixir
+config :ecs_app, EcsAppWeb.Endpoint,
+  url: [host: "your-lb.us-east-1.elb.amazonaws.com", port: 4000],
+  cache_static_manifest: "priv/static/cache_manifest.json"
+```
+
+This will ensure live view works correctly.
+
+Secondly, make sure you uncomment the following line in `config/prod.secret.exs`
+
+```elixir
+config :ecs_app, EcsAppWeb.Endpoint, server: true
+```
+
+This will ensure the endpoint starts up when running a release.
+
 ## Dockerfile
 The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content). 
 
@@ -52,6 +72,7 @@ Create the file `Dockerfile` and add the following:
 FROM elixir:1.10.0-alpine AS build
 
 ARG MIX_ENV
+ARG SECRET_KEY_BASE
 
 RUN apk add --no-cache build-base git npm python
 
@@ -109,7 +130,7 @@ BUILD ?= `git rev-parse --short HEAD`
 
 build_local:
   docker build --build-arg APP_VSN=$(APP_VSN) \
-    --build-arg MIX_ENV=dev \
+    --build-arg MIX_ENV=prod \
     --build-arg SECRET_KEY_BASE=$(SECRET_KEY_BASE) \
     -t $(APP_NAME):$(APP_VSN) .
 
@@ -129,15 +150,28 @@ deploy:
   ./bin/ecs-deploy -c your_cluster_name -n your_service_name -i your_ecr_url:$(APP_VSN)-$(BUILD) -r us-east-1 -t 300
 
 ```
-For this to work, you'll need to set an environment variable `SECRET_KEY_BASE`. You can generate a random string with `mix phx.gen.secret`.
+For this to work, you'll need to set an environment variable `SECRET_KEY_BASE` which you can generate with `mix phx.gen.secret`.
 
 Assuming you have docker on your computer, you can now run `make build_local` and it should build and package a production release docker image.
 
-The `push` task will require that you have your AWS access_key and secret setup correctly. See [AWS Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) to set it up locally. In the next section, I'll talk through getting it setup correctly for Github Actions.
+The `push` task will require that you have the [AWS CLI](https://aws.amazon.com/cli/) installed on your computer and your AWS access_key and secret setup correctly. See [AWS Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) to set it up locally.
 
-For the `deploy` step, I reference a script at `./bin/ecs-deploy`. You can get this script at [silinternational/ecs-deploy](https://github.com/silinternational/ecs-deploy). Create a folder at the root of your project called `bin` and place the `ecs-deploy` script in it. This will require the same AWS authentication as the `push` task.
+For the `deploy` step, I reference a script at `./bin/ecs-deploy`. You can get this script at [silinternational/ecs-deploy](https://github.com/silinternational/ecs-deploy). Create a folder at the root of your project called `bin` and place the `ecs-deploy` script in it. This will require the same AWS authentication as the `push` task. It also requires that you have `jq` installed on your system and may require you to set the execution bit on the file `chmod +X ./bin/ecs-deploy`.
+
+## Deploy!
+
+Now that we have a simple project, lets get it deployed to ECS. Assuming you have your AWS credentials setup correctly, you should be able to run the following commands in order:
+1. `make build`  - builds and tags a docker image
+2. `make push`   - pushs that image to your private docker repository
+3. `make deploy` - instructs ECS to create a new task defifnition with your latest image and start running it 
+
+The deploy task can take some time. It trys to verify that the task is running and that the previous task is stopped. You can now browse to the ECS web console and watch the progress of your task starting.
+
+If everything worked correctly, you should be able to browse to the Load Balancer URL and see the default Phoenix welcome screen!
 
 ## Github Actions
+It's great that we can build and deploy the app locally, now lets automate the deployment process with Github Actions.
+
 We're going to create one workflow that does three jobs:
   1. Run Tests
   2. Build and push the docker image
@@ -156,27 +190,27 @@ on:
 
 jobs:
   test:
-  name: Run Tests
-  runs-on: ubuntu-latest
-   steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: main 
-    - uses: actions/cache@v2
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-        restore-keys: |
-          ${{ runner.os }}-mix-
-    - name: Set up Elixir
-      uses: actions/setup-elixir@v1
-      with:
-        elixir-version: '1.10.3' 
-        otp-version: '22.3' 
-    - name: Install dependencies
-      run: mix deps.get
-    - name: Run tests
-      run: MIX_ENV=test mix do compile, test 
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main 
+      - uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - name: Set up Elixir
+        uses: actions/setup-elixir@v1
+        with:
+          elixir-version: '1.10.3' 
+          otp-version: '22.3' 
+      - name: Install dependencies
+        run: mix deps.get
+      - name: Run tests
+        run: MIX_ENV=test mix do compile, test 
 
   build:
     name: Build And Push Container
@@ -225,9 +259,9 @@ jobs:
       run: make deploy
 ```
 
-You'll notice that there are references to three different ${{secrets}}. You can set these in your Github repos Settings page. There is section there call secrets, just add the three secrets and this build will have access.
+You'll notice that there are references to three different ${{secrets}}. You can set these in your Github repos Settings page. There is section there called secrets, just add the three secrets and this build will have access.
 
-Now push your code the the repo and your `ci` action should test, build and deploy your code to ECS.
+Now push your code the the repo and your `ci` action should test, build and deploy your code to ECS. You can watch the progress in the Actions tab of your Github repo.
 
 Verify this by going to `your-lb-url.com/health` to see the version and node name of your app.
 
@@ -235,6 +269,5 @@ Verify this by going to `your-lb-url.com/health` to see the version and node nam
 
 Now there is a reproducable infrastructure definition, and its being deployed on a push to repository. Most projects would probably be done at this point.
 
-In Part 3, I'll show you how I went about building a distributed cluster on ECS using the built in Service Discovery tools.
-
+In Part 3, I'll show you how to use ECS Service Discovery to build a distributed cluster on ECS.
 

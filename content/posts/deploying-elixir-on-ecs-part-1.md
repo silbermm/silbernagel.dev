@@ -3,44 +3,33 @@ title: "Deploying Elixir on ECS - Part 1"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This first part deals entirely with setting up the Infrastructure using Terraform"
 date: 2020-08-23T18:23:57-04:00
 keywords: "elixir,terraform,aws,ecs"
-draft: true
+draft: false
 ---
 
-I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clusting. [Gigalixir](https://www.gigalixir.com/) has sovled that issue and is probably my plaform of choice... given I have the choice.
+I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
 
-At work I am limited to using AWS. So for deployment my options are usig EC2 instances or ECS. I opted for ECS with Fargate. It wasn't (at least for me) straight forward to get up and running, and there were few resources specific to Elixir, imparticularly builing a cluster of nodes. Hopefully this guide will help others that are using AWS to run their Elixir services.
-
-# TL;DR
-* Install and configure Terraform
-* Add the contents of [this terraform file](https://gist.github.com/silbermm/8f5f08389c23a84325259118a47dd22d#file-main-tf) to a file named `main.tf` in an infrastruture folder in your project and adjust default values.
-* Run `terraform init`
-* Run `terraform import aws_vpc.main your_vpc_id`
-* Run `terraform apply -target aws_vpc.main`
-* Run `terraform apply`
-
-This will give you the infrastructure needed to deploy and run a container with an Elixir service.
+In Part 1 we'll use [Terraform](https://www.terraform.io/) to describe and build the infrastructure correctly, in a reproducable way and in the right order
 
 # The Infrastructure
-In order to help build the infrastructure correctly, in a reproducable way and in the right order, I'll use [Terraform](https://www.terraform.io/). Terraform itself can be maddening (the subject of a future post), but it also seeems like a neccesary evil, since the AWS console can be frustrating to work with and often limits the functionality of services.
 
-Below I've split the terraform into sections and talk through each one, or if you prefer, feel free to  [skip ahead to the final file](#the-final-file). Installing and configuring terraform for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
+Below I've split the terraform into sections and talk through each one. Installing and configuring terraform for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
 
 ## Initialize Terraform
 To start with, you'll need to tell terraform that you want to use the AWS provider. Add this to a file called `main.tf` and run `terraform init`.
 
-```terraform
+```hcl
 provider aws {
   profile = "default"
   region  = "us-east-1"
 }
-
 ```
+> I typically keep my terraform files in an `infrastructure` folder in the root of my project
 
-The other requirment is a VPC. Most likely, you'll want to build your own VPC and use that, but for brevity you can just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and also find the CIDR block.
+## Add a VPC
+One requirment for ECS is a VPC. Most likely, you'll want to build a new VPC and use that, but for brevity you can just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and also find the CIDR block.
 
 Add to your terraform file:
-
-```terraform
+```hcl
 resource aws_vpc main {
   cidr_block = "your_vpc_CIDR_block"
   tags = {
@@ -66,7 +55,7 @@ This should import the current state of your default VPC and allow you to pass i
 You'll need a place to upload your container to so that ECS can pull it in. AWS offers ECR (Elastic Container Registry) which is essentially a private docker repo.
 
 To create the registry add to your terraform:
-```terraform
+```hcl
 resource "aws_ecr_repository" "repo" {
   name                 = "your_repo"  # give this a better name
   image_tag_mutability = "MUTABLE"
@@ -81,13 +70,16 @@ output repo_url {
 }
 ```
 
+This creates a place to push our images too from our CI/CD process.
+Notice the ouput is the URL of the created repository. This will be important later when we talk about deployment.
+
 ## Build the ALB (Application Load Balancer)
 This will be the public entry point to your web service, and will direct traffic to one of your many containers. To make things easier, this shows how to allow port 80 traffic, but I've commented in the locations that would require a code change for port 443.
 
 > If you want to use  SSL, you'll need to generate a certificate for your domain name. If you manage your domain with Route53, this is easy enough to do in AWS Certificate Manager.
 
 
-```terraform
+```hcl
 # configure the ALB target group
 resource aws_lb_target_group lb_target_group {
   name        = "your-app-tg" # choose a name that makes sense
@@ -108,8 +100,13 @@ resource aws_lb_target_group lb_target_group {
 
 resource aws_lb_listener ecs_listener {
   load_balancer_arn  = "${aws_lb.load_balancer.arn}"
-  port               = "80"
-  protocol           = "HTTP"
+  port               = "80"     # 443 if using SSL
+  protocol           = "HTTP"   # HTTPS if using SSL
+
+  # uncomment following lines if using SSL
+  # ssl_policy        = "ELBSecurityPolicy-2016-08" 
+  # certificate_arn   = ""      # the ARN a valid cert from Certificate Manager
+
   default_action {
     type             = "forward"
     target_group_arn = "${aws_lb_target_group.lb_target_group.arn}"
@@ -148,113 +145,30 @@ resource aws_security_group lb_security_group {
   }
 }
 
+# the url where you app will be accessible
+output dns {
+  value = aws_lb.load_balancer.dns_name
+}
+
 ```
+
 ## Configure ECS
-And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run 1 or more instances of your container. This will build 1 cluster that has 1 service that runs 2 instances of a container (defined by a Task Definition).
+And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run 1 or more instances of a Task which is defined by a TaskDefinition. The following configuration will build 1 cluster that has 1 service that runs 2 instances of a task.
 
-```terraform
+### Task Definition
+The Task Definition is basically a description of how to run your container. Later on when we deploy, we'll create new versions of this initial Task Definition that point to different versions of your docker image. We can then instruct the ECS service to use our new Task Definition and start new tasks with newer versions of our code.
 
+The Task Definition will also need some roles created.
+* The ecs execution role is what is used when the task starts. It needs access to the repository and logs. 
+* The ecs role is what the task runs under. It is what you can use if you need your task to access other AWS services like S3.
+
+And we'll also need to create the log group so the task can log output.
+
+```hcl
 # this may need to change depending
 # on how often you run this
 variable task_version {
   default = 1
-}
-
-# this gets your AWS account id 
-# needed to build the task ARN later
-data "aws_caller_identity" "current" {}
-
-resource aws_ecs_cluster ecs_cluster {
-  name = "your_app_cluster"
-}
-
-resource aws_ecs_task_definition task_definition {
-  family                    = "your_app_task"
-  task_role_arn             = aws_iam_role.ecs_role.arn
-  execution_role_arn        = aws_iam_role.ecs_execution_role.arn
-  requires_compatibilities  = ["FARGATE"]
-  memory                    = 8192
-  cpu                       = 4096
-
-  network_mode              = "awsvpc"
-
-  container_definitions     = <<-EOF
-  [
-    {
-      "cpu": 0,
-      "image": "${aws_ecr_repository.repo.repository_url}:latest",
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/your_app",
-          "awslogs-region": "us-east-1",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
-      "portMappings": [
-        {
-          "hostPort": 4000,
-          "protocol": "tcp",
-          "containerPort": 4000
-        }
-      ],
-      "environment": [],
-      "mountPoints": [],
-      "volumesFrom": [],
-      "essential": true,
-      "links": [],
-      "name": "your_app"
-    }
-  ]
-  EOF
-}
-
-resource aws_ecs_service service {
-  name            = "your_app_service"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-
-  task_definition = "arn:aws:ecs:us-east-1:${data.aws_caller_identity.current.account_id}:task-definition/${aws_ecs_task_definition.task_definition.family}:${var.task_version}"
-  desired_count   = 2
-  launch_type     = "FARGATE"
-  network_configuration {
-    security_groups   = [aws_security_group.security_group.id]
-    subnets           = data.aws_subnet.default_subnet.*.id
-    assign_public_ip  = true # this seems to be required to access the container repo
-  }
-  load_balancer {
-    target_group_arn = aws_lb_target_group.lb_target_group.arn
-    container_name   = "your_app"
-    container_port   = "4000"
-  }
-
-  # this will come into play later for distributed clustering
-  service_registries {
-    registry_arn =  aws_service_discovery_service.service_discovery.arn
-    container_name = "your_app"
-  }
-}
-
-# needed that that our container can access the outside world
-# and traffic in your VPC can access the containers
-resource aws_security_group security_group {
-  name        = "your_app_ecs"
-  description = "Allow all outbound traffic"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description = "HTTP/S Traffic"
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
 # this is the role that your container runs as
@@ -334,25 +248,105 @@ resource aws_cloudwatch_log_group log_group {
   name = "/ecs/your_app"
 }
 
-# these enable service discovery to help us cluster our servers
-resource "aws_service_discovery_private_dns_namespace" dns_namespace {
-  name        = "your_app.local"
-  description = "some desc"
-  vpc         = aws_vpc.main.id
+
+
+resource aws_ecs_task_definition task_definition {
+  family                    = "your_app_task"
+  task_role_arn             = aws_iam_role.ecs_role.arn
+  execution_role_arn        = aws_iam_role.ecs_execution_role.arn
+  requires_compatibilities  = ["FARGATE"]
+  memory                    = 8192
+  cpu                       = 4096
+
+  network_mode              = "awsvpc"
+
+  container_definitions     = <<-EOF
+  [
+    {
+      "cpu": 0,
+      "image": "${aws_ecr_repository.repo.repository_url}:latest",
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.log_group.name}",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 4000,
+          "protocol": "tcp",
+          "containerPort": 4000
+        }
+      ],
+      "environment": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "essential": true,
+      "links": [],
+      "name": "your_app"
+    }
+  ]
+  EOF
+}
+```
+
+### Cluster and Service
+These are pretty easy. We just need to 
+* create the service and tell it about the task and load balancer
+* create a security group to allow traffic out to the world and in from our VPC
+* create a cluster
+
+```hcl
+
+# this gets your AWS account id 
+# needed to build the task ARN later
+data "aws_caller_identity" "current" {}
+
+resource aws_ecs_cluster ecs_cluster {
+  name = "your_app_cluster"
 }
 
-resource "aws_service_discovery_service" service_discovery {
-  name = "your_app"
+resource aws_ecs_service service {
+  name            = "your_app_service"
+  cluster         = aws_ecs_cluster.ecs_cluster.id
 
-  dns_config {
-    namespace_id = "${aws_service_discovery_private_dns_namespace.dns_namespace.id}"
+  task_definition = "arn:aws:ecs:us-east-1:${data.aws_caller_identity.current.account_id}:task-definition/${aws_ecs_task_definition.task_definition.family}:${var.task_version}"
+  desired_count   = 2
+  launch_type     = "FARGATE"
+  network_configuration {
+    security_groups   = [aws_security_group.security_group.id]
+    subnets           = data.aws_subnet.default_subnet.*.id
+    assign_public_ip  = true # this seems to be required to access the container repo
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.lb_target_group.arn
+    container_name   = "your_app"
+    container_port   = "4000"
+  } 
+}
 
-    dns_records {
-      ttl  = 10
-      type = "A"
-    }
+# needed that that our container can access the outside world
+# and traffic in your VPC can access the containers
+resource aws_security_group security_group {
+  name        = "your_app_ecs"
+  description = "Allow all outbound traffic"
+  vpc_id      = aws_vpc.main.id
 
-    routing_policy = "MULTIVALUE"
+  ingress {
+    description = "HTTP/S Traffic"
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -361,7 +355,7 @@ resource "aws_service_discovery_service" service_discovery {
 ## The final file
 Assuming you have the permission, you should be able `terraform plan` and `terraform apply` the following file.
 
-```terraform
+```hcl
 provider aws {
   profile = "default"
   region  = "us-east-1"
@@ -374,7 +368,6 @@ variable app_name {
 variable task_version {
   default = 1
 }
-
 
 resource aws_vpc main {
   cidr_block = "172.31.0.0/16"
@@ -483,7 +476,7 @@ resource aws_ecs_task_definition task_definition {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/${var.app_name}",
+          "awslogs-group": "${aws_cloudwatch_log_group.log_group.name}",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -522,11 +515,6 @@ resource aws_ecs_service service {
     target_group_arn = aws_lb_target_group.lb_target_group.arn
     container_name   = var.app_name
     container_port   = "4000"
-  }
-
-  service_registries {
-    registry_arn =  aws_service_discovery_service.service_discovery.arn
-    container_name = var.app_name 
   }
 }
 
@@ -622,36 +610,19 @@ resource aws_cloudwatch_log_group log_group {
   name = "/ecs/${var.app_name}"
 }
 
-resource "aws_service_discovery_private_dns_namespace" dns_namespace {
-  name        = "${var.app_name}.local"
-  description = "some desc"
-  vpc         = aws_vpc.main.id
-}
-
-resource "aws_service_discovery_service" service_discovery {
-  name = var.app_name
-
-  dns_config {
-    namespace_id = aws_service_discovery_private_dns_namespace.dns_namespace.id
-
-    dns_records {
-      ttl  = 10
-      type = "A"
-    }
-
-    routing_policy = "MULTIVALUE"
-  }
-}
-
 output repo_url {
   value = aws_ecr_repository.repo.repository_url
+}
+
+output dns {
+  value = aws_lb.load_balancer.dns_name
 }
 ```
 
 # Wrap up
 With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail. 
 
-In Part 2 we'll push an Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
+In Part 2 we'll push a Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
 
 
 
