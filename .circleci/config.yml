@@ -35,9 +35,9 @@ jobs:
           name: Install IPFS DEPLOY
           command: npm install ipfs-deploy
       - run:
-          name: Pin website, post notification for PRs or update DNS on master
+          name: Pin website, post notification for PRs or update DNS on main
           command: |
-            if [ "$CIRCLE_BRANCH" == "master" ] ; then
+            if [ "$CIRCLE_BRANCH" == "main" ] ; then
               npx ipfs-deploy /tmp/workspace/$BUILD_DIR -C -O -d cloudflare -p pinata
             fi
 workflows:
