@@ -2,6 +2,12 @@
 title: "Deploying Elixir on ECS - Part 3"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This third part will get help you build a distrubuted Elixir cluster using ECS service discovery"
 date: 2020-09-01T21:14:19-04:00
+categories:
+- Elixir
+tags:
+- Elixir
+- AWS
+- Terraform
 keywords: "elixir,terraform,aws,ecs"
 draft: true
 ---

@@ -10,6 +10,10 @@ pygmentsUseClasses       = true
 relativeURLs             = true
 disqusShortName          = "silbernagel-dev"
 
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
 [params]
     author               = "Matt Silbernagel"
     dateform             = "Mon Jan 02, 2006"
