@@ -23,7 +23,9 @@
   <div id="contentBody">
     {{ .Content }}
   </div>
-  {{ template "_internal/disqus.html" . }}
+  <div style="width: 800px;margin: 0 auto;margin-top: 6em;">
+    {{ template "_internal/disqus.html" . }}
+  </div>
 
   {{ partial "footer.html" . }}
 {{ end }}
