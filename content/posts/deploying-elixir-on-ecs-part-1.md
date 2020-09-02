@@ -8,11 +8,13 @@ draft: false
 
 I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
 
-In Part 1 we'll use [Terraform](https://www.terraform.io/) to describe and build the infrastructure correctly, in a reproducable way and in the right order
+* **Part 1 - using Terraform to describe and build the infrastructure** 
+* [Part 2 - building and deploying a docker image to ECS]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}})
+* Part 3 - using ECS Service Discovery to build a distributed elixir cluster
 
 # The Infrastructure
 
-Below I've split the terraform into sections and talk through each one. Installing and configuring terraform for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
+Below I've split the terraform into sections and talk through each one. Installing and configuring [Terraform](https://www.terraform.io/) for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
 
 ## Initialize Terraform
 To start with, you'll need to tell terraform that you want to use the AWS provider. Add this to a file called `main.tf` and run `terraform init`.

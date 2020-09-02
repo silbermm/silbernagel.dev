@@ -1,14 +1,16 @@
 ---
 title: "Deploying Elixir on ECS - Part 2"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This second part will get your service deployed and running using Github Actions."
-date: 2020-08-23T23:37:04-04:00
+date: 2020-09-01T12:37:04-04:00
 keywords: "elixir,terraform,aws,ecs"
-draft: true
+draft: false
 ---
 
 In [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}}) we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it. 
 
-# Containers and CI
+* [Part 1 - using Terraform to describe and build the infrastructure]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}})
+* **Part 2 - building and deploying a docker image to ECS**
+* Part 3 - using ECS Service Discovery to build a distributed elixir cluster
 
 ## A simple project
 Start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
@@ -152,7 +154,13 @@ deploy:
 ```
 For this to work, you'll need to set an environment variable `SECRET_KEY_BASE` which you can generate with `mix phx.gen.secret`.
 
-Assuming you have docker on your computer, you can now run `make build_local` and it should build and package a production release docker image.
+Assuming you have docker on your computer, you can now run `make build_local` and it should build and package a production release docker image. And it's always a good idea to try it out locally before deploying:
+
+```bash
+$ docker run -p 4000:4000 -it ecs_app:0.1.0
+```
+
+You should be able to hit [http://localhost:4000](http://localhost:4000) now.
 
 The `push` task will require that you have the [AWS CLI](https://aws.amazon.com/cli/) installed on your computer and your AWS access_key and secret setup correctly. See [AWS Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) to set it up locally.
 
@@ -177,7 +185,7 @@ We're going to create one workflow that does three jobs:
   2. Build and push the docker image
   3. Deploy to ECS 
 
-Steps 1 and 2 will run in parallel and only if they are both successful, step 3 will run.
+Steps 1 and 2 will run in parallel and step 3 will run only if 1 and 2 are both successful.
 
 
 Create a new file at `.github/workflows/ci.yml` with the following content:
@@ -194,7 +202,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
+        with: 
           ref: main 
       - uses: actions/cache@v2
         with:
@@ -259,7 +267,7 @@ jobs:
       run: make deploy
 ```
 
-You'll notice that there are references to three different ${{secrets}}. You can set these in your Github repos Settings page. There is section there called secrets, just add the three secrets and this build will have access.
+You'll notice that there are references to three different `${{secrets}}`. You can set these in your Github repos Settings page. There is section there called secrets, just add the three secrets and this build will have access.
 
 Now push your code the the repo and your `ci` action should test, build and deploy your code to ECS. You can watch the progress in the Actions tab of your Github repo.
 

@@ -16,34 +16,34 @@ disqusShortName          = "silbernagel-dev"
     avatar               = "avatar.jpg"
     favicon              = "favicon.ico"
     homepage             = "main"
-    description          = "Presentations and Posts"
+    description          = ""
     title                = "silbernagel.dev"
     publicationYear      = "2019"
 
 [[menu.main]]
-    identifier = "blog"
-    # name = "Blog" #If display text link, cancel comment out
+    identifier = "posts"
+    name = "Blog" #If display text link, cancel comment out
     pre = "<i class='fa fa-book-open fa-lg'></i>" #Choose your favorite font from Font Awesome
     url = "/posts/"
     weight = 10
 
 [[menu.main]]
-    identifier = "linkedin"
-    # name = "Linked In"
+    identifier = "presentations"
+    name = "Presentations"
     pre = "<i class='fa fa-file-powerpoint fa-lg'></i>"
     url = "/presentations/"
     weight = 20
 
 [[menu.main]]
     identifier = "twitter"
-    # name = "Twitter"
+    name = "Twitter"
     pre = "<i class='fab fa-twitter fa-lg'></i>"
     url = "https://twitter.com/silbermm"
     weight = 30
 
 [[menu.main]]
     identifier = "github"
-    # name = "GitHub"
+    name = "GitHub"
     pre = "<i class='fab fa-github fa-lg'></i>"
     url = "https://github.com/silbermm"
     weight = 40
