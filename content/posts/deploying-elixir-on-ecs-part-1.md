@@ -10,7 +10,7 @@ I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple 
 
 * **Part 1 - using Terraform to describe and build the infrastructure** 
 * [Part 2 - building and deploying a docker image to ECS]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}})
-* Part 3 - using ECS Service Discovery to build a distributed elixir cluster
+* Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
 
 # The Infrastructure
 
