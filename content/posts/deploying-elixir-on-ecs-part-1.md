@@ -357,13 +357,12 @@ resource aws_security_group security_group {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 ```
 
 ## The final file
 Assuming you have the permission, you should be able `terraform plan` and `terraform apply` the following file.
 
-```hcl
+```tf {linenos=true}
 provider aws {
   profile = "default"
   region  = "us-east-1"

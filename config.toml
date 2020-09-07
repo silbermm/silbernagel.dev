@@ -4,15 +4,23 @@ defaultContentLanguage   = "en"
 isMultilingual           = false
 title                    = "silbernagel.dev"
 theme                    = "pulp"
-pygmentsStyle            = "monokai"
-pygmentsCodefences       = true
-pygmentsUseClasses       = true
 relativeURLs             = true
 disqusShortName          = "silbernagel-dev"
 
 [taxonomies]
   category = "categories"
   tag = "tags"
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = false
+    tabWidth = 2
 
 [params]
     author               = "Matt Silbernagel"
@@ -23,6 +31,8 @@ disqusShortName          = "silbernagel-dev"
     description          = ""
     title                = "silbernagel.dev"
     publicationYear      = "2019"
+    custom_css           = ["css/syntax.css"]
+
 
 [[menu.main]]
     identifier = "posts"
