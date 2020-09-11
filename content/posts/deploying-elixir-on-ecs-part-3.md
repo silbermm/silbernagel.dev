@@ -14,7 +14,7 @@ draft: true
 
 * [Part 1 - using Terraform to describe and build the infrastructure]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}})
 * [Part 2 - building and deploying a docker image to ECS]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}})
-* Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
+* **Part 3 - using ECS Service Discovery to build a distributed Elixir cluster**
 
 
 In Parts 1 and 2, we built the infrastructure and deployed a very simple Phoenix application. We can scale up our application since it's behind a load balancer by increasing the number of Tasks in our ECS service. For a lot of use cases, that works just fine. But if we are using Phoenix Presence or anything that requires coordination between the Elixir nodes, we'll need to build a cluster.
@@ -55,7 +55,7 @@ resource "aws_service_discovery_service" service_discovery {
 
 ```
 
-and then reference in the `service` resource
+and then reference the service discovery in the `service` resource:
 ```tf {hl_lines=[19,20,21,22]}
 resource aws_ecs_service service {
   name            = "${var.app_name}_service"
@@ -81,12 +81,11 @@ resource aws_ecs_service service {
   }
 }
 ```
-This will create a service regsitry and register our services ip address when it starts up. It uses Route53 to do this by creating a private DNS entry that can be called anything you like. In the above definition, we called it `ecs_app.local`. When a new task boots up, it will be registed as an `A` record under that DNS namespace.
+This will create a service registry and register our services ip address when it starts up. It uses Route53 to do this by creating a private DNS entry that can be called anything you like. In the above definition, we called it `ecs_app.local`. When a new task starts up, it will be registed as an `A` record under that DNS namespace.
 
 Make sure to run `terraform plan` and  `terraform apply`. 
 
 > Adding service registries to a ECS service is a destructive action, so don't be alarmed that it will destroy then recreate your ECS service.
-
 
 ## Auto connecting nodes with libcluster
 
@@ -143,10 +142,9 @@ defmodule EcsApp.Application do
 end
 ```
 
-
 ## Naming the Nodes
 
-Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the long name of our node. 
+Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the long name of our node.
 
 Start by generating the default templates
 ```bash
@@ -162,13 +160,13 @@ export RELEASE_NODE=<%= @release.name %>@${PUBLIC_HOSTNAME}
 ```
 
 Here is whats happening in this file. 
-  * Line 2 - This gets the [Metadata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v3.html#task-metadata-endpoint-v3-response) for the current Task and parses it using `jq` to get the IP Address.
+  * Line 2 - This gets the [Metadata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v3.html#task-metadata-endpoint-v3-response) for the current Task, parses it using `jq` to get the IP Address and sets the variable `PUBLIC_HOSTNAME` to that ip address.
   * Line 3 - This tells the Release to use the long name format
   * Line 4 - Sets the long name of the node to `app_name@ip_address` i.e `ecs_app@192.168.1.10`
 
-This script runs as part of the release, but we still need to tell Docker to include it.
+This script runs as part of the release, but we still need to tell Docker to include it. We also need to install `jq` and `curl` in our container.
 
-```dockerfile {hl_lines=[32]}
+```dockerfile {hl_lines=[32,41]}
 FROM elixir:1.10.0-alpine AS build
 
 ARG MIX_ENV
@@ -209,7 +207,7 @@ FROM alpine:3.9 AS app
 ARG MIX_ENV
 ARG SECRET_KEY_BASE
 
-RUN apk add --no-cache openssl ncurses-libs
+RUN apk add --no-cache openssl ncurses-libs curl jq
 
 WORKDIR /app
 
@@ -224,8 +222,23 @@ ENV HOME=/app
 CMD ["bin/ecs_app", "start"]
 ```
 
+## Set the cookie
+The last thing we need to do is make sure all the nodes have the same cookie. This is required for the nodes to connect.
+
+In the AWS ECS console, we can set environment variables and the release will look for one called `RELEASE_COOKIE`. Lets set that up.
+
+  * Find your current TaskDefinition for your service and choose to `Create a New Revision`. 
+  * In the Container Definition settings, click your container name and find the Environment Variables section. 
+    * In the Key field type `RELEASE_COOKIE` and in the value field the result of running `mix phx.gen.secret`. 
+  * Click update then scroll down and click Create
+  * In the Actions dropdown, choose Update Service
+  * Scroll down and click Skip to Review
+  * Scroll down and click Update Service
+
+Assuming everything goes well, your new Task Definition will start running.
+
 ## Finalize
 
-Now push up your branch and increase you number of tasks running. Your nodes should all connect which you can verify via logging or by turing on the LiveDashboard in production. 
+Finally, push up your latest changes and let it deploy. Once deployed, you should be able to increase the number of tasks running, and your nodes should all connect. This is usually easily verified via logging or by turing on the LiveDashboard in production.
 
-
+For an example application, see [this github repo](https://github.com/silbermm/ecs_example)
