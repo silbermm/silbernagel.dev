@@ -30,7 +30,7 @@ In order to do this we'll need do a several things:
 
 ECS includes [Service Discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) that we can setup via Terraform. Add this to our previous Terraform file:
 
-```tf
+```hcl
 
 resource "aws_service_discovery_private_dns_namespace" dns_namespace {
   name        = "${var.app_name}.local"
@@ -56,7 +56,7 @@ resource "aws_service_discovery_service" service_discovery {
 ```
 
 and then reference the service discovery in the `service` resource:
-```tf {hl_lines=[19,20,21,22]}
+```hcl {hl_lines=[19,20,21,22]}
 resource aws_ecs_service service {
   name            = "${var.app_name}_service"
   cluster         = aws_ecs_cluster.ecs_cluster.id

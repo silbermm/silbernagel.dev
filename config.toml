@@ -23,7 +23,6 @@ disqusShortName          = "silbernagel-dev"
     description          = ""
     title                = "silbernagel.dev"
     publicationYear      = "2019"
-    custom_css            = ["/css/syntax.css"]
 
 [[menu.main]]
     identifier = "posts"

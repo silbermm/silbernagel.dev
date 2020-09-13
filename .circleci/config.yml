@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cibuilds/hugo:0.58
+      - image: cibuilds/hugo:0.74
     working_directory: ~/project
     steps:
       - checkout
@@ -11,6 +11,9 @@ jobs:
           command: |
             git submodule init
             git submodule update --remote
+      - run:
+          name: Install Pygments
+          command: sudo apt-get install python3-pygments
       - run:
           name: "Run Hugo"
           command: HUGO_ENV=production hugo -v --gc --minify
