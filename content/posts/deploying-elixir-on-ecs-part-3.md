@@ -30,7 +30,7 @@ In order to do this we'll need do a several things:
 
 ECS includes [Service Discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) that we can setup via Terraform. Add this to our previous Terraform file:
 
-```hcl
+``` hcl
 
 resource "aws_service_discovery_private_dns_namespace" dns_namespace {
   name        = "${var.app_name}.local"
@@ -56,7 +56,7 @@ resource "aws_service_discovery_service" service_discovery {
 ```
 
 and then reference the service discovery in the `service` resource:
-```hcl {hl_lines=[19,20,21,22]}
+``` hcl {hl_lines=[19,20,21,22]}
 resource aws_ecs_service service {
   name            = "${var.app_name}_service"
   cluster         = aws_ecs_cluster.ecs_cluster.id
@@ -111,7 +111,7 @@ end
 and run `mix deps.get`
 
 Now we need to configure libcluster. I like to do this in the `application.ex` file.
-```elixir {hl_lines=["6-15", 18]}
+``` elixir {hl_lines=["6-15", 18]}
 # lib/ecs_app/application.ex
 defmodule EcsApp.Application do
   use Application
@@ -147,12 +147,12 @@ end
 Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the [long name](https://erlang.org/doc/reference_manual/distributed.html#nodes) of our node.
 
 Start by generating the default templates
-```bash
+``` bash
 mix release.init
 ```
 
 This will create a new folder at `rel/` with three new files. The one we care about is `env.sh.eex`. Make it look like the following:
-```bash {linenos=true}
+``` bash {linenos=true}
 #!/bin/sh
 export PUBLIC_HOSTNAME=`curl ${ECS_CONTAINER_METADATA_URI}/task | jq -r ".Containers[0].Networks[0].IPv4Addresses[0]"`
 export RELEASE_DISTRIBUTION=name
