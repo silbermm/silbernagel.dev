@@ -12,11 +12,11 @@ tags:
 draft: false
 ---
 
-I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
-
 * **Part 1 - using Terraform to describe and build the infrastructure** 
 * [Part 2 - building and deploying a docker image to ECS]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}})
-* Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
+* [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster]({{< ref "posts/deploying-elixir-on-ecs-part-3.md" >}})
+
+I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
 
 # The Infrastructure
 
@@ -629,7 +629,6 @@ output dns {
 # Wrap up
 With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail. 
 
-In Part 2 we'll push a Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
-
+In [Part 2]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}}) we'll push a Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
 
 

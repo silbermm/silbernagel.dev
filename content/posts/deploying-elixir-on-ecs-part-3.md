@@ -1,7 +1,7 @@
 ---
 title: "Deploying Elixir on ECS - Part 3"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This third part will get help you build a distrubuted Elixir cluster using ECS service discovery"
-date: 2020-09-01T21:14:19-04:00
+date: 2020-09-12T21:14:19-04:00
 categories:
 - Elixir
 tags:
@@ -9,7 +9,7 @@ tags:
 - AWS
 - Terraform
 keywords: "elixir,terraform,aws,ecs"
-draft: true
+draft: false
 ---
 
 * [Part 1 - using Terraform to describe and build the infrastructure]({{< ref "posts/deploying-elixir-on-ecs-part-1.md" >}})
@@ -144,7 +144,7 @@ end
 
 ## Naming the Nodes
 
-Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the long name of our node.
+Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the [long name](https://erlang.org/doc/reference_manual/distributed.html#nodes) of our node.
 
 Start by generating the default templates
 ```bash
@@ -239,6 +239,6 @@ Assuming everything goes well, your new Task Definition will start running.
 
 ## Finalize
 
-Finally, push up your latest changes and let it deploy. Once deployed, you should be able to increase the number of tasks running, and your nodes should all connect. This is usually easily verified via logging or by turing on the LiveDashboard in production.
+Finally, push up your latest changes and let it deploy. Once deployed, you should be able to increase the number of tasks running, and your nodes should all connect. This is usually easily verified via logging or by turning on the LiveDashboard in production.
 
 For an example application, see [this github repo](https://github.com/silbermm/ecs_example)

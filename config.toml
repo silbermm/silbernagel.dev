@@ -6,7 +6,7 @@ title                    = "silbernagel.dev"
 theme                    = "pulp"
 pygmentsStyle            = "monokai"
 pygmentsCodefences       = true
-pygmentsUseClasses       = true
+pygmentsUseClasses       = false
 relativeURLs             = true
 disqusShortName          = "silbernagel-dev"
 
