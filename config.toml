@@ -22,7 +22,7 @@ disqusShortName          = "silbernagel-dev"
     homepage             = "main"
     description          = ""
     title                = "silbernagel.dev"
-    publicationYear      = "2019"
+    publicationYear      = "2021"
     custom_css            = ["/css/syntax.css"]
 
 [[menu.main]]
