@@ -23,7 +23,7 @@ jobs:
             - public
   deploy:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:12
         environment:
           IPFS_DEPLOY_CLOUDFLARE__ZONE: silbernagel.dev
           IPFS_DEPLOY_CLOUDFLARE__RECORD: _dnslink.silbernagel.dev
