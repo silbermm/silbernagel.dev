@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "ipfs-deploy": "^10.1.0"
+  }
+}
