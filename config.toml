@@ -27,7 +27,7 @@ disqusShortName          = "silbernagel-dev"
 
 [[menu.main]]
     identifier = "posts"
-    name = "Blog" #If display text link, cancel comment out
+    name = "Posts"
     pre = "<i class='fa fa-book-open fa-lg'></i>" #Choose your favorite font from Font Awesome
     url = "/posts/"
     weight = 10
@@ -53,6 +53,13 @@ disqusShortName          = "silbernagel-dev"
     url = "https://github.com/silbermm"
     weight = 40
 
+[[menu.main]]
+    identifier = "gpg"
+    name = "GPG Public Key"
+    pre = "<i class='fas fa-key fa-lg'></i>"
+    url = "/silbernagel.pgp"
+    weight = 40
+
 [[params.mainMenu]]
     link = "/posts"
     text = "posts"
@@ -60,7 +67,6 @@ disqusShortName          = "silbernagel-dev"
 [[params.mainMenu]]
     link = "/presentations"
     text = "presentations"
-
 
 [imaging]
     quality = 75
