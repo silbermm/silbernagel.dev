@@ -4,7 +4,6 @@ defaultContentLanguage   = "en"
 isMultilingual           = false
 title                    = "silbernagel.dev"
 theme                    = "anatole"
-pygmentsStyle            = "monokai"
 pygmentsCodefences       = true
 pygmentsUseClasses       = false
 relativeURLs             = true
