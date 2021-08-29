@@ -2,6 +2,8 @@
 title: "Deploying Elixir on ECS - Part 3"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This third part will get help you build a distrubuted Elixir cluster using ECS service discovery"
 date: 2020-09-12T21:14:19-04:00
+series:
+- deploying-elixir-on-ecs
 categories:
 - Elixir
 tags:
@@ -9,6 +11,7 @@ tags:
 - AWS
 - Terraform
 keywords: "elixir,terraform,aws,ecs"
+summary: "Part 3 in the series of Deploying Elixir to AWS ECS using Terraform. In this third post we'll learn how to build a distributed Elixir cluster in ECS."
 draft: false
 ---
 
@@ -25,7 +28,7 @@ In order to do this we'll need do a several things:
   * Include libcluster to automatically connect nodes
   * Update our Release to include a pre-start script that names our node
   * Make sure all nodes have the same COOKIE
-  
+
 ## Update the ECS Service
 
 ECS includes [Service Discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) that we can setup via Terraform. Add this to our previous Terraform file:
@@ -77,13 +80,13 @@ resource aws_ecs_service service {
 
   service_registries {
     registry_arn =  aws_service_discovery_service.service_discovery.arn
-    container_name = var.app_name 
+    container_name = var.app_name
   }
 }
 ```
 This will create a service registry and register our services ip address when it starts up. It uses Route53 to do this by creating a private DNS entry that can be called anything you like. In the above definition, we called it `ecs_app.local`. When a new task starts up, it will be registed as an `A` record under that DNS namespace.
 
-Make sure to run `terraform plan` and  `terraform apply`. 
+Make sure to run `terraform plan` and  `terraform apply`.
 
 > Adding service registries to a ECS service is a destructive action, so don't be alarmed that it will destroy then recreate your ECS service.
 
@@ -159,7 +162,7 @@ export RELEASE_DISTRIBUTION=name
 export RELEASE_NODE=<%= @release.name %>@${PUBLIC_HOSTNAME}
 ```
 
-Here is whats happening in this file. 
+Here is whats happening in this file.
   * Line 2 - This gets the [Metadata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v3.html#task-metadata-endpoint-v3-response) for the current Task, parses it using `jq` to get the IP Address and sets the variable `PUBLIC_HOSTNAME` to that ip address.
   * Line 3 - This tells the Release to use the long name format
   * Line 4 - Sets the long name of the node to `app_name@ip_address` i.e `ecs_app@192.168.1.10`
@@ -227,9 +230,9 @@ The last thing we need to do is make sure all the nodes have the same cookie. Th
 
 In the AWS ECS console, we can set environment variables and the release will look for one called `RELEASE_COOKIE`. Lets set that up.
 
-  * Find your current TaskDefinition for your service and choose to `Create a New Revision`. 
-  * In the Container Definition settings, click your container name and find the Environment Variables section. 
-    * In the Key field type `RELEASE_COOKIE` and in the value field the result of running `mix phx.gen.secret`. 
+  * Find your current TaskDefinition for your service and choose to `Create a New Revision`.
+  * In the Container Definition settings, click your container name and find the Environment Variables section.
+    * In the Key field type `RELEASE_COOKIE` and in the value field the result of running `mix phx.gen.secret`.
   * Click update then scroll down and click Create
   * In the Actions dropdown, choose Update Service
   * Scroll down and click Skip to Review

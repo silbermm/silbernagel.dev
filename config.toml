@@ -3,8 +3,7 @@ languageCode             = "en-us"
 defaultContentLanguage   = "en"
 isMultilingual           = false
 title                    = "silbernagel.dev"
-theme                    = "pulp"
-pygmentsStyle            = "monokai"
+theme                    = "anatole"
 pygmentsCodefences       = true
 pygmentsUseClasses       = false
 relativeURLs             = true
@@ -12,53 +11,50 @@ disqusShortName          = "silbernagel-dev"
 
 [taxonomies]
   category = "categories"
-  tag = "tags"
+  tag      = "tags"
+  series   = "series"
 
 [params]
     author               = "Matt Silbernagel"
     dateform             = "Mon Jan 02, 2006"
-    avatar               = "avatar.jpg"
+    profilePicture       = "img/avatar.jpg"
     favicon              = "favicon.ico"
     homepage             = "main"
     description          = ""
     title                = "silbernagel.dev"
     publicationYear      = "2021"
-    custom_css            = ["/css/syntax.css"]
+    displayMode          = "dark"
+    doNotLoadAnimations  = true
+    contentratio         = 0.8
+    customCss            = ["css/syntax.css"]
+    images               = ["img/avatar.jpg"]
+    disableThemeSwitcher = true
+    mainSections         = ["posts", "projects"]
+    enableMediumZoom     = false
 
 [[menu.main]]
     identifier = "posts"
-    name = "Posts"
-    pre = "<i class='fa fa-book-open fa-lg'></i>" #Choose your favorite font from Font Awesome
-    url = "/posts/"
-    weight = 10
+    name       = "Posts"
+    url        = "/posts/"
+    weight     = 10
+
+[[menu.main]]
+    identifier = "projects"
+    name       = "Projects"
+    url        = "/projects/"
+    weight     = 15
 
 [[menu.main]]
     identifier = "presentations"
-    name = "Presentations"
-    pre = "<i class='fa fa-file-powerpoint fa-lg'></i>"
-    url = "/presentations/"
-    weight = 20
+    name       = "Presentations"
+    url        = "/presentations/"
+    weight     = 20
 
-[[menu.main]]
-    identifier = "twitter"
-    name = "Twitter"
-    pre = "<i class='fab fa-twitter fa-lg'></i>"
-    url = "https://twitter.com/silbermm"
-    weight = 30
+[[menu.footer]]
+    title = "Powered by the Interplanetary Filesystem"
+    url   = "https://ipfs.io"
+    name  = "Powered by the Interplanetary Filesystem"
 
-[[menu.main]]
-    identifier = "github"
-    name = "GitHub"
-    pre = "<i class='fab fa-github fa-lg'></i>"
-    url = "https://github.com/silbermm"
-    weight = 40
-
-[[menu.main]]
-    identifier = "gpg"
-    name = "GPG Public Key"
-    pre = "<i class='fas fa-key fa-lg'></i>"
-    url = "/silbernagel.pgp"
-    weight = 40
 
 [[params.mainMenu]]
     link = "/posts"
@@ -67,6 +63,21 @@ disqusShortName          = "silbernagel-dev"
 [[params.mainMenu]]
     link = "/presentations"
     text = "presentations"
+
+[[params.socialIcons]]
+  icon  = "fab fa-twitter"
+  title = "Twitter"
+  url   = "https://twitter.com/silbermm"
+
+[[params.socialIcons]]
+  icon  = "fab fa-github"
+  title = "Github"
+  url   = "https://github.com/silbermm"
+
+[[params.socialIcons]]
+  icon  = "fas fa-key"
+  title = "GPG Public Key"
+  url   = "/silbernagel.pgp"
 
 [imaging]
     quality = 75

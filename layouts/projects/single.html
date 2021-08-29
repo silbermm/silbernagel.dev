@@ -1,0 +1,25 @@
+{{ define "main" }}
+  {{ $projectName := $.Param "projectName" }}
+  {{ $urlPre := printf "https://api.github.com/repos/silbermm/%s/readme" $projectName }}
+  {{ $readme := getJSON $urlPre (dict "accept" "application/vnd.github.v3+json")}}
+
+  <div class="post">
+      <div class="post-content">
+        {{ $readme.content | base64Decode | markdownify }}
+      </div>
+
+      <div class="post-footer">
+        <div class="info">
+          {{ with .Page.Params.Categories }}
+          {{ partial "taxonomy/categories.html" . }}
+
+
+          {{ end }}
+
+          {{ with .Page.Params.Tags }}
+            {{ partial "taxonomy/tags.html" . }}
+          {{ end }}
+        </div>
+      </div>
+  </div>
+{{ end }}

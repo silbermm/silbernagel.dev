@@ -1,0 +1,68 @@
+{{ define "main" }}
+<header>{{ partial "navbar.html" . }}</header>
+<div class="wrapper">
+  <aside>
+    {{- partial "sidebar.html" . -}}
+  </aside>
+  <main>
+    <div class="autopagerize_page_element">
+      <div class="content">
+
+        <div
+            class="archive {{ with .Site.Params.doNotLoadAnimations }}
+                   .
+            {{ else }}
+            animated fadeInDown
+
+            {{ end }}"
+            >
+            <ul class="list-with-title">
+              {{ range .Data.Pages.GroupByDate "2006" }}
+              <div class="listing-title">{{ .Key }}</div>
+              {{ range .Pages }}
+              <ul class="listing">
+                <div class="listing-item">
+                  <div class="listing-post">
+                    <a href="{{ .RelPermalink }}" title="{{ .Title }}">{{ .Title }}</a>
+                    <div class="post-time">
+                      <span class="date"
+                            >{{ if isset .Site.Params "listdateformat" }}
+                            {{ .Date.Format .Site.Params.listDateFormat }}
+
+
+                            {{ else }}
+                            {{ .Date.Format "Jan 2" }}
+
+
+                            {{ end }}</span
+                          >
+                    </div>
+                  </div>
+                </div>
+              </ul>
+
+              {{ end }}
+
+
+              {{ end }}
+            </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+{{- partial "footer.html" (dict "context" . "footerClassModifier" "base") -}}
+
+{{- if (eq .Site.Params.simpleAnalytics.enable true) -}}
+{{- partial "analytics/simpleanalytics.html" . -}}
+
+
+{{- end -}}
+
+
+
+
+
+
+{{ end }}
