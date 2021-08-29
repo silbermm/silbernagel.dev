@@ -2,11 +2,7 @@
   {{(.Title | markdownify) }}
 {{ end }}
 
-{{ define "layout" }}
-
-{{ end }}
-
-{{ define "header" }}
+{{ define "head" }}
   <!-- override the header of base.html -->
 {{ end }}
 
@@ -44,9 +40,11 @@
       width: 35%;
     }
   </style>
-  <textarea id="source">
-    {{- .RawContent -}}
-  </textarea>
+  <div class="post-content">
+    <textarea id="source">
+      {{- .RawContent -}}
+    </textarea>
+  </div>
   <script src="{{ "js/remark.js" | absURL }}"></script>
   <script>
     var slideshow = remark.create({
@@ -59,9 +57,6 @@
   </script>
 {{ end }}
 
-{{ define "about" }}
-
-{{ end }}
 {{ define "footer" }}
 
 {{ end }}

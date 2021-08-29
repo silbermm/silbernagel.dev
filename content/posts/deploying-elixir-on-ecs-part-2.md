@@ -3,6 +3,8 @@ title: "Deploying Elixir on ECS - Part 2"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This second part will get your service deployed and running using Github Actions."
 date: 2020-09-01T12:37:04-04:00
 keywords: "elixir,terraform,aws,ecs"
+series:
+- deploying-elixir-on-ecs
 categories:
 - Elixir
 tags:
@@ -52,7 +54,7 @@ end
 > This is a pattern I add to a lot of my web services so I can verify the version that's deployed and the node name.
 
 ## Configuration
-There's a few things we'll need to update in the default phoenix configuration. 
+There's a few things we'll need to update in the default phoenix configuration.
 
 First update the `prod.exs` by changeing the host to your load balancer url. This was one of the terraform outputs when we built the infrastructure, or it can also be found in the AWS web console:
 ```elixir
@@ -72,7 +74,7 @@ config :ecs_app, EcsAppWeb.Endpoint, server: true
 This will ensure the endpoint starts up when running a release.
 
 ## Dockerfile
-The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content). 
+The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content).
 
 Create the file `Dockerfile` and add the following:
 
@@ -177,7 +179,7 @@ For the `deploy` step, I reference a script at `./bin/ecs-deploy`. You can get t
 Now that we have a simple project, lets get it deployed to ECS. Assuming you have your AWS credentials setup correctly, you should be able to run the following commands in order:
 1. `make build`  - builds and tags a docker image
 2. `make push`   - pushs that image to your private docker repository
-3. `make deploy` - instructs ECS to create a new task defifnition with your latest image and start running it 
+3. `make deploy` - instructs ECS to create a new task defifnition with your latest image and start running it
 
 The deploy task can take some time. It trys to verify that the task is running and that the previous task is stopped. You can now browse to the ECS web console and watch the progress of your task starting.
 
@@ -189,7 +191,7 @@ It's great that we can build and deploy the app locally, now lets automate the d
 We're going to create one workflow that does three jobs:
   1. Run Tests
   2. Build and push the docker image
-  3. Deploy to ECS 
+  3. Deploy to ECS
 
 Steps 1 and 2 will run in parallel and step 3 will run only if 1 and 2 are both successful.
 
@@ -208,8 +210,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with: 
-          ref: main 
+        with:
+          ref: main
       - uses: actions/cache@v2
         with:
           path: deps
@@ -219,12 +221,12 @@ jobs:
       - name: Set up Elixir
         uses: actions/setup-elixir@v1
         with:
-          elixir-version: '1.10.3' 
-          otp-version: '22.3' 
+          elixir-version: '1.10.3'
+          otp-version: '22.3'
       - name: Install dependencies
         run: mix deps.get
       - name: Run tests
-        run: MIX_ENV=test mix do compile, test 
+        run: MIX_ENV=test mix do compile, test
 
   build:
     name: Build And Push Container
@@ -284,4 +286,3 @@ Verify this by going to `your-lb-url.com/health` to see the version and node nam
 Now there is a reproducable infrastructure definition, and its being deployed on a push to repository. Most projects would probably be done at this point.
 
 In Part 3, I'll show you how to use ECS Service Discovery to build a distributed cluster on ECS.
-

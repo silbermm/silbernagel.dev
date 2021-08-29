@@ -3,6 +3,9 @@ title: "Deploying Elixir on ECS - Part 1"
 description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This first part deals entirely with setting up the Infrastructure using Terraform"
 date: 2020-08-23T18:23:57-04:00
 keywords: "elixir,terraform,aws,ecs"
+#toc: true
+series:
+- deploying-elixir-on-ecs
 categories:
 - Elixir
 tags:
@@ -12,7 +15,7 @@ tags:
 draft: false
 ---
 
-* **Part 1 - using Terraform to describe and build the infrastructure** 
+* **Part 1 - using Terraform to describe and build the infrastructure**
 * [Part 2 - building and deploying a docker image to ECS]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}})
 * [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster]({{< ref "posts/deploying-elixir-on-ecs-part-3.md" >}})
 
@@ -96,7 +99,7 @@ resource aws_lb_target_group lb_target_group {
   vpc_id      = aws_vpc.main.id # our default vpc id
   target_type = "ip"
   health_check {
-    path = "/health" 
+    path = "/health"
     port = "4000"
   }
   stickiness {
@@ -112,7 +115,7 @@ resource aws_lb_listener ecs_listener {
   protocol           = "HTTP"   # HTTPS if using SSL
 
   # uncomment following lines if using SSL
-  # ssl_policy        = "ELBSecurityPolicy-2016-08" 
+  # ssl_policy        = "ELBSecurityPolicy-2016-08"
   # certificate_arn   = ""      # the ARN a valid cert from Certificate Manager
 
   default_action {
@@ -167,7 +170,7 @@ And now finally our ECS configuration. ECS has the concept of Clusters which are
 The Task Definition is basically a description of how to run your container. Later on when we deploy, we'll create new versions of this initial Task Definition that point to different versions of your docker image. We can then instruct the ECS service to use our new Task Definition and start new tasks with newer versions of our code.
 
 The Task Definition will also need some roles created.
-* The ecs execution role is what is used when the task starts. It needs access to the repository and logs. 
+* The ecs execution role is what is used when the task starts. It needs access to the repository and logs.
 * The ecs role is what the task runs under. It is what you can use if you need your task to access other AWS services like S3.
 
 And we'll also need to create the log group so the task can log output.
@@ -301,14 +304,14 @@ resource aws_ecs_task_definition task_definition {
 ```
 
 ### Cluster and Service
-These are pretty easy. We just need to 
+These are pretty easy. We just need to
 * create the service and tell it about the task and load balancer
 * create a security group to allow traffic out to the world and in from our VPC
 * create a cluster
 
 ```hcl
 
-# this gets your AWS account id 
+# this gets your AWS account id
 # needed to build the task ARN later
 data "aws_caller_identity" "current" {}
 
@@ -332,7 +335,7 @@ resource aws_ecs_service service {
     target_group_arn = aws_lb_target_group.lb_target_group.arn
     container_name   = "your_app"
     container_port   = "4000"
-  } 
+  }
 }
 
 # needed that that our container can access the outside world
@@ -369,7 +372,7 @@ provider aws {
 }
 
 variable app_name {
-  default = "ecs_app"  
+  default = "ecs_app"
 }
 
 variable task_version {
@@ -384,7 +387,7 @@ resource aws_vpc main {
 }
 
 resource "aws_ecr_repository" "repo" {
-  name                 = "${var.app_name}_repo"  
+  name                 = "${var.app_name}_repo"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -404,13 +407,13 @@ data aws_subnet default_subnet {
 data "aws_caller_identity" "current" {}
 
 resource aws_lb_target_group lb_target_group {
-  name        = "ecs-app-tg" 
+  name        = "ecs-app-tg"
   port        = 4000
   protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id 
+  vpc_id      = aws_vpc.main.id
   target_type = "ip"
   health_check {
-    path = "/health" 
+    path = "/health"
     port = "4000"
   }
   stickiness {
@@ -526,7 +529,7 @@ resource aws_ecs_service service {
 }
 
 resource aws_security_group security_group {
-  name        = var.app_name 
+  name        = var.app_name
   description = "Allow all outbound traffic"
   vpc_id      = aws_vpc.main.id
 
@@ -627,8 +630,6 @@ output dns {
 ```
 
 # Wrap up
-With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail. 
+With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail.
 
 In [Part 2]({{< ref "posts/deploying-elixir-on-ecs-part-2.md" >}}) we'll push a Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
-
-
