@@ -7,7 +7,7 @@ theme                    = "anatole"
 pygmentsCodefences       = true
 pygmentsUseClasses       = false
 relativeURLs             = true
-disqusShortName          = "silbernagel-dev"
+disqusShortname          = "silbernagel-dev"
 
 [taxonomies]
   category = "categories"
@@ -31,6 +31,7 @@ disqusShortName          = "silbernagel-dev"
     disableThemeSwitcher = true
     mainSections         = ["posts", "projects"]
     enableMediumZoom     = false
+    postSectionName      = "posts"
 
 [[menu.main]]
     identifier = "posts"

@@ -12,6 +12,7 @@ tags:
 - Terraform
 keywords: "elixir,terraform,aws,ecs"
 summary: "Part 3 in the series of Deploying Elixir to AWS ECS using Terraform. In this third post we'll learn how to build a distributed Elixir cluster in ECS."
+disableComments: false
 draft: false
 ---
 
