@@ -29,6 +29,9 @@ disqusShortName          = "silbernagel-dev"
     contentratio         = 0.8
     customCss            = ["css/syntax.css"]
     images               = ["img/avatar.jpg"]
+    disableThemeSwitcher = true
+    mainSections         = ["posts", "projects"]
+    enableMediumZoom     = false
 
 [[menu.main]]
     identifier = "posts"
