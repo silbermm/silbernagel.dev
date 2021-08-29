@@ -9,6 +9,7 @@ tags:
 - Elixir
 - Phoenix
 - Tailwind
+summary: "How to properly build Tailwind with an Elixir releases in Docker"
 draft: false
 ---
 

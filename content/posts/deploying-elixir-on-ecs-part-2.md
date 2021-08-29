@@ -11,6 +11,7 @@ tags:
 - Elixir
 - AWS
 - Terraform
+summary: "Part 2 in the series of Deploying Elixir to AWS ECS using Terraform. In this post we'll build a simple Phoenix app and deploy it to ECS using Github Actions"
 draft: false
 ---
 

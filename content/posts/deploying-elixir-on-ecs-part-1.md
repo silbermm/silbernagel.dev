@@ -12,6 +12,7 @@ tags:
 - Elixir
 - AWS
 - Terraform
+summary: "Part 1 in a series dedicated to Deploying Elixir to AWS ECS using Terraform. In this first post we'll use Terraform to build out the required AWS infrastructure."
 draft: false
 ---
 
