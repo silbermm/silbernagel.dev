@@ -27,7 +27,8 @@ disqusShortName          = "silbernagel-dev"
     displayMode          = "dark"
     doNotLoadAnimations  = true
     contentratio         = 0.8
-    customCss           = ["css/syntax.css"]
+    customCss            = ["css/syntax.css"]
+    images               = ["img/avatar.jpg"]
 
 [[menu.main]]
     identifier = "posts"

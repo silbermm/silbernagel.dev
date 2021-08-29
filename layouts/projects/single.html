@@ -1,65 +1,65 @@
 {{ define "main" }}
 
-	{{ $projectName := $.Param "projectName" }}
-	{{ $urlPre := printf "https://api.github.com/repos/silbermm/%s/readme" $projectName }}
-	{{ $readme := getJSON $urlPre (dict "accept" "application/vnd.github.v3+json")}}
+{{ $projectName := $.Param "projectName" }}
+{{ $urlPre := printf "https://api.github.com/repos/silbermm/%s/readme" $projectName }}
+{{ $readme := getJSON $urlPre (dict "accept" "application/vnd.github.v3+json")}}
 
-  <div
+<div
     class="post {{ with .Site.Params.doNotLoadAnimations }}
-      .
+           .
 
-    {{ else }}
-      animated fadeInDown
+{{ else }}
+animated fadeInDown
 
-    {{ end }}"
-  >
+{{ end }}"
+    >
+
 
     <div class="post-content">
       {{ if .Params.thumbnail }}
-        <img class="post-thumbnail" src="{{ .Params.thumbnail | relURL }}" alt="Thumbnail image" />
+      <img class="post-thumbnail" src="{{ .Params.thumbnail | relURL }}" alt="Thumbnail image" />
 
       {{ end }}
       <div class="post-title">
         <h1>{{ .Title }}</h1>
         {{ if or (eq .Type "post") (eq .Type .Site.Params.postSectionName) }}
-          <div class="info">
-            <em class="fas fa-calendar-day"></em>
-            <span class="date"
-              >{{ if isset .Site.Params "singledateformat" }}
+        <div class="info">
+          <em class="fas fa-calendar-day"></em>
+          <span class="date"
+                >{{ if isset .Site.Params "singledateformat" }}
                 {{ .Date.Format .Site.Params.singleDateFormat }}
 
 
-              {{ else }}
+                {{ else }}
                 {{ .Date.Format "Mon, Jan 2, 2006" }}
 
 
-              {{ end }}</span
-            >
-            <em class="fas fa-stopwatch"></em>
-            <span class="reading-time">{{ i18n "reading_time" .ReadingTime }}</span>
-          </div>
+                {{ end }}</span
+              >
+              <em class="fas fa-stopwatch"></em>
+              <span class="reading-time">{{ i18n "reading_time" .ReadingTime }}</span>
+        </div>
 
         {{ end }}
       </div>
 
       {{- if (eq .Params.toc true) -}}
-        <h3>Table of Contents</h3>
-        {{ .TableOfContents }}
+      <h3>Table of Contents</h3>
+      {{ .TableOfContents }}
 
 
       {{- end -}}
 
-
-  		{{ $readme.content | base64Decode | markdownify }}
+      {{ $readme.content | base64Decode | markdownify }}
 
       {{- if isset .Params "series" -}}
-        {{- partial "series.html" . -}}
+      {{- partial "series.html" . -}}
 
 
       {{- end -}}
 
       {{- if (eq .Params.contact true) -}}
-        {{- partial "contact.html" . -}}
+      {{- partial "contact.html" . -}}
 
 
       {{- end -}}
@@ -67,13 +67,13 @@
     <div class="post-footer">
       <div class="info">
         {{ with .Page.Params.Categories }}
-          {{ partial "taxonomy/categories.html" . }}
+        {{ partial "taxonomy/categories.html" . }}
 
 
         {{ end }}
 
         {{ with .Page.Params.Tags }}
-          {{ partial "taxonomy/tags.html" . }}
+        {{ partial "taxonomy/tags.html" . }}
 
 
         {{ end }}
@@ -81,37 +81,37 @@
     </div>
 
     {{ if and (or (eq .Type "post") (eq .Type .Site.Params.postSectionName)) (ne .Page.Params.disableComments true) }}
-      {{- if .Site.DisqusShortname -}}
-        <div id="fb_comments_container">
-          <h2>{{ i18n "comments" }}</h2>
-          {{ template "_internal/disqus.html" . }}
-        </div>
+    {{- if .Site.DisqusShortname -}}
+    <div id="fb_comments_container">
+      <h2>{{ i18n "comments" }}</h2>
+      {{ template "_internal/disqus.html" . }}
+    </div>
 
-      {{- end -}}
-      {{- if .Site.Params.utterances.repo -}}
-        <div id="fb_comments_container">
-          <h2>{{ i18n "comments" }}</h2>
-          {{ partial "comments/utterances.html" . }}
-        </div>
+    {{- end -}}
+    {{- if .Site.Params.utterances.repo -}}
+    <div id="fb_comments_container">
+      <h2>{{ i18n "comments" }}</h2>
+      {{ partial "comments/utterances.html" . }}
+    </div>
 
-      {{- end -}}
-      {{- if .Site.Params.CommentoURL -}}
-        <div id="fb_comments_container">
-          <h2>{{ i18n "comments" }}</h2>
-          {{ partial "comments/commento.html" . }}
-        </div>
+    {{- end -}}
+    {{- if .Site.Params.CommentoURL -}}
+    <div id="fb_comments_container">
+      <h2>{{ i18n "comments" }}</h2>
+      {{ partial "comments/commento.html" . }}
+    </div>
 
-      {{- end -}}
-      {{- if .Site.Params.gitalk.repo -}}
-        <div id="fb_comments_container">
-          <h2>{{ i18n "comments" }}</h2>
-          {{ partial "comments/gitalk.html" . }}
-        </div>
+    {{- end -}}
+    {{- if .Site.Params.gitalk.repo -}}
+    <div id="fb_comments_container">
+      <h2>{{ i18n "comments" }}</h2>
+      {{ partial "comments/gitalk.html" . }}
+    </div>
 
-      {{- end -}}
+    {{- end -}}
 
 
     {{ end }}
-  </div>
+</div>
 
 {{ end }}
