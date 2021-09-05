@@ -12,7 +12,6 @@ categories:
 - Projects
 tags:
 - Elixir
-- library
 summary: "An Elixir library to help make building CLI's easier"
 draft: false
 ---

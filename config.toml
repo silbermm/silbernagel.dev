@@ -29,7 +29,7 @@ disqusShortname          = "silbernagel-dev"
     customCss            = ["css/syntax.css"]
     images               = ["img/avatar.jpg"]
     disableThemeSwitcher = true
-    mainSections         = ["posts", "projects"]
+    mainSections         = ["posts"]
     enableMediumZoom     = false
     postSectionName      = "posts"
 

@@ -1,11 +1,12 @@
 ---
-title: "Diceware - Password Generator"
+title: "Diceware"
 projectName: "diceware"
 projectType: "Libraries"
-description: "A library that generates passwords using the Diceware method"
-summary: "A library that generates passwords using the Diceware method"
-date: 2021-08-29T12:55:30-04:00
+description: "Password generator library based on the Diceware method"
+summary: "Password generator library based on the Diceware method"
+date: 2021-02-21T18:08:35-04:00
 showDate: false
-categories: ["Projects"]
-draft: true
+tags: ["Elixir"]
+categories: ["Projects", "Elixir"]
+draft: false
 ---

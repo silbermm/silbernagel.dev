@@ -1,6 +1,6 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
-projectName: "{{ title }}"
+projectName: "{{ .Name }}"
 projectType: "CLI"
 description: ""
 summary: ""
