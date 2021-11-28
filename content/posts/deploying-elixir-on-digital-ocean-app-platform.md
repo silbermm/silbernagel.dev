@@ -15,6 +15,7 @@ I recently worked on a project that used [Digital Ocean](https://www.digitalocea
 
 ## Assumptions
 * You have an existing app that you want to deploy
+* You already have your app configured as a [release](https://elixir-lang.org/getting-started/mix-otp/config-and-releases.html)
 * You have docker installed and have basic understanding
 
 
@@ -76,7 +77,7 @@ Once build, try running it
 ```bash
 docker run --expose 8080 -p 4000:4000 -e SECRET_KEY_BASE=secret_key -e DATABASE_URL=your_db_url -e PORT=4000 --rm -it your_app:latest
 ```
-> be sure to replace `your_db_url` with an actual database url and `secret_key` with the output of `mix phx.gen.secret` and add any other runtime variables you've defined in your app.
+>be sure to replace `your_db_url` with an actual database url and `secret_key` with the output of `mix phx.gen.secret` and add any other runtime variables you've defined in your app.
 
 ### DockerHub
 
@@ -92,8 +93,12 @@ and push it to dockerhub
 docker push docker_username/your_app:latest
 ```
 
-
 ## Digital Ocean Setup
 
+Once you are logged into Digital Ocean, choose the Apps link in the lefthand menu.
+
+![Digital Ocean menu](/img/do_apps.png)
 
 ## Deploying
+
+## CI/CD
