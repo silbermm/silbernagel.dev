@@ -1,0 +1,13 @@
+li code, p code {
+  padding: .2em .4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(99, 110, 123, 0.4);
+  border-radius: 6px;
+}
+
+.listing-description {
+  padding-bottom: 1em;
+  font-style: italic;
+  font-size: 90%;
+}
