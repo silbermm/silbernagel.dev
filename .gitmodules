@@ -1,6 +1,0 @@
-[submodule "content/presentations"]
-	path = content/presentations
-	url = https://github.com/silbermm/presentations
-[submodule "themes/anatole"]
-	path = themes/anatole
-	url = https://github.com/lxndrblz/anatole.git

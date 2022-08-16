@@ -37,3 +37,6 @@ npm-debug.log
 *.db-*
 
 .env
+/silbernageldev_dev.db
+/silbernageldev_dev.db-shm
+/silbernageldev_dev.db-wal
