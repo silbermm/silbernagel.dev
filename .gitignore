@@ -40,3 +40,4 @@ npm-debug.log
 /silbernageldev_dev.db
 /silbernageldev_dev.db-shm
 /silbernageldev_dev.db-wal
+/silbernageldev_test.db*
