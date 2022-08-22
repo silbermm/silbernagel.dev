@@ -12,7 +12,8 @@ defmodule Silbernageldev.Application do
       SilbernageldevWeb.Telemetry,
       {Phoenix.PubSub, name: Silbernageldev.PubSub},
       SilbernageldevWeb.Endpoint,
-      {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]}
+      {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
+      {Silbernageldev.RepoReplication, []}
     ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]

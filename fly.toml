@@ -13,10 +13,6 @@ processes = []
   allowed_public_ports = []
   auto_rollback = true
 
-[mounts]
-  destination = "/data"
-  source = "database"
-
 [[services]]
   http_checks = []
   internal_port = 8080

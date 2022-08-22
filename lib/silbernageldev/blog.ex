@@ -1,5 +1,7 @@
 defmodule Silbernageldev.Blog do
+  alias Silbernageldev.Blog.Peek
   alias Silbernageldev.Blog.Post
+  alias Silbernageldev.Repo
 
   use NimblePublisher,
     build: Post,
@@ -30,5 +32,17 @@ defmodule Silbernageldev.Blog do
       [] -> raise NotFoundError, "posts with tag=#{tag} not found"
       posts -> posts
     end
+  end
+
+  def add_peek(post_title) do
+    peek = Peek.changeset(%Peek{}, %{"post" => post_title, "count" => 49})
+
+    to_run = fn ->
+      Repo.insert(peek)
+    end
+
+    to_run.()
+    
+    Repo.replicate(to_run)
   end
 end
