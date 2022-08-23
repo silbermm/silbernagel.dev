@@ -6,7 +6,7 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
   def default(assigns) do
     ~H"""
     <div class="container max-w-3xl mx-auto overflow-hidden prose-pre:rounded-md prose-pre:p-4">
-      <div class="w-full prose prose:slate dark:prose-invert hover:prose-a:text-orange-400">
+      <div class="max-w-3xl prose prose:slate dark:prose-invert hover:prose-a:text-orange-400">
         <!--Title-->
         <header>
           <h2> <%= @post.title %> </h2>
