@@ -123,7 +123,7 @@ CMD ["bin/ecs_app", "start"]
 ```
 
 ## Build Configuraton
-I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]({{< ref "posts/deploying-elixir-on-ecs-part-1.md#build-the-container-repo" >}}).
+I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]("deploying-elixir-to-ecs-part-1").
 
 ```makefile
 APP_NAME ?= `grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g'`

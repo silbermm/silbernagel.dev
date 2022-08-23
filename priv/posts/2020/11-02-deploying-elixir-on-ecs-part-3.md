@@ -1,5 +1,5 @@
 %{
-  title: "Deploying Elixir to ECS - Part 3",
+  title: "Deploying Elixir on ECS - Part 3",
   author: "Matt Silbernagel",
   tags: ~w(Elixir AWS Terraform),
   description: "Part 3 in the series of Deploying Elixir to AWS ECS using Terraform. In this third post we'll learn how to build a distributed Elixir cluster in ECS."
