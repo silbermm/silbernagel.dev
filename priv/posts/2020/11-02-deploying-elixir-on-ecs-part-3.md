@@ -6,8 +6,8 @@
 }
 ---
 
-* [Part 1 - using Terraform to describe and build the infrastructure](deploying-elixir-to-ecs-part-1)
-* [Part 2 - building and deploying a docker image to ECS](deploying-elixir-to-ecs-part-2)
+* [Part 1 - using Terraform to describe and build the infrastructure](/posts/deploying-elixir-on-ecs-part-1)
+* [Part 2 - building and deploying a docker image to ECS](/posts/deploying-elixir-on-ecs-part-2)
 * **Part 3 - using ECS Service Discovery to build a distributed Elixir cluster**
 
 
