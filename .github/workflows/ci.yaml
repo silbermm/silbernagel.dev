@@ -27,12 +27,20 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-mix-
 
-    - name: Cache Dialyzer
-      id: cache-dialyzer
+    - name: Restore PLT cache
       uses: actions/cache@v2
+      id: plt_cache
       with:
-        path: priv/plts
-        key: ${{ runner.os }}-new-plts
+          key: |
+            ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          restore-keys: |
+            ${{ runner.os }}-${{ steps.beam.outputs.elixir-version }}-${{ steps.beam.outputs.otp-version }}-plt
+          path: |
+            priv/plts
+
+    - name: Create PLTs
+      if: steps.plt_cache.outputs.cache-hit != 'true'
+      run: mix dialyzer --plt
 
     - name: Install dependencies
       run: mix deps.get
@@ -40,8 +48,15 @@ jobs:
     - name: Compile
       run: mix compile --warnings-as-errors
 
+    - name: Cache Dialyzer
+      id: cache-dialyzer
+      uses: actions/cache@v2
+      with:
+        path: priv/plts
+        key: ${{ runner.os }}-new-plts
+
     - name: Static Analysis
-      run: mix dialyzer --halt-exit-status
+      run: mix dialyzer --halt-exit-status --format github
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -53,7 +68,7 @@ jobs:
       uses: erlef/setup-beam@v1.8
       with:
         elixir-version: '1.13.2' # Define the elixir version [required]
-        otp-version: '25.0.3' # Define the OTP version [required]
+        otp-version: '24.1' # Define the OTP version [required]
 
     - uses: actions/cache@v2
       with:
