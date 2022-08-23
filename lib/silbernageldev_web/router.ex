@@ -19,8 +19,8 @@ defmodule SilbernageldevWeb.Router do
 
     get "/", HomepageController, :index
 
-    get "/blog", BlogController, :index
-    get "/blog/:id", BlogController, :show
+    get "/posts", BlogController, :index
+    get "/posts/:id", BlogController, :show
 
   end
 
