@@ -6,11 +6,11 @@
 }
 ---
 
-* [Part 1 - using Terraform to describe and build the infrastructure](deploying-elixir-to-ecs-part-1)
+* [Part 1 - using Terraform to describe and build the infrastructure](/posts/deploying-elixir-on-ecs-part-1)
 * **Part 2 - building and deploying a docker image to ECS**
-* [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster](deploying-elixir-to-ecs-part-3)
+* [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster](/posts/deploying-elixir-on-ecs-part-3)
 
-In [Part 1]("deploying-elixir-to-ecs-part-1") we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it.
+In [Part 1]("/posts/deploying-elixir-on-ecs-part-1") we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it.
 
 ## A simple project
 Start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
