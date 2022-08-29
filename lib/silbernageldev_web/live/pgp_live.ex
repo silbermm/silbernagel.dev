@@ -9,7 +9,7 @@ defmodule SilbernageldevWeb.Live.PGPLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1> My PGP public key </h1>
+    <h1>My PGP public key</h1>
     """
   end
 end
