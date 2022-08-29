@@ -13,7 +13,7 @@ config :silbernageldev,
 
 # Configures the endpoint
 config :silbernageldev, SilbernageldevWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "silbernagel.dev"],
   render_errors: [view: SilbernageldevWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Silbernageldev.PubSub,
   live_view: [signing_salt: "yeNIpo46"]
