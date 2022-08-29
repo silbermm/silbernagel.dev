@@ -42,6 +42,15 @@ defmodule SilbernageldevWeb do
     end
   end
 
+  def blog_live_view do
+    quote do
+      use Phoenix.LiveView,
+        layout: {SilbernageldevWeb.LayoutView, "blog.html"}
+
+      unquote(view_helpers())
+    end
+  end
+
   def live_view do
     quote do
       use Phoenix.LiveView,

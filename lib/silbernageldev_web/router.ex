@@ -2,26 +2,27 @@ defmodule SilbernageldevWeb.Router do
   use SilbernageldevWeb, :router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {SilbernageldevWeb.LayoutView, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {SilbernageldevWeb.LayoutView, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
-  scope "/", SilbernageldevWeb do
-    pipe_through :browser
+  scope "/", SilbernageldevWeb.Live do
+    pipe_through(:browser)
 
-    get "/", HomepageController, :index
+    live("/posts", BlogLive, :index)
+    live("/posts/:id", BlogLive, :show)
 
-    get "/posts", BlogController, :index
-    get "/posts/:id", BlogController, :show
+    live("/pgp", PGPLive, :index)
 
+    live("/", HomeLive, :index)
   end
 
   # Other scopes may use custom stacks.
@@ -40,9 +41,9 @@ defmodule SilbernageldevWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: SilbernageldevWeb.Telemetry
+      live_dashboard("/dashboard", metrics: SilbernageldevWeb.Telemetry)
     end
   end
 
@@ -52,9 +53,9 @@ defmodule SilbernageldevWeb.Router do
   # node running the Phoenix server.
   if Mix.env() == :dev do
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
   end
 end
