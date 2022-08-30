@@ -26,12 +26,38 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", info => topbar.show())
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
+
+let Hooks = {}
+Hooks.CopyPGP = {
+  mounted() {
+    var btn = this.el.querySelector("#pgp-copy-btn") 
+    btn.addEventListener("click", e => {
+      // get pgp text
+      if (!navigator.clipboard) {
+        // Clipboard API not available
+        alert("Browser clipboard not available")
+        return
+      } else {
+        var content = this.el.querySelector('pre').innerHTML;
+
+        navigator.clipboard.writeText(content)
+            .then(() => {
+            alert("PGP key copied!")
+        })
+            .catch(err => {
+            alert('Something went wrong', err);
+        })
+      }
+    })
+  }
+}
+
+let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()
