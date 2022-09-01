@@ -23,9 +23,15 @@ defmodule SilbernageldevWeb.Router do
     live("/tags", Blog.TagsLive, :index)
     live("/tags/:tag_name", Blog.TagsLive, :show)
 
-    live("/pgp", PGPLive, :index)
+    live("/gpg", GPGLive, :index)
 
     live("/", HomeLive, :index)
+  end
+  
+  scope "/", SilbernageldevWeb.Controllers do
+    pipe_through(:browser)
+
+    get("/gpg/download", GPGController, :download)
   end
 
   # Other scopes may use custom stacks.
