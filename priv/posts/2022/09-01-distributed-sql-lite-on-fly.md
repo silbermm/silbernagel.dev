@@ -30,14 +30,43 @@ $ fly launch
 * type in an app name (or just take the default)
 * choose any region you like
 * choose N when asked if you want a Postgres database
-* choose Y to deploy now
+* choose N to deploy now
 
-The deploy should fail becuase we need to define a few environment variables. First, we need specify a `DATABASE_FILE` so ecto knows where the sqlite db file is.
+We need to define a few environment variables for our first deployment to be successful. First, we need define a `DATABASE_PATH` so ecto knows where the sqlite db file is.
 ```bash
-$ 
+$ flyctl secrets set DATABASE_PATH=/data/distributed_sqlite.db
+```
+You can use any file name you like, I just choose to name it the same as my application `distributed_sqlite`
+
+Let's try to deploy now
+```bash
+$ flyctl deploy
 ```
 
+It failed for me because I'm missing a `SECRET_KEY_BASE` environment variable, so lets create that and deploy again.
+```bash
+$ mix phx.gen.secret 
+$ flyctl secrets set SECRET_KEY_BASE={output from above command}
+$ flyctl deploy
+```
 
+Another failure. This time it's because I am using directory that doesn't exist yet in `/data`. This is an easy fix. In the `Dockerfile` I just add:
+```
+# Storage for the database
+RUN mkdir -p /data
+RUN chown nobody /data
+```
+
+and try to deploy again
+```bash
+$ flyctl deploy
+```
+
+Success! A Phoenix app running on Fly using SQLite! 
+
+Lets build a simple data model so we can see our DB working.
+
+## Counter
 
 ## Distributing
 
