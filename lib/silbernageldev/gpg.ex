@@ -1,7 +1,7 @@
 defmodule Silbernageldev.GPG do
   @doc false 
 
-  @gpg_public_key ~S"""
+  @gpg_public_key ~s"""
   -----BEGIN PGP PUBLIC KEY BLOCK-----
 
   mQINBGDFEK4BEACktdBDgIKkaHK66Hx6kQkxOEbXN46VlscmkI976l+7gw1XVNPH
@@ -57,6 +57,6 @@ defmodule Silbernageldev.GPG do
   """
 
   def get_gpg_key() do
-    @gpg_public_key
+    String.trim(@gpg_public_key)
   end
 end
