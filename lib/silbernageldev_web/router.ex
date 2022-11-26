@@ -10,6 +10,10 @@ defmodule SilbernageldevWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :webfinger do
+    plug(:accepts, ["jrd", "json"])
+  end
+
   pipeline :api do
     plug(:accepts, ["json"])
   end
@@ -27,7 +31,13 @@ defmodule SilbernageldevWeb.Router do
 
     live("/", HomeLive, :index)
   end
-  
+
+  scope "/", SilbernageldevWeb.Controllers do
+    pipe_through(:webfinger)
+
+    get("/.well-known/webfinger", WebFingerController, :finger)
+  end
+
   scope "/", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
 

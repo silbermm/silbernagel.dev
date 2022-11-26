@@ -29,6 +29,10 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
+config :mime, :types, %{
+  "application/jrd+json" => ["jrd"]
+}
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
