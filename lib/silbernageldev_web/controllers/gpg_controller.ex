@@ -17,6 +17,7 @@ defmodule SilbernageldevWeb.Controllers.GPGController do
 
     conn
     |> put_resp_content_type("application/octet-stream")
+    |> put_resp_header("Access-Control-Allow-Origin", "*")
     |> send_resp(200, File.read!(file))
   end
 
