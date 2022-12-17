@@ -1,10 +1,6 @@
 defmodule SilbernageldevWeb.Controllers.GPGController do
   use SilbernageldevWeb, :controller
 
-  @acceptable_emails [
-    "matt@silbernagel.dev"
-  ]
-
   def download(conn, _params) do
     conn
     |> put_resp_content_type("text/plain")
@@ -17,7 +13,7 @@ defmodule SilbernageldevWeb.Controllers.GPGController do
   end
 
   def binary_key(conn, %{"localpart" => "d6tq6t4iirtg3qpyw1nyzsr5nsfcqrht"}) do
-    file = Application.app_dir(:silbernageldev, "/priv/static/assets/silbernagel.pub")
+    file = Application.app_dir(:silbernageldev, "/priv/static/silbernagel.pub")
 
     conn
     |> put_resp_content_type("application/octet-stream")
