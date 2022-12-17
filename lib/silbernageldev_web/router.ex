@@ -32,10 +32,15 @@ defmodule SilbernageldevWeb.Router do
     live("/", HomeLive, :index)
   end
 
-  scope "/", SilbernageldevWeb.Controllers do
+  scope "/.well-known/webfinger", SilbernageldevWeb.Controllers do
     pipe_through(:webfinger)
+    get("/", WebFingerController, :finger)
+  end
 
-    get("/.well-known/webfinger", WebFingerController, :finger)
+  scope "/.well-known/openpgpkey", SilbernageldevWeb.Controllers do
+    pipe_through(:browser)
+    get("/policy", GPGController, :policy)
+    get("/hu/:localpart", GPGController, :binary_key)
   end
 
   scope "/", SilbernageldevWeb.Controllers do

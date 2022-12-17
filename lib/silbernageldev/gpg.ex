@@ -1,5 +1,5 @@
 defmodule Silbernageldev.GPG do
-  @doc false 
+  @doc false
 
   @gpg_public_key ~s"""
   -----BEGIN PGP PUBLIC KEY BLOCK-----
