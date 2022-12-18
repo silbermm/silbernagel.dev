@@ -43,3 +43,6 @@ npm-debug.log
 /silbernageldev_dev.db-shm
 /silbernageldev_dev.db-wal
 /silbernageldev_test.db*
+
+/priv/static/assets/app.js
+/priv/static/assets/app.css
