@@ -11,7 +11,7 @@ defmodule SilbernageldevWeb.Live.GPGLive do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center w-full m-auto pb-4">
-      <.link class="text-gray-500 dark:text-slate-400 hover:text-orange-400" href="https://keyoxide.org/80C8F7AE64E589449FB0A03974DB6708422DD33B" target="_blank"> Proof of identity </.link>
+      <.link class="text-gray-500 dark:text-slate-400 hover:text-orange-400" href="https://keyoxide.org/wkd/matt%40silbernagel.dev" target="_blank"> Proof of identity </.link>
       </div>
       <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-4">Use GPG to import</h3>
       <pre class="bg-black text-gray-200 whitespace-pre-wrap"><code>
