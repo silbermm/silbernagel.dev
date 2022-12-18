@@ -9,10 +9,17 @@ defmodule SilbernageldevWeb.Live.GPGLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center w-full m-auto pb-4">
+      <.link class="text-gray-500 dark:text-slate-400 hover:text-orange-400" href="https://keyoxide.org/80C8F7AE64E589449FB0A03974DB6708422DD33B" target="_blank"> Proof of identity </.link>
+      </div>
+      <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-4">Use GPG to import</h3>
+      <pre class="bg-black text-gray-200 whitespace-pre-wrap"><code>
+      gpg --locate-keys --auto-key-locate clear,nodefault,wkd matt@silbernagel.dev
+      </code></pre>
       <div id="pgp-key" class="flow-root" phx-hook="CopyPGP">
         <div class="grid grid-cols-3 grid-flow-col gap-2 py-6">
-          <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">GPG Public Key</h3>
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">OpenPGP Key</h3>
           <div class="col-span-2 text-right">
             <span class="relative z-0 inline-flex rounded-md shadow-sm">
               <button
