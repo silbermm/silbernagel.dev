@@ -46,3 +46,6 @@ npm-debug.log
 
 /priv/static/assets/app.js
 /priv/static/assets/app.css
+
+/priv/plts/dialyzer.plt
+/priv/plts/dialyzer.plt.hash
