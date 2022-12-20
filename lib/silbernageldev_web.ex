@@ -45,7 +45,7 @@ defmodule SilbernageldevWeb do
   def blog_live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {SilbernageldevWeb.LayoutView, "blog.html"}
+        layout: {SilbernageldevWeb.LayoutView, :blog}
 
       unquote(view_helpers())
     end
