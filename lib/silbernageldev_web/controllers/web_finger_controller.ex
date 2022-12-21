@@ -13,7 +13,7 @@ defmodule SilbernageldevWeb.Controllers.WebFingerController do
     case resource do
       r when r in @aliases ->
         data = %{
-          subject: "acct:ahappydeath@silbernagel.dev",
+          subject: "acct:ahappydeath@freeradical.zone",
           aliases: [
             "acct:ahappydeath@freeradical.zone",
             "https://freeradical.zone/@ahappydeath",
