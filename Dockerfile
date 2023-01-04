@@ -69,11 +69,18 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
+FROM alpine:latest as tailscale
+WORKDIR /app
+
+ENV TSFILE=tailscale_1.34.1_amd64.tgz
+RUN wget https://pkgs.tailscale.com/stable/${TSFILE} && \
+  tar xzf ${TSFILE} --strip-components=1
+
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
-RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates \
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
@@ -99,9 +106,11 @@ COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
 COPY litestream.yml /etc/litestream.yml
 COPY run.sh /scripts/run.sh
 
-RUN chmod 777 /scripts/run.sh
+COPY --from=tailscale /app/tailscaled /app/tailscaled
+COPY --from=tailscale /app/tailscale /app/tailscale
+RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
 
-USER nobody
+RUN chmod 777 /scripts/run.sh
 
 CMD ["/scripts/run.sh"]
 # Appended by flyctl

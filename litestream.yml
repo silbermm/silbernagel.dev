@@ -1,7 +1,10 @@
-access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
-secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
-
 dbs:
   - path: /data/silbernageldev.db
     replicas:
-      - url: ${REPLICA_URL}
+      - type: s3
+        bucket: silbernageldev
+        path: db
+        endpoint: https://100.100.20.30:9000
+        skip-verify: true
+        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
