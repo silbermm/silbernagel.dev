@@ -49,6 +49,8 @@ defmodule Silbernageldev.MixProject do
       {:nimble_publisher, "~> 0.1.0"},
       {:makeup_elixir, ">= 0.0.0"},
       {:makeup_erlang, ">= 0.0.0"},
+      {:makeup_eex, ">= 0.0.0"},
+      {:makeup_html, ">= 0.0.0"},
       {:libcluster, "~> 3.3"},
       {:tailwind, "~> 0.1.6", runtime: Mix.env() == :dev},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
