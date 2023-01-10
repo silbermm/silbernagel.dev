@@ -4,7 +4,7 @@ defmodule SilbernageldevWeb.Live.HomeLive do
   @impl true
   def render(assigns) do
     ~H"""
-
+    <div class="h-screen"></div>
     """
   end
 end
