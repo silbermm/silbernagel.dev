@@ -9,13 +9,13 @@
 
 I recently read about [litestream](https://litestream.io/) and wanted to try this on [Fly](https://fly.io) with [Elixir](https://elixir-lang.org/).
 
-[Litestream](https://litestream.io/) allows us to backup our SQLite database to any S3 compatible storage after every transaction. It will also restore from that backup. Meaning that anytime we scale our app on Fly, we can restore the latest version of the database. 
+[Litestream](https://litestream.io/) allows us to backup our SQLite database to any S3 compatible storage after every transaction. It will also restore from that backup. Meaning that anytime we scale our app on Fly, we can restore the latest version of the database.
 
 ## Why
 * **fast** data access
 * **simple** local development
 * **low** maintenance
-* Elixir makes it possible via it's distribution capabilities
+* Elixir makes it all possible via it's distribution capabilities
 
 ## Getting Started
 Create a new phoenix app that uses [SQLite3](https://github.com/elixir-sqlite/ecto_sqlite3) as the database:
@@ -23,40 +23,24 @@ Create a new phoenix app that uses [SQLite3](https://github.com/elixir-sqlite/ec
 $ mix phx.new distributed_sqlite --database sqlite3
 ```
 
-Lets try to push this up to Fly as-is and see what happens:
+Launch a new fly application:
 
 ```bash
 $ fly launch
 ```
 * type in an app name (or just take the default)
 * choose any region you like
-* choose N when asked if you want a Postgres database
-* choose N to deploy now
+* choose **N** when asked if you want a Postgres database
+* choose **N** when asked if you want a Redis instance
+* choose **N** to deploy now
 
-We'll need to add an environment variable to indicate which file to use for the SQLite database.
+An environment varilable `DATABASE_PATH` is needed to indicate which file to use for the SQLite database. Open the `fly.toml` file and add `DATABASE_PATH = /app/distributed_sqlite.db` (use any database name you want here) under the `[env]` section and try to deploy.
 
-Open the `fly.toml` file and add `DATABASE_PATH = /data/distributed_sqlite.db` under the `[env]` section.
-
-Let's try to deploy now
 ```bash
 $ flyctl deploy
 ```
 
-Another failure. This time it's because I am using directory that doesn't exist yet in `/data`. This is an easy fix. In the `Dockerfile` I just add:
-```
-# Storage for the database
-RUN mkdir -p /data
-RUN chown nobody /data
-```
-
-and try to deploy again
-```bash
-$ flyctl deploy
-```
-
-Success! A Phoenix app running on Fly using SQLite!
-
-Lets build a simple data model so we can see our DB working.
+Success! A Phoenix app running on Fly using SQLite! Now, to see it in action.
 
 ## Counter Data Model
 
@@ -67,7 +51,7 @@ $ mix phx.gen.schema Counter.PageCount page_counts page:string count:integer
 $ mix ecto.migrate
 ```
 
-Now we can add a `Counter` module that will add page view counts
+Add a `Counter` module where we can add page view counts
 
 ```elixir
 # lib/distributed_sqlite/counter.ex
@@ -76,11 +60,17 @@ defmodule DistributedSqlite.Counter do
   alias DistributedSqlite.Repo
 
   def count_page_view(page_name) do
-    page_count = Repo.get_by(PageCount, page: page_name) || %PageCount{page: page_name, count: 0}
-
-    page_count
-    |> PageCount.changeset(%{count: page_count.count + 1})
-    |> Repo.insert_or_update!()
+    page_count = Repo.get_by(PageCount, page: page_name)
+    case page_count do
+      nil -> 
+       %PageCount{}
+       |> PageCount.changeset(%{count: 1, page: page_name})
+       |> Repo.insert()
+      %PageCount{} = page_count ->
+        page_count
+        |> PageCount.changeset(%{count: page_count.count + 1})
+        |> Repo.update()
+    end
   end
 end
 ```
@@ -107,9 +97,9 @@ Now deploy again using `flyctl deploy` and then browse to your site to validate 
 
 ## Restoring the Database on Deploy
 
-The next problem to deal with that the database will be wiped on our next deploy since it's using ephemeral storage.
+The next problem to deal with is that the database will be wiped on our next deploy since it's using ephemeral storage.
 
-One way to resolve this is to use a persistent volume (which is probably not a bad idea for production apps). But since this post is all about [litestream](https://litestream.io/) lets set that up and see how it helps us here.
+One way to resolve this is to use a persistent volume (which should be done for production apps). But since this post is all about [litestream](https://litestream.io/) lets set that up and see how it helps us here.
 
 The first step is to create a bucket in some S3 compatible storage. I like to use [Digital Ocean spaces](https://www.digitalocean.com/products/spaces) for this, but you can also use AWS if you want. [See litestream docs for more options](https://litestream.io/guides/)
 
@@ -138,7 +128,7 @@ access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
 secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
 
 dbs:
-  - path: /data/distributed_sql.db
+  - path: /app/distributed_sql.db
     replicas:
       - url: ${REPLICA_URL}
 ```
@@ -149,17 +139,17 @@ Now set the three variables in Fly to the values you recorded from when setting 
 $ flyctl secrets set REPLICA_URL=... LITESTREAM_ACCESS_KEY_ID=... LITESTREAM_SECRET_ACCESS_KEY=...
 ```
 
-Finally, we need to update how we start our app so that it's a sub-process of litestream. The easiest way I've found to do this is to create a run script called `run.sh` with the following content:
+Finally, update the starting script so that the elixir release is a sub-process of litestream. The easiest way I've found to do this is to create a run script called `run.sh` with the following content:
 ```
 #!/bin/bash
 set -e
 
 # Restore the database if it does not already exist.
-if [ -f /data/distributed_sql.db ]; then
+if [ -f /app/distributed_sql.db ]; then
   echo "Database already exists, skipping restore"
 else
   echo "No database found, restoring from replica if exists"
-  litestream restore -v -if-replica-exists -o /data/distributed_sql.db "${REPLICA_URL}"
+  litestream restore -v -if-replica-exists -o /app/distributed_sql.db "${REPLICA_URL}"
 fi
 
 # Run migrations
@@ -169,24 +159,24 @@ fi
 exec litestream replicate -exec "/app/bin/server"
 ```
 
-> Be sure to remove the migration script from fly.toml since we are doing it in a different step now
+> Be sure to remove the migration script from fly.toml since we it runs in the run.sh script now.
 
 Now update the `Dockerfile` to use this new script to start the app:
 
 ```
 COPY run.sh /scripts/run.sh
-RUN chmod 777 /scripts/run.sh
+RUN chmod 755 /scripts/run.sh
 
 CMD ["/scripts/run.sh"]
 ```
 
-Deploying should now start using litestream restore the database on deploys and push backups when data changes. You can verify in the monitoring interface of fly. Look for something similar to the image below:
+Deploying should now start using litestream to restore the database on deploys and push backups when data changes. You can verify in the monitoring interface of fly. Look for something similar to the image below:
 
 ![Fly logs showing that litestream is running](/images/fly-logs.png "Fly Logs")
 
 ## Distributing
 
-With all of this in place, things would work great if you only wanted to run one instance of you app. But as soon as you add another node things get out of wack. 
+With all of this in place, things would work great when running one instance of you app. But as soon as you add another node things get out of wack. 
 
 Lets see this in action -- Scale the app to 2 and see what happens to the data.
 
@@ -194,7 +184,7 @@ Lets see this in action -- Scale the app to 2 and see what happens to the data.
 $ flyctl scale count 2
 ```
 
-Enough refreshing or opening in different browser sessions and you'll start to see discrepencies in the view count. This is because we are replicating the data between the instances. But we have Elixir and this shouldn't be to hard to do.
+Enough refreshing or opening in different browser sessions and you'll start to see discrepencies in the view count. This is because we are not replicating the data between the instances. This is a problem Elixir is built for...
 
 Follow the [Fly guide to Clustering Your Application](https://fly.io/docs/elixir/getting-started/clustering/) to get clustering working correctly.
 
@@ -246,8 +236,55 @@ children = [
 ]
 ```
 
+Open the `DistributedSqlite.Repo` file and add a `replicate/2` function
+
+```elixir
+@doc """
+Replicate the query on the the other nodes in the cluster
+"""
+def replicate({:ok, data_to_replicate} = ret, operation) when operation in [:insert, :update] do
+  _ =
+    for node <- Node.list() do
+      GenServer.cast(
+        {GenexRemote.RepoReplication, node},
+        {:replicate, data_to_replicate, operation}
+      )
+    end
+
+  ret
+end
+
+def replicate({:error, _changeset} = ret, _), do: ret
+
+def replicate(%Ecto.Changeset{} = changeset, operation) when operation in [:insert, :update] do
+  _ =
+    for node <- Node.list() do
+      GenServer.cast(
+        {GenexRemote.RepoReplication, node},
+        {:replicate, changeset, operation}
+      )
+    end
+
+  {:ok, changeset}
+end
+
+def replicate(schema, :insert) do
+  _ =
+    for node <- Node.list() do
+      GenServer.cast(
+        {GenexRemote.RepoReplication, node},
+        {:replicate, schema, :insert}
+      )
+    end
+
+  {:ok, schema}
+end
+```
+
 
 
 ## Wrap Up
+
+
 
 
