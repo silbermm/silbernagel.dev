@@ -8,9 +8,9 @@ defmodule SilbernageldevWeb.Live.BlogLive do
   def mount(%{"id" => blog_post_id}, _session, socket) do
     socket =
       socket
-      |> assign(:post, Blog.get_post_by_id!(blog_post_id))
-      |> assign(:page_title, fn %{post: post} -> post.title end)
-      |> assign(:description, fn %{post: post} -> post.description end)
+      |> assign_new(:post, fn -> Blog.get_post_by_id!(blog_post_id) end)
+      |> assign_new(:page_title, fn %{post: post} -> post.title end)
+      |> assign_new(:description, fn %{post: post} -> post.description end)
       |> assign_new(:posts, fn -> Blog.all_posts() end)
 
     {:ok, socket}
@@ -21,7 +21,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
     socket =
       socket
       |> assign(:post, nil)
-      |> assign(:page_title, fn -> "Blog Posts" end)
+      |> assign(:page_title, "Blog Posts")
       |> assign_new(:posts, fn -> Blog.all_posts() end)
 
     {:ok, socket}
@@ -29,18 +29,20 @@ defmodule SilbernageldevWeb.Live.BlogLive do
 
   @impl true
   def handle_params(%{"id" => blog_post_id}, _url, socket) do
+    post = Blog.get_post_by_id!(blog_post_id)
+
     {:noreply,
      socket
-     |> assign(:post, Blog.get_post_by_id!(blog_post_id))
-     |> assign(:page_title, fn %{post: post} -> post.title end)
-     |> assign(:description, fn %{post: post} -> post.description end)}
+     |> assign(:post, post)
+     |> assign(:page_title, post.title)
+     |> assign(:description, post.description)}
   end
 
   def handle_params(%{}, _url, socket) do
     {:noreply,
      socket
      |> assign(:post, nil)
-     |> assign(:page_title, fn -> "Blog Posts" end)}
+     |> assign(:page_title, "Blog Posts")}
   end
 
   @impl true
