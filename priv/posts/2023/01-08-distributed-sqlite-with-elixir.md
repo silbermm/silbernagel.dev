@@ -3,7 +3,7 @@
   author: "Matt Silbernagel",
   tags: ~w(Elixir Phoenix SQLite),
   description: "Phoenix with SQLite as a Distributed Database at the edge",
-  draft: true
+  draft: false
 }
 ---
 
@@ -18,6 +18,9 @@ I recently read about [litestream](https://litestream.io/) and wanted to try thi
 * Elixir makes it all possible via it's distribution capabilities
 
 ## Getting Started
+
+See the [companion repo](https://github.com/silbermm/distributed_sqlite) for reference.
+
 Create a new phoenix app that uses [SQLite3](https://github.com/elixir-sqlite/ecto_sqlite3) as the database:
 ```bash
 $ mix phx.new distributed_sqlite --database sqlite3
@@ -208,12 +211,6 @@ defmodule DistributedSqlite.RepoReplication do
     {:ok, []}
   end
 
-  @impl true
-  def handle_cast({:replicate, func}, state) when is_function(func) do
-    func.()
-    {:noreply, state}
-  end
-
   def handle_cast({:replicate, query, :insert}, state) do
     Repo.insert!(query)
     {:noreply, state}
@@ -246,7 +243,7 @@ def replicate({:ok, data_to_replicate} = ret, operation) when operation in [:ins
   _ =
     for node <- Node.list() do
       GenServer.cast(
-        {GenexRemote.RepoReplication, node},
+        {DistributedSqlite.RepoReplication, node},
         {:replicate, data_to_replicate, operation}
       )
     end
@@ -260,7 +257,7 @@ def replicate(%Ecto.Changeset{} = changeset, operation) when operation in [:inse
   _ =
     for node <- Node.list() do
       GenServer.cast(
-        {GenexRemote.RepoReplication, node},
+        {DistributedSqlite.RepoReplication, node},
         {:replicate, changeset, operation}
       )
     end
@@ -272,7 +269,7 @@ def replicate(schema, :insert) do
   _ =
     for node <- Node.list() do
       GenServer.cast(
-        {GenexRemote.RepoReplication, node},
+        {DistributedSqlite.RepoReplication, node},
         {:replicate, schema, :insert}
       )
     end
@@ -281,10 +278,36 @@ def replicate(schema, :insert) do
 end
 ```
 
+This gives us a function we can pipe into from an `Repo.insert` or the result of a `Repo.update`. Try this in the `DistributedSqlite.Counter` module:
 
+```elixir
+case page_count do
+  nil ->
+    %PageCount{}
+    |> PageCount.changeset(%{count: 1, page: page_name})
+    |> Repo.insert()
+    |> Repo.replicate(:insert)
+
+  %PageCount{} = page_count ->
+    page_count
+    |> PageCount.changeset(%{count: page_count.count + 1})
+    |> Repo.update()
+    |> case do
+      {:ok, cnt} ->
+        cnt
+        |> PageCount.replicate_changeset()
+        |> Repo.replicate(:update)
+
+        {:ok, cnt}
+  end
+end
+```
+
+With all of this in place, deploy again. Your data should now be consistent no matter which node your traffic is served from!
 
 ## Wrap Up
 
+I'm not sure how far this can be pushed and there are downsides to this approach, but I plan on continuing this journey that puts my data as close to the application as possible.
 
-
+There is [another approach](https://fly.io/docs/litefs/) worth exploring that removes the need to replicate the data on the application side. It is still in beta, but I plan on trying it out soon as well.
 
