@@ -49,3 +49,4 @@ npm-debug.log
 
 /priv/plts/dialyzer.plt
 /priv/plts/dialyzer.plt.hash
+/priv/static/assets/app.css

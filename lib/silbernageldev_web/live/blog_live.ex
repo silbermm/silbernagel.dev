@@ -9,6 +9,8 @@ defmodule SilbernageldevWeb.Live.BlogLive do
     socket =
       socket
       |> assign(:post, Blog.get_post_by_id!(blog_post_id))
+      |> assign(:page_title, fn %{post: post} -> post.title end)
+      |> assign(:description, fn %{post: post} -> post.description end)
       |> assign_new(:posts, fn -> Blog.all_posts() end)
 
     {:ok, socket}
@@ -19,6 +21,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
     socket =
       socket
       |> assign(:post, nil)
+      |> assign(:page_title, fn -> "Blog Posts" end)
       |> assign_new(:posts, fn -> Blog.all_posts() end)
 
     {:ok, socket}
@@ -26,11 +29,18 @@ defmodule SilbernageldevWeb.Live.BlogLive do
 
   @impl true
   def handle_params(%{"id" => blog_post_id}, _url, socket) do
-    {:noreply, assign(socket, :post, Blog.get_post_by_id!(blog_post_id))}
+    {:noreply,
+     socket
+     |> assign(:post, Blog.get_post_by_id!(blog_post_id))
+     |> assign(:page_title, fn %{post: post} -> post.title end)
+     |> assign(:description, fn %{post: post} -> post.description end)}
   end
 
   def handle_params(%{}, _url, socket) do
-    {:noreply, assign(socket, :post, nil)}
+    {:noreply,
+     socket
+     |> assign(:post, nil)
+     |> assign(:page_title, fn -> "Blog Posts" end)}
   end
 
   @impl true
