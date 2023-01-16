@@ -54,7 +54,8 @@ defmodule Silbernageldev.MixProject do
       {:makeup_html, ">= 0.0.0"},
       {:libcluster, "~> 3.3"},
       {:tailwind, "~> 0.1.6", runtime: Mix.env() == :dev},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
+      {:heroicons, "~> 0.5"}
     ]
   end
 

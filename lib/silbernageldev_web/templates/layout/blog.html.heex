@@ -46,6 +46,12 @@
               OpenPGP
             </a>
           </li>
+
+          <li class="inline-block">
+            <%= link to: Routes.rss_url(SilbernageldevWeb.Endpoint, :index) do %>
+              <Heroicons.rss class="w-4 h-4 text-white hover:text-orange-400" />
+            <% end %>
+          </li>
         </ul>
         <hr class="mx-auto max-w-xs border-orange-400" />
       </p>
