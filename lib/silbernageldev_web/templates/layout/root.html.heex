@@ -11,9 +11,8 @@
       <meta name="description" content={@description} />
       <meta property="og:description" content={@description} />
     <% end %>
-
     <meta property="og:image" content={Routes.static_path(@conn, "/images/avatar.jpg")} />
-
+    <meta name="robots" content="index, follow" />
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
     <script
       defer
@@ -22,6 +21,7 @@
       src={Routes.static_path(@conn, "/assets/app.js")}
     >
     </script>
+    <link rel="alternate" type="application/rss+xml" href={Routes.rss_url(@conn, :index)} />
   </head>
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
     <%= @inner_content %>

@@ -30,6 +30,7 @@ defmodule Silbernageldev.MixProject do
 
   defp deps do
     [
+      {:atomex, "~> 0.5.1"},
       {:phoenix, "~> 1.6.11"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
