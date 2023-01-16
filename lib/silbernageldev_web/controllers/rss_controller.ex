@@ -23,6 +23,7 @@ defmodule SilbernageldevWeb.Controllers.RssController do
     |> Feed.author(@author, email: @email)
     |> Feed.link(Routes.rss_url(conn, :index), rel: "self")
     |> Feed.entries(Enum.map(posts, &get_entry(conn, &1)))
+    |> Feed.icon(Routes.static_url(conn, "/images/avatar.jpg"))
     |> Feed.build()
     |> Atomex.generate_document()
   end
