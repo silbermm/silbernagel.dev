@@ -51,6 +51,8 @@ defmodule SilbernageldevWeb.Router do
     pipe_through(:browser)
 
     get("/gpg/download", GPGController, :download)
+
+    get("/webmention", WebMentionController, :receive)
   end
 
   # Other scopes may use custom stacks.

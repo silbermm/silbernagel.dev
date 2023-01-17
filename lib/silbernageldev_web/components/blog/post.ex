@@ -6,15 +6,15 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
   def show(assigns) do
     ~H"""
     <div class="container max-w-3xl mx-auto overflow-hidden prose-pre:rounded-md prose-pre:p-4">
-      <div class="max-w-3xl prose prose:slate dark:prose-invert hover:prose-a:text-orange-400">
+      <div class="h-entry max-w-3xl prose prose:slate dark:prose-invert hover:prose-a:text-orange-400">
         <!--Title-->
         <header>
-          <h2><%= @post.title %></h2>
-          <span>Published <time><%= @post.date %></time></span>
+          <h2 class="p-name"><%= @post.title %></h2>
+          <span class="dt-published">Published <time><%= @post.date %></time></span>
           <.taglist tags={@post.tags} />
         </header>
 
-        <article>
+        <article class="e-content">
           <%= raw(@post.body) %>
         </article>
       </div>
@@ -24,7 +24,7 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
 
   def list(assigns) do
     ~H"""
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="h-feed max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flow-root">
         <ul role="list" class="-my-5 divide-y divide-gray-200">
           <%= for post <- @posts do %>
@@ -55,7 +55,7 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
 
   def taglist(assigns) do
     ~H"""
-    <div class="text-gray-500">
+    <div class="p-category text-gray-500">
       <%= for tag <- @tags do %>
         <%= live_redirect(tag,
           to: Routes.blog_tags_path(SilbernageldevWeb.Endpoint, :show, tag),
