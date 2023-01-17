@@ -1,6 +1,8 @@
 defmodule SilbernageldevWeb.Controllers.WebFingerController do
   use SilbernageldevWeb, :controller
 
+  plug(ETag.Plug)
+
   plug(:resource_required)
 
   @aliases [
@@ -13,7 +15,7 @@ defmodule SilbernageldevWeb.Controllers.WebFingerController do
     case resource do
       r when r in @aliases ->
         data = %{
-          subject: "acct:ahappydeath@freeradical.zone",
+          subject: "acct:ahappydeath@silbernagel.dev",
           aliases: [
             "acct:ahappydeath@freeradical.zone",
             "https://freeradical.zone/@ahappydeath",
