@@ -23,6 +23,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
       |> assign(:post, nil)
       |> assign(:page_title, "Blog Posts")
       |> assign_new(:posts, fn -> Blog.all_posts() end)
+      |> assign_new(:description, fn -> "Blog Posts" end)
 
     {:ok, socket}
   end
