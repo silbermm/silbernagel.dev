@@ -13,7 +13,8 @@ defmodule Silbernageldev.Application do
       {Phoenix.PubSub, name: Silbernageldev.PubSub},
       SilbernageldevWeb.Endpoint,
       {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
-      {Silbernageldev.RepoReplication, []}
+      {Silbernageldev.RepoReplication, []},
+      Silbernageldev.WebMentions.supervisor_spec()
     ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]

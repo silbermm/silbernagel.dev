@@ -2,6 +2,7 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
   use Phoenix.Component
   alias SilbernageldevWeb.Router.Helpers, as: Routes
   import Phoenix.HTML, only: [raw: 1]
+  import Phoenix.HTML.Link
 
   def show(assigns) do
     ~H"""
@@ -9,7 +10,12 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
       <div class="h-entry max-w-3xl prose prose:slate dark:prose-invert hover:prose-a:text-orange-400">
         <!--Title-->
         <header>
-          <h2 class="p-name"><%= @post.title %></h2>
+          <h2 class="p-name">
+            <%= link(@post.title,
+              to: Routes.blog_path(SilbernageldevWeb.Endpoint, :show, @post.id),
+              class: "u-url"
+            ) %>
+          </h2>
           <span class="dt-published">Published <time><%= @post.date %></time></span>
           <.taglist tags={@post.tags} />
         </header>
