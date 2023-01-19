@@ -8,10 +8,12 @@ processes = []
 [env]
   PHX_HOST = "silbernagel.dev"
   PORT = "8080"
+  RELEASE_COOKIE = "iFxZ/QVH9xVmS0OiHqSsFkDZdXvrafdfhGjNE5K8YaMGXgPPjZCIn/ilaWbg4leG"
 
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
+  enable_consul = true
 
 [[services]]
   http_checks = []
@@ -38,3 +40,7 @@ processes = []
     interval = "15s"
     restart_limit = 0
     timeout = "2s"
+
+[mounts]
+  source = "sql_data"
+  destination = "/var/lib/litefs"

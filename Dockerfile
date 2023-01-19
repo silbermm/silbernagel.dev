@@ -21,11 +21,6 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
 
-# Download the static build of Litestream directly into the path & make it executable.
-# This is done in the builder and copied as the chmod doubles the size.
-ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
-RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
-
 # install build dependencies
 RUN apt-get update -y && apt-get install -y build-essential git \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
@@ -52,9 +47,7 @@ COPY config/config.exs config/${MIX_ENV}.exs config/
 RUN mix deps.compile
 
 COPY priv priv
-
 COPY lib lib
-
 COPY assets assets
 
 # compile assets
@@ -69,18 +62,11 @@ COPY config/runtime.exs config/
 COPY rel rel
 RUN mix release
 
-FROM alpine:latest as tailscale
-WORKDIR /app
-
-ENV TSFILE=tailscale_1.34.1_amd64.tgz
-RUN wget https://pkgs.tailscale.com/stable/${TSFILE} && \
-  tar xzf ${TSFILE} --strip-components=1
-
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
-RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables \
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables fuse \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
@@ -102,20 +88,15 @@ RUN chown nobody /data
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/silbernageldev ./
-COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
-COPY litestream.yml /etc/litestream.yml
-COPY run.sh /scripts/run.sh
+COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY litefs.yml /etc/litefs.yml
 
-COPY --from=tailscale /app/tailscaled /app/tailscaled
-COPY --from=tailscale /app/tailscale /app/tailscale
-RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
+COPY run.sh /scripts/run.sh
 
 RUN chmod 777 /scripts/run.sh
 
-CMD ["/scripts/run.sh"]
-# Appended by flyctl
-ENV ECTO_IPV6 true
-ENV ERL_AFLAGS "-proto_dist inet6_tcp"
+#CMD ["/scripts/run.sh"]
+ENTRYPOINT litefs mount -- /scripts/run.sh
 
 # Appended by flyctl
 ENV ECTO_IPV6 true

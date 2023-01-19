@@ -11,6 +11,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
       |> assign_new(:post, fn -> Blog.get_post_by_id!(blog_post_id) end)
       |> assign_new(:page_title, fn %{post: post} -> post.title end)
       |> assign_new(:description, fn %{post: post} -> post.description end)
+      |> assign_new(:url, fn %{post: post} -> Routes.blog_url(socket, :show, post.id) end)
       |> assign_new(:posts, fn -> Blog.all_posts() end)
 
     {:ok, socket}
@@ -24,6 +25,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
       |> assign(:page_title, "Blog Posts")
       |> assign_new(:posts, fn -> Blog.all_posts() end)
       |> assign_new(:description, fn -> "Blog Posts" end)
+      |> assign_new(:url, fn -> Routes.blog_url(socket, :index) end)
 
     {:ok, socket}
   end

@@ -11,8 +11,28 @@
       <meta name="description" content={@description} />
       <meta property="og:description" content={@description} />
     <% end %>
+    <meta property="og:type" content={assigns[:page_type] || "article"} />
+    <meta property="og:url" content={assigns[:url] || "https://silbernagel.dev"} />
     <meta property="og:image" content={Routes.static_path(@conn, "/images/avatar.jpg")} />
     <meta name="robots" content="index, follow" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href={Routes.static_path(@conn, "/apple-touch-icon.png")}
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href={Routes.static_path(@conn, "/favicon-32x32.png")}
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href={Routes.static_path(@conn, "/favicon-16x16.png")}
+    />
+    <link rel="manifest" href={Routes.static_path(@conn, "/site.webmanifest")} />
     <link rel="me" href="https://github.com/silbermm" />
     <link rel="me" href="https://freeradical.zone/@ahappydeath" />
     <link rel="me" href="mailto:matt@silbernagel.dev" />
