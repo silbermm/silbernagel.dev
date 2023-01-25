@@ -21,7 +21,7 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
         </header>
 
         <%= if @post.reply_to do %>
-          In reply to: <a href={elem(@post.reply_to, 0)} class="u-in-reply-to"><%= elem(@post.reply_to, 1) %></a>
+          In reply to: <a href={elem(@post.reply_to, 1)} class="u-in-reply-to"><%= elem(@post.reply_to, 0) %></a>
         <% end %>
 
         <article class="e-content">
