@@ -16,12 +16,23 @@ defmodule SilbernageldevWeb.Components.Blog.Post do
               class: "u-url"
             ) %>
           </h2>
+          <div class="u-author h-card hidden">
+            <img
+              src={Routes.static_path(SilbernageldevWeb.Endpoint, "/images/avatar.jpg")}
+              class="u-photo"
+              width="40"
+            />
+            <a href={Routes.home_path(SilbernageldevWeb.Endpoint, :index)} class="u-url p-name">
+              Matt Silbernagel
+            </a>
+          </div>
           <span class="dt-published">Published <time><%= @post.date %></time></span>
           <.taglist tags={@post.tags} />
         </header>
 
         <%= if @post.reply_to do %>
-          In reply to: <a href={elem(@post.reply_to, 1)} class="u-in-reply-to"><%= elem(@post.reply_to, 0) %></a>
+          In reply to:
+          <a href={elem(@post.reply_to, 1)} class="u-in-reply-to"><%= elem(@post.reply_to, 0) %></a>
         <% end %>
 
         <article class="e-content">
