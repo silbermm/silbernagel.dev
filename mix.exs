@@ -57,7 +57,8 @@ defmodule Silbernageldev.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:heroicons, "~> 0.5"},
       {:etag_plug, "~> 1.0"},
-      {:req, "~> 0.3.4"}
+      {:req, "~> 0.3.4"},
+      {:gpgmex, "~> 0.0.9"}
     ]
   end
 
