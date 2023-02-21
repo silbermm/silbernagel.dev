@@ -55,10 +55,11 @@ defmodule SilbernageldevWeb.Router do
     get("/webmention", WebMentionController, :receive)
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SilbernageldevWeb do
-  #   pipe_through :api
-  # end
+  scope "/login" do
+    pipe_through(:api)
+
+    forward("/", GPGAuth, module: SilbernageldevWeb.Plugs.Silberauth)
+  end
 
   # Enables LiveDashboard only for development
   #

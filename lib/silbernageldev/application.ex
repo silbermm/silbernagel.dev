@@ -15,7 +15,8 @@ defmodule Silbernageldev.Application do
       {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
       {Silbernageldev.RepoReplication, []},
       {Task.Supervisor, name: Silbernageldev.TaskSupervisor},
-      Silbernageldev.WebMentions.supervisor_spec()
+      Silbernageldev.WebMentions.supervisor_spec(),
+      SilbernageldevWeb.Plugs.Silberauth
     ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
