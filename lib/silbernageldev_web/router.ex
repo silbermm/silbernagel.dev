@@ -49,16 +49,13 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
-
     get("/gpg/download", GPGController, :download)
-
     get("/webmention", WebMentionController, :receive)
   end
 
   scope "/login" do
     pipe_through(:api)
-
-    forward("/", GPGAuth, module: SilbernageldevWeb.Plugs.Silberauth)
+    forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
   end
 
   # Enables LiveDashboard only for development

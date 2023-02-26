@@ -59,7 +59,8 @@ defmodule Silbernageldev.MixProject do
       {:etag_plug, "~> 1.0"},
       {:req, "~> 0.3.4"},
       {:gpgmex, "~> 0.0.9"},
-      {:diceware, "~> 0.2.8"}
+      {:diceware, "~> 0.2.8"},
+      {:plug_gpg_verify, path: "../plug_gpg_verify"}
     ]
   end
 
