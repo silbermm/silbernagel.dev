@@ -11,7 +11,13 @@ defmodule SilbernageldevWeb.Live.GPGLive do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center w-full m-auto pb-4">
-      <.link class="text-gray-500 dark:text-slate-400 hover:text-orange-400" href="https://keyoxide.org/wkd/matt%40silbernagel.dev" target="_blank"> Proof of identity </.link>
+        <.link
+          class="text-gray-500 dark:text-slate-400 hover:text-orange-400"
+          href="https://keyoxide.org/wkd/matt%40silbernagel.dev"
+          target="_blank"
+        >
+          Proof of identity
+        </.link>
       </div>
       <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-4">Use GPG to import</h3>
       <pre class="bg-black text-gray-200 whitespace-pre-wrap"><code>
@@ -33,7 +39,7 @@ defmodule SilbernageldevWeb.Live.GPGLive do
               <a
                 type="button"
                 class="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                href={Routes.gpg_path(@socket, :download)}
+                href={~p"/gpg/download"}
               >
                 Download
               </a>

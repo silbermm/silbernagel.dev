@@ -28,6 +28,8 @@ defmodule SilbernageldevWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint SilbernageldevWeb.Endpoint
+
+      use SilbernageldevWeb, :verified_routes
     end
   end
 

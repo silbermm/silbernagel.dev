@@ -15,9 +15,11 @@ defmodule Mix.Tasks.Content.New do
     * --description   string                 A description of the entry
     * --draft
 
-    ## Examples
-      mix content.new post --title "My blog post"
-      mix content.new note --title "Notebook Entry #2"
+
+  # Examples
+    * `mix content.new post --title "My blog post"`
+    * `mix content.new note --title "Notebook Entry #2"`
+
   """
 
   @valid_content_types ~w(post note)

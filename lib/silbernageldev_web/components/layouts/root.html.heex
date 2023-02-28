@@ -4,8 +4,10 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="csrf-token" content={csrf_token_value()} />
-    <%= live_title_tag(assigns[:page_title], suffix: " | Silbernagel.Dev") %>
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title suffix=" | Silbernagel.Dev">
+      <%= assigns[:page_title] %>
+    </.live_title>
     <meta property="og:title" content={assigns[:page_title] || "Silbernagel.Dev"} />
     <%= if assigns[:description] do %>
       <meta name="description" content={@description} />
@@ -13,47 +15,25 @@
     <% end %>
     <meta property="og:type" content={assigns[:page_type] || "article"} />
     <meta property="og:url" content={assigns[:url] || "https://silbernagel.dev"} />
-    <meta property="og:image" content={Routes.static_path(@conn, "/images/avatar.jpg")} />
+    <meta property="og:image" content={~p"/images/avatar.jpg"} />
     <meta name="robots" content="index, follow" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href={Routes.static_path(@conn, "/apple-touch-icon.png")}
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href={Routes.static_path(@conn, "/favicon-32x32.png")}
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href={Routes.static_path(@conn, "/favicon-16x16.png")}
-    />
-    <link rel="manifest" href={Routes.static_path(@conn, "/site.webmanifest")} />
+    <link rel="apple-touch-icon" sizes="180x180" href={~p"/apple-touch-icon.png"} />
+    <link rel="icon" type="image/png" sizes="32x32" href={~p"/favicon-32x32.png"} />
+    <link rel="icon" type="image/png" sizes="16x16" href={~p"/favicon-16x16.png"} />
+    <link rel="manifest" href={~p"/site.webmanifest"} />
     <link rel="me" href="https://github.com/silbermm" />
     <link rel="me" href="https://freeradical.zone/@ahappydeath" />
-    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
-    <script
-      defer
-      phx-track-static
-      type="text/javascript"
-      src={Routes.static_path(@conn, "/assets/app.js")}
-    >
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
-    <link rel="alternate" type="application/rss+xml" href={Routes.rss_url(@conn, :index)} />
+    <link rel="alternate" type="application/rss+xml" href={~p"/posts/rss.xml"} />
   </head>
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
     <%= @inner_content %>
   </body>
   <footer class="mt-8 text-center lg:text-left sticky bottom-0">
     <div class="text-gray-100 text-center p-4" style="background-color: rgba(0, 0, 0);">
-      Matt Silbernagel
-
-      <span>
-      </span>
+      Matt Silbernagel <span></span>
     </div>
   </footer>
 </html>
