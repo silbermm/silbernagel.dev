@@ -20,7 +20,7 @@ defmodule Silbernageldev.MixProject do
 
   def application do
     [
-      mod: {Silbernageldev.Application, []},
+      mod: {Silbernageldev.Application, [Mix.env]},
       extra_applications: [:logger, :runtime_tools]
     ]
   end

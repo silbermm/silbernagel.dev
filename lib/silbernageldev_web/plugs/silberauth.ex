@@ -3,7 +3,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   # TODO:
   """
   use GenServer
-  use GPGAuth
+  use PlugGPGVerify
 
   @users [
     %{
@@ -22,20 +22,20 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
     {:ok, @users}
   end
 
-  @impl GPGAuth
+  @impl true
   def find_user_by_email(user_email),
     do: GenServer.call(__MODULE__, {:find_user_by_email, user_email})
 
-  @impl GPGAuth
+  @impl PlugGPGVerify
   def find_user_by_id(user_id), do: GenServer.call(__MODULE__, {:find_user_by_id, user_id})
 
-  @impl GPGAuth
+  @impl PlugGPGVerify
   def gpg_verified(conn, user) do
     token = Phoenix.Token.sign(SilbernageldevWeb.Endpoint, "user_auth", user, max_age: 84000)
     Phoenix.Controller.json(conn, %{token: token})
   end
 
-  @impl GPGAuth
+  @impl PlugGPGVerify
   def challenge_created(user, challenge, plain_text),
     do: GenServer.call(__MODULE__, {:store_challenge, user, challenge, plain_text})
 
@@ -71,7 +71,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
       [{_id, _, _, res}] ->
         res
 
-      other ->
+      _other ->
         ""
     end
   end
