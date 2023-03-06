@@ -19,7 +19,7 @@ defmodule SilbernageldevWeb do
 
   def static_paths,
     do:
-      ~w(assets fonts images favicon.ico robots.txt apple-touch-icon.png favicon-32x32.png favicon-16x16.png site.webmanifest)
+      ~w(assets fonts images favicon.ico robots.txt apple-touch-icon.png favicon-32x32.png favicon-16x16.png site.webmanifest silbernagel.asc)
 
   def controller do
     quote do
