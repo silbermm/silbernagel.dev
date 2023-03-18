@@ -5,6 +5,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   use GenServer
   use PlugGPGVerify
 
+  # my user with a generated uuid
   @users [
     %{
       id: "7af6ab9b-b96a-442e-bd24-4e91db89ae52",
@@ -12,6 +13,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
     }
   ]
 
+  # a ets table to hold info for logging in
   @table :user_challenges
 
   def start_link(_), do: GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -36,8 +38,8 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   end
 
   @impl PlugGPGVerify
-  def challenge_created(user, challenge, plain_text),
-    do: GenServer.call(__MODULE__, {:store_challenge, user, challenge, plain_text})
+  def challenge_created(user, challenge),
+    do: GenServer.call(__MODULE__, {:store_challenge, user, challenge})
 
   @impl GenServer
   def handle_call({:find_user_by_email, email}, _from, state) do
@@ -61,14 +63,14 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   end
 
   @impl GenServer
-  def handle_call({:store_challenge, user, challenge, plain_text}, _from, state) do
-    res = :ets.insert(@table, {user.id, user, challenge, plain_text})
+  def handle_call({:store_challenge, user, challenge}, _from, state) do
+    res = :ets.insert(@table, {user.id, user, challenge})
     {:reply, res, state}
   end
 
   defp find_challenge_for(user_id) do
     case :ets.lookup(@table, user_id) do
-      [{_id, _, _, res}] ->
+      [{_id, _, res}] ->
         res
 
       _other ->

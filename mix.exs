@@ -58,7 +58,7 @@ defmodule Silbernageldev.MixProject do
       {:heroicons, "~> 0.5"},
       {:etag_plug, "~> 1.0"},
       {:req, "~> 0.3.4"},
-      {:gpgmex, "~> 0.0.9"},
+      {:gpgmex, "~> 0.0.10"},
       {:diceware, "~> 0.2.8"},
       {:plug_gpg_verify, path: "../plug_gpg_verify"}
     ]
