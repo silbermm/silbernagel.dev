@@ -2,7 +2,9 @@ defmodule Phx17Web.ErrorJSONTest do
   use SilbernageldevWeb.ConnCase, async: true
 
   test "renders 404" do
-    assert SilbernageldevWeb.ErrorJSON.render("404.json", %{}) == %{errors: %{detail: "Not Found"}}
+    assert SilbernageldevWeb.ErrorJSON.render("404.json", %{}) == %{
+             errors: %{detail: "Not Found"}
+           }
   end
 
   test "renders 500" do
