@@ -9,7 +9,12 @@ import Config
 
 config :silbernageldev,
   ecto_repos: [Silbernageldev.Repo],
-  generators: [binary_id: true]
+  generators: [binary_id: true],
+  rate_limits: %{
+    general: 20,
+    gpg_verification: 20
+  },
+  fail2ban_duration_hours: 24
 
 # Configures the endpoint
 config :silbernageldev, SilbernageldevWeb.Endpoint,

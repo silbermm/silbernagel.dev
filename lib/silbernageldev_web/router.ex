@@ -3,6 +3,7 @@ defmodule SilbernageldevWeb.Router do
 
   pipeline :browser do
     plug(:accepts, ["html"])
+    plug SilbernageldevWeb.Plugs.PlugAttack
     plug(:fetch_session)
     plug(:fetch_live_flash)
     plug(:put_root_layout, html: {SilbernageldevWeb.Layouts, :root})
@@ -15,6 +16,7 @@ defmodule SilbernageldevWeb.Router do
   end
 
   pipeline :api do
+    plug SilbernageldevWeb.Plugs.PlugAttack
     plug(:accepts, ["json"])
   end
 
@@ -53,7 +55,7 @@ defmodule SilbernageldevWeb.Router do
     get("/webmention", WebMentionController, :receive)
   end
 
-  scope "/login" do
+  scope "/verify" do
     pipe_through(:api)
     forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
   end
