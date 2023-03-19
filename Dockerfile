@@ -12,9 +12,9 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.13.4-erlang-25.0.2-debian-bullseye-20210902-slim
 #
-ARG ELIXIR_VERSION=1.13.4
-ARG OTP_VERSION=25.0.2
-ARG DEBIAN_VERSION=bullseye-20210902-slim
+ARG ELIXIR_VERSION=1.14.0
+ARG OTP_VERSION=25.1
+ARG DEBIAN_VERSION=bullseye-20220801-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -22,8 +22,12 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+RUN apt-get update -y && apt-get install -y build-essential git gpg libgpgme-dev curl pkg-config \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo --help
 
 # prepare build dir
 WORKDIR /app
@@ -34,6 +38,8 @@ RUN mix local.hex --force && \
 
 # set build ENV
 ENV MIX_ENV="prod"
+ENV GNUPGHOME /data/gnupg
+ENV GNUPGBIN /usr/bin/gpg
 
 # install mix dependencies
 COPY mix.exs mix.lock ./
@@ -66,7 +72,7 @@ RUN mix release
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
-RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables fuse \
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables fuse gpg libgpgme-dev curl \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
@@ -75,16 +81,26 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
+ENV GNUPGHOME /data/gnupg
+ENV GNUPGBIN /usr/bin/gpg
 
 WORKDIR "/app"
 RUN chown nobody /app
 
 # set runner ENV
 ENV MIX_ENV="prod"
+ENV GNUPGHOME /data/gnupg
+ENV GNUPGBIN /usr/bin/gpg
 
 # Storage for the database
 RUN mkdir -p /data
 RUN chown nobody /data
+
+# For GPG
+COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/lib/silbernageldev/priv/static/silbernagel.asc ./
+RUN mkdir -p /data/gnupg
+RUN gpg --update-trustdb
+RUN gpg --import ./silbernagel.asc
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/silbernageldev ./
