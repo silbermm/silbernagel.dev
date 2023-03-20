@@ -25,8 +25,6 @@ defmodule Mix.Tasks.Content.New do
   @valid_content_types ~w(post note)
   @default_author "Matt Silbernagel"
 
-  use Mix.Task
-
   defmodule Error do
     defexception [:message]
   end

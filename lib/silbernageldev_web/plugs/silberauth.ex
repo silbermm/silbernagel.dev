@@ -33,7 +33,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
 
   @impl PlugGPGVerify
   def gpg_verified(conn, user) do
-    token = Phoenix.Token.sign(SilbernageldevWeb.Endpoint, "user_auth", user, max_age: 84000)
+    token = Phoenix.Token.sign(SilbernageldevWeb.Endpoint, "user_auth", user)
     Phoenix.Controller.json(conn, %{token: token})
   end
 
