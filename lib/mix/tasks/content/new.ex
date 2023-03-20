@@ -29,7 +29,6 @@ defmodule Mix.Tasks.Content.New do
     defexception [:message]
   end
 
-  @shortdoc "What to put here?"
   def run(argv) do
     {opts, [content_type | _]} = OptionParser.parse!(argv, strict: [title: :string])
 
