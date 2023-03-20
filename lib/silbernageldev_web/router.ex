@@ -3,6 +3,7 @@ defmodule SilbernageldevWeb.Router do
 
   pipeline :browser do
     plug(:accepts, ["html"])
+    plug SilbernageldevWeb.Plugs.PlugAttack
     plug(:fetch_session)
     plug(:fetch_live_flash)
     plug(:put_root_layout, html: {SilbernageldevWeb.Layouts, :root})
@@ -15,7 +16,13 @@ defmodule SilbernageldevWeb.Router do
   end
 
   pipeline :api do
+    plug SilbernageldevWeb.Plugs.PlugAttack
     plug(:accepts, ["json"])
+  end
+
+  pipeline :authenticated do
+    plug(:fetch_session)
+    plug SilbernageldevWeb.Plugs.Authenticated
   end
 
   scope "/", SilbernageldevWeb.Controllers do
@@ -49,16 +56,18 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
-
     get("/gpg/download", GPGController, :download)
-
     get("/webmention", WebMentionController, :receive)
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", SilbernageldevWeb do
-  #   pipe_through :api
-  # end
+  scope "/verify" do
+    pipe_through(:api)
+    forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
+  end
+
+  scope "/api", SilbernageldevWeb.Controllers do
+    pipe_through([:api, :authenticated])
+  end
 
   # Enables LiveDashboard only for development
   #

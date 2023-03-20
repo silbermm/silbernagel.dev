@@ -4,22 +4,39 @@ defmodule Silbernageldev.Application do
   use Application
 
   @impl true
+  def start(_type, [:dev]) do
+    children = children()
+
+    opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies) || []
 
-    children = [
+    children =
+      children() ++
+        [
+          {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
+          Silbernageldev.WebMentions.supervisor_spec()
+        ]
+
+    opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
+    Supervisor.start_link(children, opts)
+  end
+
+  defp children() do
+    [
       Silbernageldev.Repo,
       SilbernageldevWeb.Telemetry,
       {Phoenix.PubSub, name: Silbernageldev.PubSub},
       SilbernageldevWeb.Endpoint,
-      {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
       {Silbernageldev.RepoReplication, []},
       {Task.Supervisor, name: Silbernageldev.TaskSupervisor},
-      Silbernageldev.WebMentions.supervisor_spec()
+      {PlugAttack.Storage.Ets,
+       name: SilbernageldevWeb.Plugs.PlugAttack.storage_name(), clean_period: :timer.seconds(60)},
+      SilbernageldevWeb.Plugs.Silberauth
     ]
-
-    opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
-    Supervisor.start_link(children, opts)
   end
 
   @impl true

@@ -25,13 +25,10 @@ defmodule Mix.Tasks.Content.New do
   @valid_content_types ~w(post note)
   @default_author "Matt Silbernagel"
 
-  use Mix.Task
-
   defmodule Error do
     defexception [:message]
   end
 
-  @shortdoc "What to put here?"
   def run(argv) do
     {opts, [content_type | _]} = OptionParser.parse!(argv, strict: [title: :string])
 

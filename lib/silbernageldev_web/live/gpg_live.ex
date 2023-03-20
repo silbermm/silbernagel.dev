@@ -10,7 +10,7 @@ defmodule SilbernageldevWeb.Live.GPGLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center w-full m-auto pb-4"> 
+      <div class="text-center w-full m-auto pb-4">
         <.link
           class="text-gray-500 dark:text-slate-400 hover:text-orange-400"
           href="https://keyoxide.org/wkd/matt%40silbernagel.dev"

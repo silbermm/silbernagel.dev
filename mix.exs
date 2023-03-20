@@ -20,7 +20,7 @@ defmodule Silbernageldev.MixProject do
 
   def application do
     [
-      mod: {Silbernageldev.Application, []},
+      mod: {Silbernageldev.Application, [Mix.env()]},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -57,7 +57,11 @@ defmodule Silbernageldev.MixProject do
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:heroicons, "~> 0.5"},
       {:etag_plug, "~> 1.0"},
-      {:req, "~> 0.3.4"}
+      {:req, "~> 0.3.4"},
+      {:gpgmex, "~> 0.0.10"},
+      {:diceware, "~> 0.2.8"},
+      {:plug_gpg_verify, "~> 0.1.0"},
+      {:plug_attack, "~> 0.4.2"}
     ]
   end
 

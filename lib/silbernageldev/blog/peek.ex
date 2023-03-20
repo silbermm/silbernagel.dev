@@ -5,8 +5,8 @@ defmodule Silbernageldev.Blog.Peek do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "blog_peeks" do
-    field :count, :integer
-    field :post, :string
+    field(:count, :integer)
+    field(:post, :string)
 
     timestamps()
   end
