@@ -3,32 +3,81 @@ defmodule Silbernageldev.Notes do
   This is what builds my [notes](https://indieweb.org/note)
   """
 
+  import Ecto.Query
+
+  alias Ecto.Changeset
   alias Silbernageldev.Notes.Note
+  alias Silbernageldev.Repo
 
-  use NimblePublisher,
-    build: Note,
-    from: Application.app_dir(:silbernageldev, "priv/notes/**/*.md"),
-    as: :notes,
-    highlighters: [:makeup_elixir, :makeup_erlang, :makeup_html5, :makeup_eex]
+  @doc """
+  Create a new note
 
-  # The @notes variable is first defined by NimblePublisher.
-  # Let's further modify it by sorting all notes by descending date.
-  @notes Enum.sort_by(@notes, & &1.datetime, {:desc, DateTime})
-         |> then(fn notes ->
-           unless Mix.env() == :dev do
-             Enum.reject(notes, &Map.get(&1, :draft, false))
-           else
-             notes
-           end
-         end)
+  If draft is false, then we are NOT creating this as a draft,
+  and we'll want to also send webmentions after creating the
+  note (if there are links and/or a reply_to set
+  """
+  @spec create(map()) :: {:ok, Note.t()} | {:error, Changeset.t()}
+  def create(%{"draft" => false} = params) do
+    # create the note
+    params
+    |> Note.changeset()
+    |> Repo.insert()
+    |> maybe_send_webmentions()
+  end
 
-  @doc "Export all notes"
-  def all_notes, do: @notes
+  def create(params) do
+    params
+    |> Note.changeset()
+    |> Repo.insert()
+  end
 
-  defmodule NotFoundError, do: defexception([:message, plug_status: 404])
+  @doc """
+  Get all notes with optional limit, offset and draft status
+  """
+  @spec all(Keyword.t()) :: [Note.t()]
+  def all(opts \\ []) do
+    limit = Keyword.get(opts, :limit)
+    offset = Keyword.get(opts, :offset, 0)
+    draft = Keyword.get(opts, :draft)
 
-  def get_note_by_timestamp(timestamp) do
-    Enum.find(@notes, &(&1.timestamp == timestamp)) ||
-      raise NotFoundError, "note with timestamp=#{timestamp} not found"
+    query = from(n in Note)
+    query = maybe_with_draft(query, draft)
+    query = maybe_with_limit(query, limit, offset)
+
+    Repo.all(query)
+  end
+
+  def get(note_id) do
+    Repo.get(Note, note_id)
+  end
+
+  @spec publish(binary()) :: {:ok, Note.t()} | {:error, Changeset.t()}
+  def publish(note_id) do
+    note_id
+    |> get()
+    |> Note.publish_changeset()
+    |> Repo.update()
+  end
+
+  defp maybe_with_limit(query, nil, _), do: query
+
+  defp maybe_with_limit(query, limit, offset),
+    do: from(q in query, limit: ^limit, offset: ^offset)
+
+  defp maybe_with_draft(query, nil), do: query
+
+  defp maybe_with_draft(query, draft) when is_boolean(draft),
+    do: from(q in query, where: q.draft == ^draft)
+
+  defp maybe_with_draft(query, _draft), do: query
+
+  defp maybe_send_webmentions({:ok, _note} = res) do
+    # @TODO 
+    res
+  end
+
+  defp maybe_send_webmentions({:error, _changeset} = res) do
+    # @TODO 
+    res
   end
 end

@@ -23,6 +23,7 @@ defmodule SilbernageldevWeb.Router do
   pipeline :authenticated do
     plug(:fetch_session)
     plug SilbernageldevWeb.Plugs.Authenticated
+
   end
 
   scope "/", SilbernageldevWeb.Controllers do
@@ -67,6 +68,9 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/api", SilbernageldevWeb.Controllers do
     pipe_through([:api, :authenticated])
+
+    post("/note/create", NotesController, :create)
+    put("/note/:note_id/publish", NotesController, :publish) 
   end
 
   # Enables LiveDashboard only for development

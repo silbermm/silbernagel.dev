@@ -1,14 +1,56 @@
 defmodule Silbernageldev.Notes.Note do
-  @enforce_keys [:author, :body, :datetime]
-  defstruct [:author, :body, :tags, :datetime, :draft, :reply_to]
+  alias Ecto.Changeset
+  use Ecto.Schema
+  import Ecto.Changeset
 
-  def build(filename, attrs, body) do
-    [year, month_day_time] = filename |> Path.rootname() |> Path.split() |> Enum.take(-2)
+  @type t :: %__MODULE__{}
 
-    [month, day, time] = String.split(month_day_time, "-", parts: 3)
-    date = Date.from_iso8601!("#{year}-#{month}-#{day}")
-    time = Time.from_iso8601!(time)
-    datetime = DateTime.new!(date, time)
-    struct!(__MODULE__, [datetime: datetime, body: body] ++ Map.to_list(attrs))
+  @derive {Jason.Encoder,
+           only: [:id, :author, :draft, :reply_to, :tags, :content, :inserted_at, :published_at]}
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+  schema "notes" do
+    field :author, :string, default: "matt@silbernagel.dev"
+    field :draft, :boolean, default: true
+    field :reply_to, :string
+    field :tags, {:array, :string}
+    field :content, :string
+    field :published_at, :utc_datetime
+
+    timestamps()
   end
+
+  @doc false
+  def changeset(note \\ %__MODULE__{}, attrs) do
+    note
+    |> cast(attrs, [:author, :tags, :reply_to, :draft, :content, :published_at])
+    |> validate_required([:content])
+  end
+
+  @doc """
+  Use this when a note already exists and it needs a published_at date
+  and the draft flag removed
+  """
+  def publish_changeset(nil) do
+    %__MODULE__{}
+    |> changeset(%{})
+    |> Changeset.add_error(:id, "not found")
+  end
+
+  def publish_changeset(note) do
+    note
+    |> changeset(%{})
+    |> validate_publish_at_date()
+    |> unset_draft()
+  end
+
+  defp validate_publish_at_date(changeset) do
+    utc_now =
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+
+    Changeset.put_change(changeset, :published_at, utc_now)
+  end
+
+  defp unset_draft(changeset), do: Changeset.put_change(changeset, :draft, false)
 end
