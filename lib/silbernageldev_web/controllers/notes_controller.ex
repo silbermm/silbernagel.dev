@@ -34,4 +34,32 @@ defmodule SilbernageldevWeb.Controllers.NotesController do
         |> json(%{})
     end
   end
+
+  def get(conn, %{"note_id" => note_id}) do
+    note = Notes.get(note_id)
+    conn
+    |> put_status(200)
+    |> json(note)
+  end
+
+  def list(conn, %{"limit" => limit, "offset" => offset} = params) do
+    draft_status = Map.get(params, "draft", false)
+    notes = Notes.all(limit: limit, offset: offset, draft: draft_status)
+    do_list(conn, notes, draft_status)
+  end
+
+  def list(conn, params) do
+    IO.inspect params
+    draft_status = Map.get(params, "draft", false)
+    notes = Notes.all(limit: 50, draft: draft_status)
+    do_list(conn, notes, draft_status)
+  end
+
+  defp do_list(conn, notes, draft_status) do
+    total = Notes.total(draft: draft_status)
+
+    conn
+    |> put_status(200)
+    |> json(%{notes: notes, total: total})
+  end
 end

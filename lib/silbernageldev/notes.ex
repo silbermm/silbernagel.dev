@@ -47,6 +47,18 @@ defmodule Silbernageldev.Notes do
     Repo.all(query)
   end
 
+  @doc "Returns the total count of notes"
+  @spec total(Keyword.t()) :: number()
+  def total(opts \\ []) do
+    draft = Keyword.get(opts, :draft)
+
+    query = from(n in Note)
+    query = maybe_with_draft(query, draft)
+    Repo.aggregate(query, :count)
+  end
+
+  @doc "Get a note by id"
+  @spec get(binary()) :: Note.t() | nil
   def get(note_id) do
     Repo.get(Note, note_id)
   end
@@ -69,7 +81,11 @@ defmodule Silbernageldev.Notes do
   defp maybe_with_draft(query, draft) when is_boolean(draft),
     do: from(q in query, where: q.draft == ^draft)
 
-  defp maybe_with_draft(query, _draft), do: query
+  defp maybe_with_draft(query, "true"),
+    do: from(q in query, where: q.draft == true)
+
+  defp maybe_with_draft(query, "false"),
+    do: from(q in query, where: q.draft == false)
 
   defp maybe_send_webmentions({:ok, _note} = res) do
     # @TODO 

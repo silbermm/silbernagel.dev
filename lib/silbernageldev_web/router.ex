@@ -70,7 +70,9 @@ defmodule SilbernageldevWeb.Router do
     pipe_through([:api, :authenticated])
 
     post("/note/create", NotesController, :create)
-    put("/note/:note_id/publish", NotesController, :publish) 
+    put("/note/:note_id/publish", NotesController, :publish)
+    get("/notes", NotesController, :list)
+    get("/notes/:note_id", NotesController, :get)
   end
 
   # Enables LiveDashboard only for development
