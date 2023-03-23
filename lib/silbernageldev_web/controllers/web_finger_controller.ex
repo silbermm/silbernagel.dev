@@ -49,6 +49,9 @@ defmodule SilbernageldevWeb.Controllers.WebFingerController do
         |> put_resp_content_type("application/jrd+json")
         |> send_resp(200, response)
 
+      "acct:silbernagel.dev@silbernagel.dev" ->
+        redirect(conn, external: "https://fed.brid.gy#{conn.request_path}?#{conn.query_string}")
+
       _ ->
         send_resp(conn, :not_found, "")
     end
