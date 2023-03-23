@@ -48,6 +48,12 @@ defmodule SilbernageldevWeb.Router do
     get("/", WebFingerController, :finger)
   end
 
+  scope "/.well-known/host-meta", SilbernageldevWeb.Controllers do
+    pipe_through(:webfinger)
+    get("/", WebFingerController, :host_meta)
+  end
+
+
   scope "/.well-known/openpgpkey", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
     get("/policy", GPGController, :policy)

@@ -57,6 +57,10 @@ defmodule SilbernageldevWeb.Controllers.WebFingerController do
     end
   end
 
+  def host_meta(conn, _params) do
+    redirect(conn, external: "https://fed.brid.gy#{conn.request_path}?#{conn.query_string}")
+  end
+
   defp resource_required(%{query_params: %{"resource" => _}} = conn, _) do
     conn
   end
