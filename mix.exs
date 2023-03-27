@@ -60,7 +60,7 @@ defmodule Silbernageldev.MixProject do
       {:req, "~> 0.3.4"},
       {:gpgmex, "~> 0.0.10"},
       {:diceware, "~> 0.2.8"},
-      {:plug_gpg_verify, "~> 0.1.0"},
+      {:plug_gpg_verify, "~> 0.1.1"},
       {:plug_attack, "~> 0.4.2"},
       {:ratatouille, "~> 0.5"}
     ]

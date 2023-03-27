@@ -66,7 +66,7 @@ defmodule SilbernageldevWeb.Router do
     forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
   end
 
-  scope "/api", SilbernageldevWeb.Controllers do
+  scope "/api", SilbernageldevWeb.Controllers, as: :api do
     pipe_through([:api, :authenticated])
 
     post("/note/create", NotesController, :create)

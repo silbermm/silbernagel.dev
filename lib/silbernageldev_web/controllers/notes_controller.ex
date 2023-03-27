@@ -49,7 +49,6 @@ defmodule SilbernageldevWeb.Controllers.NotesController do
   end
 
   def list(conn, params) do
-    IO.inspect params
     draft_status = Map.get(params, "draft", false)
     notes = Notes.all(limit: 50, draft: draft_status)
     do_list(conn, notes, draft_status)
