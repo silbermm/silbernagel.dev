@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Content.UI do
     {%{
        title: "silbernagel.dev",
        url: url,
-       notes: %{notes: [], total: 0}
+       notes: %{data: [], total: 0}
      }, get_current_notes}
   end
 
@@ -29,7 +29,10 @@ defmodule Mix.Tasks.Content.UI do
   def update(model, msg) do
     case msg do
       {:fetch_current_notes, {:ok, res}} ->
-        %{model | notes: Map.get(res.body, "notes")}
+        data = Map.get(res.body, "notes")
+        total = Map.get(res.body, "total")
+
+        %{model | notes: %{data: data, total: total}}
 
       _ ->
         model
@@ -56,21 +59,19 @@ defmodule Mix.Tasks.Content.UI do
       end
 
       row do
-        column(size: 3) do
+        column(size: 4) do
           panel title: "Notes", height: :fill do
             table do
-              table_row do
-                table_cell(content: "Column 1")
-              end
-
-              table_row do
-                table_cell(content: "a")
-              end
+              Enum.map(model.notes.data, fn note ->
+                table_row do
+                  table_cell(content: show_note_title(note))
+                end
+              end)
             end
           end
         end
 
-        column(size: 9) do
+        column(size: 8) do
           panel title: "Data", height: :fill do
             label(content: "data")
           end
@@ -84,6 +85,24 @@ defmodule Mix.Tasks.Content.UI do
       label(
         content: "[j/k or ↑/↓ to move] [space to show] [c to copy] [q to quit] [? for more help]"
       )
+    end
+  end
+
+  defp show_note_title(%{"content" => content, "draft" => draft}) do
+    case String.split_at(content, 20) do
+      {c, rest} when rest == "" ->
+        if draft do
+          "DRAFT: #{c}"
+        else
+          c
+        end
+
+      {c, _rest} ->
+        if draft do
+          "DRAFT: #{c}..."
+        else
+          "#{c}..."
+        end
     end
   end
 end
