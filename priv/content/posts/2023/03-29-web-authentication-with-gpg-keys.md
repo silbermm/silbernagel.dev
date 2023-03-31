@@ -19,8 +19,8 @@ To that end, I wanted to try an experiment that uses GPG public keys to authenti
 
 The concept here is pretty simple.
 
-### A user wants to register for the site. 
-1. They provide their email that is their uid of there GPG key
+### A user registers 
+1. User provides their email that is the uid of their GPG key
 2. We try to find their public key via [WKD](https://wiki.gnupg.org/WKD) or some well known key servers
     1. If we can't find a key, provide a way to upload their public key
 3. Import the users public key into the systems GPG store
@@ -28,8 +28,21 @@ The concept here is pretty simple.
 5. Have the user input the signed text and verify it against the original text.
 6. If it all checks out, activate their account
 
-### A registered user wants to login
+### A registered user logins
 
+There are a few ways of handling this. 
+
+One easy way is to send a magic link via email. Theoretically we've vetted their email already, so this seems safe enough.
+
+The less user friendly way is to provide another randomly generated string for the user to sign and then verify the signature, just like during registration.
+
+The least friendly way is to provide another tool that runs locally on the users computer (like a CLI tool) that can programmatically reach out to the site, ask for a string to sign, sign it and get a magic link in return. Since a tool like this runs locally, it would be able to access GPG on the user's machine and would require little to no input from the user.
+
+And the last method that doesn't yet seem possible is to access the users local GPG store from the browser. This feels insecure at best and I don't plan on pursueing it.
+
+## Show me some code!
+
+I'll be using Elixir and Phoenix for the samples, but this should be transferable to the language and framework of your choosing.
 
 
 
