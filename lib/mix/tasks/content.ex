@@ -7,16 +7,25 @@ defmodule Mix.Tasks.Content do
   See `mix help content.new` for more granular one off management
   """
 
-  def run(_argv) do
-    {:ok, _started} = Application.ensure_all_started(:silbernageldev)
+  def run(argv) do
+    # {:ok, _started} = Application.ensure_all_started(:silbernageldev)
     {:ok, _started} = Application.ensure_all_started(:req)
-    Mix.Tasks.Content.Store.Token.start_link()
-    # authenticate and store the token in ets for access later
-    url = SilbernageldevWeb.Endpoint.url() <> "/verify"
 
-    case Mix.Tasks.GpgVerify.run(["--url", url, "matt@silbernagel.dev"]) do
+    url =
+      case OptionParser.parse(argv, strict: [url: :string]) do
+        {opts, _, _} ->
+          Keyword.get(opts, :url, "http://localhost:4000")
+
+        _ ->
+          "http://localhost:4000"
+      end
+
+    Mix.Tasks.Content.Store.start_link()
+
+    case Mix.Tasks.GpgVerify.run(["--url", url <> "/verify", "matt@silbernagel.dev"]) do
       %{"token" => token} ->
         store_token(token)
+        store_url(url)
         Ratatouille.run(Mix.Tasks.Content.UI, interval: 250)
 
       _ ->
@@ -25,6 +34,10 @@ defmodule Mix.Tasks.Content do
   end
 
   defp store_token(token) do
-    Mix.Tasks.Content.Store.Token.save_token(token)
+    Mix.Tasks.Content.Store.save_token(token)
+  end
+
+  defp store_url(url) do
+    Mix.Tasks.Content.Store.save_url(url)
   end
 end

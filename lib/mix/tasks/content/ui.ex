@@ -6,9 +6,9 @@ defmodule Mix.Tasks.Content.UI do
 
   @impl true
   def init(_context) do
-    token = Mix.Tasks.Content.Store.Token.get_token()
-    url = SilbernageldevWeb.Endpoint.url()
-    notes_url = SilbernageldevWeb.Router.Helpers.api_notes_url(SilbernageldevWeb.Endpoint, :list)
+    token = Mix.Tasks.Content.Store.get_token()
+    url = Mix.Tasks.Content.Store.get_url()
+    notes_url = url <> "/api/notes"
 
     get_current_notes =
       Command.new(
