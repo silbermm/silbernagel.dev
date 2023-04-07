@@ -33,6 +33,36 @@ window.addEventListener("phx:page-loading-start", info => topbar.show())
 window.addEventListener("phx:page-loading-stop", info => topbar.hide())
 
 let Hooks = {}
+Hooks.ToggleColorMode = {
+  mounted() {
+    var btn = this.el
+    if (btn.id === "dark-mode") {
+      if (localStorage.theme === 'dark') {
+        btn.classList.add("bg-orange-400", "text-black")
+      }
+    } else if (btn.id === "light-mode") {
+      if (localStorage.theme === 'light') {
+        btn.classList.add("bg-orange-400", "text-black")
+      }
+    } else {
+      if (!localStorage.theme) {
+        btn.classList.add("bg-orange-400", "text-black")
+      }
+    }
+
+    btn.addEventListener("click", e => {
+      if (btn.id === "dark-mode") {
+        localStorage.theme = 'dark'
+      } else if (btn.id === "light-mode") {
+        localStorage.theme = 'light'
+      } else {
+        localStorage.removeItem('theme')
+      }
+      window.location.reload();
+    })
+  }
+}
+
 Hooks.CopyPGP = {
   mounted() {
     var btn = this.el.querySelector("#pgp-copy-btn") 

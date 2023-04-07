@@ -28,13 +28,24 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
     <link rel="alternate" type="application/rss+xml" href={~p"/posts/rss.xml"} />
+    <script defer type="text/javascript">
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
   </head>
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
     <%= @inner_content %>
   </body>
   <footer class="mt-8 text-center lg:text-left sticky bottom-0">
     <div class="text-gray-100 text-center p-4" style="background-color: rgba(0, 0, 0);">
-      Matt Silbernagel <span></span>
+      <span class="text-right">
+        <.button id="dark-mode" phx-hook="ToggleColorMode">Dark</.button>
+        <.button id="light-mode" phx-hook="ToggleColorMode">Light</.button>
+        <.button id="system-mode" phx-hook="ToggleColorMode">System</.button>
+      </span>
     </div>
   </footer>
 </html>
