@@ -61,7 +61,8 @@ defmodule Silbernageldev.MixProject do
       {:gpgmex, "~> 0.0.10"},
       {:diceware, "~> 0.2.8"},
       {:plug_gpg_verify, "~> 0.1.0"},
-      {:plug_attack, "~> 0.4.2"}
+      {:plug_attack, "~> 0.4.2"},
+      {:logger_json, "~> 5.1"}
     ]
   end
 

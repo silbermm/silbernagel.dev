@@ -38,6 +38,11 @@ config :mime, :types, %{
   "application/jrd+json" => ["jrd"]
 }
 
+config :logger_json, :backend,
+  metadata: :all,
+  json_encoder: Jason,
+  formatter: LoggerJSON.Formatters.BasicLogger
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
