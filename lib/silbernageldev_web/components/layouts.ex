@@ -11,7 +11,7 @@ defmodule SilbernageldevWeb.Layouts do
     if Phoenix.Controller.current_path(conn) == active_path do
       "inline-block py-2 px-4 text-gray-900 font-bold no-underline"
     else
-      "inline-block text-gray-600 no-underline hover:text-gray-900 hover:text-underline py-2 px-4"
+      "inline-block text-gray-600 no-underline hover:!text-gray-900 hover:!text-underline py-2 px-4"
     end
   end
 end

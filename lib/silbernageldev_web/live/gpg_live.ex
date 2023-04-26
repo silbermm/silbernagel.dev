@@ -12,7 +12,7 @@ defmodule SilbernageldevWeb.Live.GPGLive do
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center w-full m-auto pb-4">
         <.link
-          class="text-gray-500 dark:text-slate-400 hover:text-orange-400"
+          class="text-gray-500 dark:text-slate-400 hover:!text-orange-400"
           href="https://keyoxide.org/wkd/matt%40silbernagel.dev"
           target="_blank"
         >
@@ -31,14 +31,14 @@ defmodule SilbernageldevWeb.Live.GPGLive do
               <button
                 type="button"
                 id="pgp-copy-btn"
-                class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="relative inline-flex items-center rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:!bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               >
                 Copy
               </button>
 
               <a
                 type="button"
-                class="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                class="relative -ml-px inline-flex items-center rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:!bg-gray-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                 href={~p"/gpg/download"}
               >
                 Download
