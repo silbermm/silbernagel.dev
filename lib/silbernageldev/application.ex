@@ -5,6 +5,8 @@ defmodule Silbernageldev.Application do
 
   @impl true
   def start(_type, [:dev]) do
+    Silbernageldev.Instrumenter.setup()
+
     children = children()
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
@@ -12,6 +14,7 @@ defmodule Silbernageldev.Application do
   end
 
   def start(_type, _args) do
+    Silbernageldev.Instrumenter.setup()
     topologies = Application.get_env(:libcluster, :topologies) || []
 
     children =
