@@ -62,7 +62,14 @@ defmodule Silbernageldev.MixProject do
       {:diceware, "~> 0.2.8"},
       {:plug_gpg_verify, "~> 0.1.0"},
       {:plug_attack, "~> 0.4.2"},
-      {:logger_json, "~> 5.1"}
+      {:logger_json, "~> 5.1"},
+      {:opentelemetry_exporter, "~> 1.0"},
+      {:opentelemetry, "~> 1.0"},
+      {:opentelemetry_api, "~> 1.0"},
+      {:opentelemetry_ecto, "~> 1.0"},
+      {:opentelemetry_liveview, "~> 1.0.0-rc.4"},
+      {:opentelemetry_phoenix, "~> 1.0"},
+      {:opentelemetry_cowboy, "~> 0.2"}
     ]
   end
 

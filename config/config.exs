@@ -19,7 +19,11 @@ config :silbernageldev,
 # Configures the endpoint
 config :silbernageldev, SilbernageldevWeb.Endpoint,
   url: [host: "silbernagel.dev"],
-  render_errors: [view: SilbernageldevWeb.ErrorHTML, accepts: ~w(html json), layout: {SilbernageldevWeb.Layouts, :root}],
+  render_errors: [
+    view: SilbernageldevWeb.ErrorHTML,
+    accepts: ~w(html json),
+    layout: {SilbernageldevWeb.Layouts, :root}
+  ],
   pubsub_server: Silbernageldev.PubSub,
   live_view: [signing_salt: "yeNIpo46"]
 
@@ -68,7 +72,7 @@ config :esbuild,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id, :path]
+  metadata: [:request_id, :path, :otel_span_id, :otel_trace_flags, :otel_trace_id]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

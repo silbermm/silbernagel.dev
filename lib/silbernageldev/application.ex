@@ -7,6 +7,8 @@ defmodule Silbernageldev.Application do
   def start(_type, [:dev]) do
     Silbernageldev.Instrumenter.setup()
 
+    otel_setup()
+
     children = children()
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
@@ -15,6 +17,8 @@ defmodule Silbernageldev.Application do
 
   def start(_type, _args) do
     Silbernageldev.Instrumenter.setup()
+    otel_setup()
+
     topologies = Application.get_env(:libcluster, :topologies) || []
 
     children =
@@ -40,6 +44,21 @@ defmodule Silbernageldev.Application do
        name: SilbernageldevWeb.Plugs.PlugAttack.storage_name(), clean_period: :timer.seconds(60)},
       SilbernageldevWeb.Plugs.Silberauth
     ]
+  end
+
+  defp otel_setup() do
+    if System.get_env("ECTO_IPV6") do
+      :httpc.set_option(:ipfamily, :inet6fb4)
+    end
+
+    :ok = :opentelemetry_cowboy.setup()
+    :ok = OpentelemetryPhoenix.setup()
+    :ok = OpentelemetryLiveView.setup()
+
+    :ok =
+      Silbernageldev.Repo.config()
+      |> Keyword.fetch!(:telemetry_prefix)
+      |> OpentelemetryEcto.setup()
   end
 
   @impl true
