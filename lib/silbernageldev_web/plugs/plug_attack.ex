@@ -4,6 +4,9 @@ defmodule SilbernageldevWeb.Plugs.PlugAttack do
   """
 
   use PlugAttack
+  use Silbernageldev.OpenTelemetry
+
+  trace_all kind: :internal
 
   @storage_name SilbernageldevWeb.PlugAttack.Storage
   def storage_name, do: @storage_name

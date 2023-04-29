@@ -4,6 +4,9 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   """
   use GenServer
   use PlugGPGVerify
+  use Silbernageldev.OpenTelemetry
+
+  trace_all kind: :internal
 
   # my user with a generated uuid
   @users [
