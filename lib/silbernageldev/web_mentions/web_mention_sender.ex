@@ -6,7 +6,11 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   """
 
   use GenServer, restart: :temporary
+  use Silbernageldev.OpenTelemetry
+
   require Logger
+
+  trace_all kind: :internal
 
   @log_prefix "[WebMentionSender] |"
 
