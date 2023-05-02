@@ -2,7 +2,7 @@
   title: "Elixir, Fly, and Grafana Cloud",
   author: "Matt Silbernagel",
   tags: ~w(Elixir Telemetry),
-  description: "",
+  description: "Learn how to send your Metrics, Logs and Traces to Grafana Cloud from your Elixir app hosted on Fly.io",
   draft: true
 }
 ---
