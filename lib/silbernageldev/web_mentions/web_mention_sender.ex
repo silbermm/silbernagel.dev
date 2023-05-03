@@ -98,7 +98,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
 
     case Req.get(link, user_agent: "Webmention-Discovery") do
       {:ok, %Req.Response{status: 200, headers: _headers, body: body}} ->
-        find_webmention_links(body)
+        find_webmention_links(body, link)
 
       {:ok, %Req.Response{status: status, body: body}} ->
         Logger.error("#{@log_prefix} Invalid request -- #{status}")
@@ -111,7 +111,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
     end
   end
 
-  defp find_webmention_links(body) do
+  defp find_webmention_links(body, orig_link) do
     case Floki.parse_document(body) do
       {:ok, document} ->
         links_with_webmention = Floki.find(document, ~S{link[rel="webmention"]})
@@ -120,6 +120,13 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
         links_with_webmention
         |> Enum.concat(a_with_webmention)
         |> Floki.attribute("href")
+        |> Enum.map(fn l ->
+          if String.starts_with?(l, "/") do
+            orig_link <> l
+          else
+            l
+          end
+        end)
 
       {:error, reason} ->
         Logger.warn("#{@log_prefix} Unable to parse html -- #{reason}")
