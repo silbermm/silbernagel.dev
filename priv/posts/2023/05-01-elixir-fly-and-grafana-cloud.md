@@ -1,9 +1,9 @@
 %{
   title: "Elixir, Fly, and Grafana Cloud",
   author: "Matt Silbernagel",
-  tags: ~w(Elixir Telemetry),
+  tags: ~w(Elixir Telemetry Observability),
   description: "Learn how to send your Metrics, Logs and Traces to Grafana Cloud from your Elixir app hosted on Fly.io",
-  draft: true
+  draft: false
 }
 ---
 
@@ -94,5 +94,23 @@ After those are set, deploy your app and you start seeing traces appear in Tempo
 
 ## Metrics
 
-For Metrics, I really like to use [Prometheus](https://prometheus.io/docs/introduction/overview/)
+For Metrics, I really like to use [Prometheus](https://prometheus.io/docs/introduction/overview/) and I find the easiest way to get started with Prometheus is using [prom_ex](https://hexdocs.pm/prom_ex/readme.html). 
 
+Once prom_ex is installed and running, it just needs to be exposed so that Fly can scrape it. As [documented by Fly](https://fly.io/docs/reference/metrics/#configuration), just add the following to your fly.toml file:
+
+```toml
+[metrics]
+port = 9091
+path = "/metrics"
+```
+
+Finally, setup the Prometheus data source in Grafana Cloud with the following properties:
+* HTTP -> URL https://api.fly.io/prometheus/<org-slug>/
+* Custom HTTP Headers -> + Add Header:
+  * Header: Authorization, Value: Bearer <token>
+
+> You can get your token using  `flyctl auth token`
+
+You should now see all of the fly metrics and prom_ex defined metrics in Grafana!
+
+[](https://fed.brid.gy/)
