@@ -4,9 +4,15 @@ defmodule Silbernageldev.WebMentions do
   """
   import Ecto.Query
 
+  use Silbernageldev.OpenTelemetry
+
   alias Silbernageldev.Repo
   alias Silbernageldev.WebMentions.WebMentionSupervisor
   alias Silbernageldev.WebMentions.WebMention
+
+  require Logger
+
+  trace_all(kind: :internal)
 
   @doc """
   Return the spec for the dynamic supervisor for web mentions
@@ -21,6 +27,8 @@ defmodule Silbernageldev.WebMentions do
   def capture_result(post, url, status) do
     hash = hash_post(post)
 
+    trace_attrs(hash: hash, post_id: post.id)
+
     attrs = %{
       source_id: post.id,
       source_type: :post,
@@ -30,7 +38,7 @@ defmodule Silbernageldev.WebMentions do
     }
 
     attrs
-    |> WebMention.changeset() 
+    |> WebMention.changeset()
     |> Repo.insert()
   end
 
@@ -54,13 +62,19 @@ defmodule Silbernageldev.WebMentions do
     end
   end
 
+  trace(kind: :internal)
+
   defp determine_status(post, web_mention_result) do
     hash = hash_post(post)
+    Logger.info("db hash = #{web_mention_result.sha}")
+    Logger.info("current post hash = #{hash}")
 
-    if hash == web_mention_result.sha do
-      :complete
-    else
+    trace_attrs(hash: hash, post_id: post.id)
+
+    if hash != web_mention_result.sha && web_mention_result.status == :sent do
       :update
+    else
+      :complete
     end
   end
 
