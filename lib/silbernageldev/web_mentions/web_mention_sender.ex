@@ -77,18 +77,18 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
         {:ok, %Req.Response{status: status, headers: _headers, body: _body}}
         when status >= 200 and status <= 300 ->
           Logger.info("#{@log_prefix} SUCCESS")
-          WebMentions.capture_result(post, link, :sent)
+          _ = WebMentions.capture_result(post, link, :sent)
           :ok
 
         {:ok, %Req.Response{status: status, body: body}} ->
           Logger.error("#{@log_prefix} Invalid request -- #{status}")
           Logger.error("#{@log_prefix} #{inspect(body)}")
-          WebMentions.capture_result(post, link, :failed)
+          _ = WebMentions.capture_result(post, link, :failed)
           :error
 
         {:error, err} ->
           Logger.error("#{@log_prefix} #{inspect(err)}")
-          WebMentions.capture_result(post, link, :failed)
+          _ = WebMentions.capture_result(post, link, :failed)
           :error
       end
     end
@@ -97,11 +97,14 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   defp discover(link, post) do
     Logger.info("#{@log_prefix} discovering webmentions at #{link}")
 
+    # first, see if we already looked for this link
+
     case Req.get(link, user_agent: "Webmention-Discovery") do
       {:ok, %Req.Response{status: 200, headers: _headers, body: body}} ->
         case find_webmention_links(body, link) do
           [] ->
-            WebMentions.capture_result(post, link, :not_found)
+            _ = WebMentions.capture_result(post, link, :not_found)
+            []
 
           links ->
             links
@@ -110,12 +113,12 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
       {:ok, %Req.Response{status: status, body: body}} ->
         Logger.error("#{@log_prefix} Invalid request -- #{status}")
         Logger.error("#{@log_prefix} #{inspect(body)}")
-        WebMentions.capture_result(post, link, :failed)
+        _ = WebMentions.capture_result(post, link, :failed)
         []
 
       {:error, err} ->
         Logger.error("#{@log_prefix} #{inspect(err)}")
-        WebMentions.capture_result(post, link, :failed)
+        _ = WebMentions.capture_result(post, link, :failed)
         []
     end
   end
