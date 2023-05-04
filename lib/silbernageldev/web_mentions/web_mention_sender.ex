@@ -4,19 +4,18 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   links and attempts to send a webmention
   end
   """
+  alias Silbernageldev.WebMentions
 
   use GenServer, restart: :temporary
   use Silbernageldev.OpenTelemetry
 
   require Logger
 
-  trace_all kind: :internal
+  trace_all(kind: :internal)
 
   @log_prefix "[WebMentionSender] |"
 
-  def start_link(post) do
-    GenServer.start_link(__MODULE__, post)
-  end
+  def start_link(post), do: GenServer.start_link(__MODULE__, post)
 
   @impl true
   def init(post) do
@@ -50,7 +49,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   def handle_continue(:discovery, state) do
     links =
       Enum.map(state.links, fn link ->
-        %{link => discover(link)}
+        %{link => discover(link, state.post)}
       end)
 
     {:noreply, %{state | links: links}, {:continue, :notify}}
@@ -59,7 +58,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   def handle_continue(:notify, state) do
     for links <- state.links do
       for {link, targets} <- links do
-        send_webmentions_for(link, targets, state.source_url)
+        send_webmentions_for(state.post, link, targets, state.source_url)
       end
     end
 
@@ -72,41 +71,51 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
     :ok
   end
 
-  defp send_webmentions_for(link, targets, source_url) do
+  defp send_webmentions_for(post, link, targets, source_url) do
     for target <- targets do
       case Req.post(target, form: [source: source_url, target: link]) do
-        {:ok, %Req.Response{status: status, headers: _headers, body: body}}
-        when status > 200 and status < 300 ->
+        {:ok, %Req.Response{status: status, headers: _headers, body: _body}}
+        when status >= 200 and status <= 300 ->
           Logger.info("#{@log_prefix} SUCCESS")
-          Logger.debug(inspect(body))
+          WebMentions.capture_result(post, link, :sent)
           :ok
 
         {:ok, %Req.Response{status: status, body: body}} ->
           Logger.error("#{@log_prefix} Invalid request -- #{status}")
           Logger.error("#{@log_prefix} #{inspect(body)}")
+          WebMentions.capture_result(post, link, :failed)
           :error
 
         {:error, err} ->
           Logger.error("#{@log_prefix} #{inspect(err)}")
+          WebMentions.capture_result(post, link, :failed)
           :error
       end
     end
   end
 
-  defp discover(link) do
+  defp discover(link, post) do
     Logger.info("#{@log_prefix} discovering webmentions at #{link}")
 
     case Req.get(link, user_agent: "Webmention-Discovery") do
       {:ok, %Req.Response{status: 200, headers: _headers, body: body}} ->
-        find_webmention_links(body, link)
+        case find_webmention_links(body, link) do
+          [] ->
+            WebMentions.capture_result(post, link, :not_found)
+
+          links ->
+            links
+        end
 
       {:ok, %Req.Response{status: status, body: body}} ->
         Logger.error("#{@log_prefix} Invalid request -- #{status}")
         Logger.error("#{@log_prefix} #{inspect(body)}")
+        WebMentions.capture_result(post, link, :failed)
         []
 
       {:error, err} ->
         Logger.error("#{@log_prefix} #{inspect(err)}")
+        WebMentions.capture_result(post, link, :failed)
         []
     end
   end
