@@ -17,8 +17,11 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
 
   def start_link(post), do: GenServer.start_link(__MODULE__, post)
 
+  trace(kind: :internal)
+
   @impl true
   def init(post) do
+    Logger.metadata(post_id: post.id)
     source_url =
       SilbernageldevWeb.Router.Helpers.blog_url(
         SilbernageldevWeb.Endpoint,
@@ -26,6 +29,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
         post.id
       )
 
+    trace_attrs(source_url: source_url)
     {:ok, %{post: post, source_url: source_url, links: []}, {:continue, :search_post}}
   end
 
@@ -42,6 +46,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
       |> Enum.uniq()
 
     Logger.info("#{@log_prefix} Links found: #{inspect(links)}")
+    trace_attrs(links: links)
 
     {:noreply, %{state | links: links}, {:continue, :discovery}}
   end
@@ -71,7 +76,11 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
     :ok
   end
 
+  trace(kind: :internal)
+
   defp send_webmentions_for(post, link, targets, source_url) do
+    trace_attrs(link: link, targets: targets)
+
     for target <- targets do
       case Req.post(target, form: [source: source_url, target: link]) do
         {:ok, %Req.Response{status: status, headers: _headers, body: _body}}
@@ -97,8 +106,25 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   defp discover(link, post) do
     Logger.info("#{@log_prefix} discovering webmentions at #{link}")
 
-    # first, see if we already looked for this link
+    case WebMentions.check_webmention_result(post, link) do
+      :empty ->
+        Logger.info("#{@log_prefix} webmention for #{link} has not been attempted yet")
+        do_discovery(post, link)
 
+      :complete ->
+        Logger.info("#{@log_prefix} webmention for #{link} does not need to be sent again")
+        []
+
+      :update ->
+        Logger.warn(
+          "#{@log_prefix} post has changed and we've sent a success before for #{link} - should send an update"
+        )
+
+        []
+    end
+  end
+
+  defp do_discovery(post, link) do
     case Req.get(link, user_agent: "Webmention-Discovery") do
       {:ok, %Req.Response{status: 200, headers: _headers, body: body}} ->
         case find_webmention_links(body, link) do

@@ -72,7 +72,7 @@ config :esbuild,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id, :path, :otel_span_id, :otel_trace_flags, :otel_trace_id]
+  metadata: [:request_id, :path, :otel_span_id, :otel_trace_flags, :otel_trace_id, :post_id]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

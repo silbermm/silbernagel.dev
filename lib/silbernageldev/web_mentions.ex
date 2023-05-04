@@ -4,7 +4,6 @@ defmodule Silbernageldev.WebMentions do
   """
   import Ecto.Query
 
-  alias Silbernageldev.WebMentions
   alias Silbernageldev.Repo
   alias Silbernageldev.WebMentions.WebMentionSupervisor
   alias Silbernageldev.WebMentions.WebMention
