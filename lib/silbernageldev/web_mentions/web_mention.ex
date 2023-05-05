@@ -11,7 +11,8 @@ defmodule Silbernageldev.WebMentions.WebMention do
     field(:source_type, Ecto.Enum, values: [:post, :note])
     field(:url, :string)
     field(:sha, :string)
-    field(:status, Ecto.Enum, values: [:sent, :not_found, :failed])
+    field(:status, Ecto.Enum, values: [:sent, :not_found, :failed, :pending])
+    field(:webmention_endpoint, :string, virtual: true)
     timestamps()
   end
 
@@ -19,7 +20,7 @@ defmodule Silbernageldev.WebMentions.WebMention do
 
   def changeset(mention \\ %WebMention{}, params) do
     mention
-    |> cast(params, @attrs)
+    |> cast(params, @attrs ++ [:webmention_endpoint])
     |> validate_required(@attrs)
   end
 end

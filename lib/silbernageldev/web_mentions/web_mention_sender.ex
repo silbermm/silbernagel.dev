@@ -22,6 +22,7 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   @impl true
   def init(post) do
     Logger.metadata(post_id: post.id)
+
     source_url =
       SilbernageldevWeb.Router.Helpers.blog_url(
         SilbernageldevWeb.Endpoint,
@@ -30,7 +31,9 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
       )
 
     trace_attrs(source_url: source_url)
-    {:ok, %{post: post, source_url: source_url, links: []}, {:continue, :search_post}}
+
+    {:ok, %{post: post, source_url: source_url, links: [], web_mentions: []},
+     {:continue, :search_post}}
   end
 
   @impl true
@@ -52,19 +55,52 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
   end
 
   def handle_continue(:discovery, state) do
-    links =
-      Enum.map(state.links, fn link ->
-        %{link => discover(link, state.post)}
-      end)
+    web_mentions =
+      for link <- state.links, reduce: [] do
+        acc ->
+          case WebMentions.check_webmention_result(state.post, link) do
+            nil ->
+              acc
 
-    {:noreply, %{state | links: links}, {:continue, :notify}}
+            mention ->
+              mention =
+                case discover(link) do
+                  :not_found ->
+                    WebMentions.change(mention, %{status: :not_found})
+
+                  :failed ->
+                    WebMentions.change(mention, %{status: :failed})
+
+                  endpoint ->
+                    WebMentions.change(mention, %{
+                      status: :pending,
+                      webmention_endpoint: endpoint
+                    })
+                end
+
+              [mention | acc]
+          end
+      end
+
+    {:noreply, %{state | web_mentions: web_mentions}, {:continue, :notify}}
   end
 
   def handle_continue(:notify, state) do
-    for links <- state.links do
-      for {link, targets} <- links do
-        send_webmentions_for(state.post, link, targets, state.source_url)
+    changes =
+      for mention_changeset <- state.web_mentions do
+        if WebMentions.is_pending?(mention_changeset) do
+          WebMentions.send_webmention_for(mention_changeset, state.source_url)
+        else
+          mention_changeset
+        end
       end
+
+    {:noreply, %{state | web_mentions: changes}, {:continue, :persist}}
+  end
+
+  def handle_continue(:persist, state) do
+    for mention <- state.web_mentions do
+      WebMentions.capture_result(mention)
     end
 
     {:stop, :normal, state}
@@ -76,76 +112,27 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
     :ok
   end
 
-  trace(kind: :internal)
-
-  defp send_webmentions_for(post, link, targets, source_url) do
-    trace_attrs(link: link, targets: targets)
-
-    for target <- targets do
-      case Req.post(target, form: [source: source_url, target: link]) do
-        {:ok, %Req.Response{status: status, headers: _headers, body: _body}}
-        when status >= 200 and status <= 300 ->
-          Logger.info("#{@log_prefix} SUCCESS")
-          _ = WebMentions.capture_result(post, link, :sent)
-          :ok
-
-        {:ok, %Req.Response{status: status, body: body}} ->
-          Logger.error("#{@log_prefix} Invalid request -- #{status}")
-          Logger.error("#{@log_prefix} #{inspect(body)}")
-          _ = WebMentions.capture_result(post, link, :failed)
-          :error
-
-        {:error, err} ->
-          Logger.error("#{@log_prefix} #{inspect(err)}")
-          _ = WebMentions.capture_result(post, link, :failed)
-          :error
-      end
-    end
-  end
-
-  defp discover(link, post) do
+  defp discover(link) do
     Logger.info("#{@log_prefix} discovering webmentions at #{link}")
 
-    case WebMentions.check_webmention_result(post, link) do
-      :empty ->
-        Logger.info("#{@log_prefix} webmention for #{link} has not been attempted yet")
-        do_discovery(post, link)
-
-      :complete ->
-        Logger.info("#{@log_prefix} webmention for #{link} does not need to be sent again")
-        []
-
-      :update ->
-        Logger.warn(
-          "#{@log_prefix} post has changed and we've sent a success before for #{link} - should send an update"
-        )
-
-        []
-    end
-  end
-
-  defp do_discovery(post, link) do
     case Req.get(link, user_agent: "Webmention-Discovery") do
       {:ok, %Req.Response{status: 200, headers: _headers, body: body}} ->
         case find_webmention_links(body, link) do
           [] ->
-            _ = WebMentions.capture_result(post, link, :not_found)
-            []
+            :not_found
 
-          links ->
-            links
+          [link | _] ->
+            link
         end
 
       {:ok, %Req.Response{status: status, body: body}} ->
         Logger.error("#{@log_prefix} Invalid request -- #{status}")
         Logger.error("#{@log_prefix} #{inspect(body)}")
-        _ = WebMentions.capture_result(post, link, :failed)
-        []
+        :failed
 
       {:error, err} ->
         Logger.error("#{@log_prefix} #{inspect(err)}")
-        _ = WebMentions.capture_result(post, link, :failed)
-        []
+        :failed
     end
   end
 
