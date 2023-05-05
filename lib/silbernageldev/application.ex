@@ -35,6 +35,7 @@ defmodule Silbernageldev.Application do
   defp children() do
     [
       Silbernageldev.Repo,
+      Silbernageldev.PromEx,
       SilbernageldevWeb.Telemetry,
       {Phoenix.PubSub, name: Silbernageldev.PubSub},
       SilbernageldevWeb.Endpoint,

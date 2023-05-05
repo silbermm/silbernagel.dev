@@ -1,10 +1,3 @@
-# This file is responsible for configuring your application
-# and its dependencies with the aid of the Config module.
-#
-# This configuration file is loaded before any dependency and
-# is restricted to this project.
-
-# General application configuration
 import Config
 
 config :silbernageldev,
@@ -73,6 +66,14 @@ config :esbuild,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id, :path, :otel_span_id, :otel_trace_flags, :otel_trace_id, :post_id]
+
+config :silbernageldev, Silbernageldev.PromEx,
+  metrics_server: [
+    port: System.get_env("PROM_PORT") || 9091,
+    path: "/metrics",
+    protocol: :http,
+    pool_size: 5
+  ]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason

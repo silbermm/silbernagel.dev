@@ -101,9 +101,35 @@ After setting these values and deploying the application, traces should start sh
 
 ## Metrics
 
-For Metrics, I really like to use [Prometheus](https://prometheus.io/docs/introduction/overview/) and I find the easiest way to get started with Prometheus is using [prom_ex](https://hexdocs.pm/prom_ex/readme.html).
+For Metrics, I really like to use [Prometheus](https://prometheus.io/docs/introduction/overview/) and I find the easiest way to get started with Prometheus is using [prom_ex](https://hexdocs.pm/prom_ex/readme.html). PromEx provides excellent documentation and is worth reading, but a quick guide to get it working:
 
-Once prom_ex is installed and running, it just needs to be exposed so that Fly can scrape it. As [documented by Fly](https://fly.io/docs/reference/metrics/#configuration), just add the following to your fly.toml file:
+* Adding `:prom_ex, "~> 1.8"` to your dependencies in `mix.exs` and run `mix deps.get`
+* Run the generator `mix prom_ex.gen.config --datasource curl`
+* Add config in `config.exs` for the metrics server
+  ```elixir
+  config :your_app, YourApp.PromEx,
+  metrics_server: [
+    port: System.get_env("PROM_PORT") || 9091,
+    path: "/metrics",
+    protocol: :http,
+    pool_size: 5
+  ]
+  ```
+* Add `YourApp.PromEx` to your supervision tree in `application.ex`
+  ```elixir
+  def start(_type, _args) do
+    children = [
+      YourAppWeb.Endpoint,
+      # PromEx should be started after the Endpoint, to avoid unnecessary error messages
+      YourApp.PromEx,
+      ...
+    ]
+  ```
+* Lastly, uncomment any desired plugins in the generated `YourApp.PromEx` file.
+
+With all of that, `localhost:9091/metrics` should be available when the app is running
+
+Next, the metrics just need to be exposed so that Fly can scrape them. As [documented by Fly](https://fly.io/docs/reference/metrics/#configuration), just add the following to your fly.toml file:
 
 ```toml
 [metrics]

@@ -41,6 +41,10 @@ processes = []
     restart_limit = 0
     timeout = "2s"
 
+[metrics]
+  port = 9091
+  path = "/metrics"
+
 [mounts]
   source = "sql_data"
   destination = "/var/lib/litefs"

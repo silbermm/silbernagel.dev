@@ -69,7 +69,8 @@ defmodule Silbernageldev.MixProject do
       {:opentelemetry_ecto, "~> 1.0"},
       {:opentelemetry_liveview, "~> 1.0.0-rc.4"},
       {:opentelemetry_phoenix, "~> 1.0"},
-      {:opentelemetry_cowboy, "~> 0.2"}
+      {:opentelemetry_cowboy, "~> 0.2"},
+      {:prom_ex, "~> 1.8"}
     ]
   end
 
