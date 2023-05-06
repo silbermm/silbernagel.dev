@@ -13,7 +13,8 @@ defmodule Silbernageldev.Notes do
 
   # The @notes variable is first defined by NimblePublisher.
   # Let's further modify it by sorting all notes by descending date.
-  @notes Enum.sort_by(@notes, & &1.datetime, {:desc, DateTime})
+  @notes @notes
+         |> Enum.sort_by(& &1.datetime, {:desc, DateTime})
          |> then(fn notes ->
            unless Mix.env() == :dev do
              Enum.reject(notes, &Map.get(&1, :draft, false))

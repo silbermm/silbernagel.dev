@@ -39,7 +39,6 @@ defmodule SilbernageldevWeb.Router do
     live("/tags/:tag_name", Blog.TagsLive, :show)
 
     live("/gpg", GPGLive, :index)
-
     live("/", HomeLive, :index)
   end
 
@@ -52,7 +51,6 @@ defmodule SilbernageldevWeb.Router do
     pipe_through(:webfinger)
     get("/", WebFingerController, :host_meta)
   end
-
 
   scope "/.well-known/openpgpkey", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
