@@ -27,6 +27,7 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/", SilbernageldevWeb.Controllers do
     get("/posts/rss.xml", RssController, :index)
+    post("/follow", FediController, :follow)
   end
 
   scope "/", SilbernageldevWeb.Live do

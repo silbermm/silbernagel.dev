@@ -25,7 +25,8 @@
     <link rel="me" href="https://freeradical.zone/@ahappydeath" />
     <link rel="pgpkey authn" href={~p"/silbernagel.pub"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer data-domain="silbernagel.dev" src="https://plausible.io/js/script.js"></script>
+    <script defer data-domain="silbernagel.dev" src="https://plausible.io/js/script.js">
+    </script>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
     <link rel="alternate" type="application/rss+xml" href={~p"/posts/rss.xml"} />
@@ -40,13 +41,20 @@
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
     <%= @inner_content %>
   </body>
-  <footer class="h-20 text-center lg:text-left sticky bottom-0 bg-black">
-    <div class="text-gray-100 text-center p-4">
-      <span class="text-right">
+  <footer class="h:40 md:h-30 text-left relative sm:sticky bottom-0 bg-black">
+    <div class="flex flex-col md:flex-row text-gray-100 p-4 justify-between w-full">
+      <.form :let={f} for={:follow} class="flex flex-col justify-normal" action="/follow" method="post" >
+        <label class="text-left"> Follow in the fediverse to comment </label>
+        <div class="text-left flex flex-row">
+          <.input field={f[:address]} type="text" placeholder="@you@instance.com" required="required" class="rounded-md text-black bg-gray-200"  />
+          <.button type="submit" class="bg-gray-600 mt-2">Follow</.button>
+        </div>
+      </.form>
+      <div class="py-3">
         <.button id="dark-mode" phx-hook="ToggleColorMode">Dark</.button>
         <.button id="light-mode" phx-hook="ToggleColorMode">Light</.button>
         <.button id="system-mode" phx-hook="ToggleColorMode">System</.button>
-      </span>
+      </div>
     </div>
   </footer>
 </html>
