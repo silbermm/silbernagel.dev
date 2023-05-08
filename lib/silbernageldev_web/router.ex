@@ -5,6 +5,7 @@ defmodule SilbernageldevWeb.Router do
     plug(:accepts, ["html"])
     plug SilbernageldevWeb.Plugs.PlugAttack
     plug(:fetch_session)
+    plug(:fetch_flash)
     plug(:fetch_live_flash)
     plug(:put_root_layout, html: {SilbernageldevWeb.Layouts, :root})
     plug(:protect_from_forgery)
@@ -27,6 +28,10 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/", SilbernageldevWeb.Controllers do
     get("/posts/rss.xml", RssController, :index)
+  end
+  
+  scope "/", SilbernageldevWeb.Controllers do
+    pipe_through(:browser)
     post("/follow", FediController, :follow)
   end
 

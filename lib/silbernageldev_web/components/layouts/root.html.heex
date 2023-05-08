@@ -39,14 +39,33 @@
     </script>
   </head>
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
+
+    <%= if Phoenix.Flash.get(@flash, :info) do %>
+      <p class="text-right w-40 alert alert-info fixed top-4 right-4" role="alert">
+        <%= Phoenix.Flash.get(@flash, :info) %>
+      </p>
+    <% end %>
+
     <%= @inner_content %>
   </body>
   <footer class="h:40 md:h-30 text-left relative sm:sticky bottom-0 bg-black">
     <div class="flex flex-col md:flex-row text-gray-100 p-4 justify-between w-full">
-      <.form :let={f} for={:follow} class="flex flex-col justify-normal" action="/follow" method="post" >
+      <.form
+        :let={f}
+        for={:follow}
+        class="flex flex-col justify-normal"
+        action="/follow"
+        method="post"
+      >
         <label class="text-left"> Follow in the fediverse to comment </label>
         <div class="text-left flex flex-row">
-          <.input field={f[:address]} type="text" placeholder="@you@instance.com" required="required" class="rounded-md text-black bg-gray-200"  />
+          <.input
+            field={f[:address]}
+            type="text"
+            placeholder="@you@instance.com"
+            required="required"
+            class="rounded-md text-black bg-gray-200"
+          />
           <.button type="submit" class="bg-gray-600 mt-2">Follow</.button>
         </div>
       </.form>
