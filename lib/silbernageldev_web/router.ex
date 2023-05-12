@@ -29,12 +29,7 @@ defmodule SilbernageldevWeb.Router do
   scope "/", SilbernageldevWeb.Controllers do
     get("/posts/rss.xml", RssController, :index)
   end
-  
-  scope "/", SilbernageldevWeb.Controllers do
-    pipe_through(:browser)
-    post("/follow", FediController, :follow)
-  end
-
+ 
   scope "/", SilbernageldevWeb.Live do
     pipe_through(:browser)
 

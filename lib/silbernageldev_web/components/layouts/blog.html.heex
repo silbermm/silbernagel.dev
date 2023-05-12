@@ -1,4 +1,4 @@
-<div class="min-h-[calc(100vh_-_10rem)] md:min-h-[calc(100vh_-_5rem)]">
+<div class="min-h-[calc(100vh_-_9.5rem)] lg:min-h-[calc(100vh_-_6rem)]">
   <div class="max-w-7xl mx-auto py-4 px-4">
     <div class="h-card text-center">
       <a href={~p"/"} class="u-url">
@@ -13,7 +13,7 @@
       </a>
       <p class="max-w-xl mt-5 mx-auto text-xl text-gray-500 dark:text-slate-400">
         <hr class="mx-auto max-w-xs border-orange-400" />
-        <ul class="list-none py-2">
+        <ul class="list-none py-2 max-w-xs mx-auto flex flex-row justify-between text-center">
           <li class="inline-block">
             <.link
               navigate={~p"/posts"}
@@ -24,32 +24,17 @@
           </li>
           <li class="inline-block text-gray-500 dark:text-slate-400"></li>
           <li class="inline-block">
-            <a
-              href="https://github.com/silbermm"
-              rel="me"
-              class="text-gray-500 dark:text-slate-400 hover:!text-orange-400"
-            >
-              Github
-            </a>
-          </li>
-          <li class="inline-block">
-            <a
-              rel="me"
-              href="https://freeradical.zone/@ahappydeath"
-              class="text-gray-500 dark:text-slate-400 hover:!text-orange-400"
-            >
-              Mastodon
-            </a>
-          </li>
-          <li class="inline-block">
             <a href={~p"/gpg"} class="text-gray-500 dark:text-slate-400 hover:!text-orange-400">
               OpenPGP
             </a>
           </li>
 
           <li class="inline-block">
-            <.link navigate={~p"/posts/rss.xml"}>
-              <Heroicons.rss class="w-4 h-4 text-gray-500 dark:text-slate-400 hover:!text-orange-400" />
+            <.link
+              navigate={~p"/posts/rss.xml"}
+              class="text-gray-500 dark:text-slate-400 hover:!text-orange-400"
+            >
+              RSS Feed <Heroicons.rss class="w-4 h-4 inline" />
             </.link>
           </li>
         </ul>

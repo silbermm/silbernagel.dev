@@ -39,37 +39,23 @@
     </script>
   </head>
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
-
-    <%= if Phoenix.Flash.get(@flash, :info) do %>
-      <p class="text-right w-40 alert alert-info fixed top-4 right-4" role="alert">
-        <%= Phoenix.Flash.get(@flash, :info) %>
-      </p>
-    <% end %>
-
     <%= @inner_content %>
   </body>
-  <footer class="h:40 md:h-30 text-left relative sm:sticky bottom-0 bg-black">
-    <div class="flex flex-col md:flex-row text-gray-100 p-4 justify-between w-full">
-      <.form
-        :let={f}
-        for={:follow}
-        class="flex flex-col justify-normal"
-        action="/follow"
-        method="post"
-      >
-        <label class="text-left"> Follow in the fediverse to comment </label>
+  <footer class="h:50 lg:h-30 text-left relative bottom-0 bg-black">
+    <div class="flex flex-col lg:flex-row text-gray-100 p-4 justify-between w-full">
+      <div class="flex flex-col w-full lg:w-1/3" >
         <div class="text-left flex flex-row">
-          <.input
-            field={f[:address]}
-            type="text"
-            placeholder="@you@instance.com"
-            required="required"
-            class="rounded-md text-black bg-gray-200"
-          />
-          <.button type="submit" class="bg-gray-600 mt-2">Follow</.button>
         </div>
-      </.form>
-      <div class="py-3">
+      </div>
+      <div class="flex flex-row justify-start lg:justify-center items-center w-full pt-4 lg:w-1/3 lg:p-0">
+        <.link href="https://github.com/silbermm" target="_blank" class="pr-2">
+          <img src={~p(/images/github-mark-white.svg)} class="w-8 h8" />
+        </.link>
+        <.link href="https://github.com/silbermm" target="_blank" class="pl-2">
+          <img src={~p(/images/mastodon-logo.svg)} class="w-8 h8" />
+        </.link>
+      </div>
+      <div class="py-3 w-full lg:w-1/3 text-left lg:text-right">
         <.button id="dark-mode" phx-hook="ToggleColorMode">Dark</.button>
         <.button id="light-mode" phx-hook="ToggleColorMode">Light</.button>
         <.button id="system-mode" phx-hook="ToggleColorMode">System</.button>
