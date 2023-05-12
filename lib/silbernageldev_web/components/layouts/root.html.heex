@@ -25,7 +25,8 @@
     <link rel="me" href="https://freeradical.zone/@ahappydeath" />
     <link rel="pgpkey authn" href={~p"/silbernagel.pub"} />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
-    <script defer data-domain="silbernagel.dev" src="https://plausible.io/js/script.js"></script>
+    <script defer data-domain="silbernagel.dev" src="https://plausible.io/js/script.js">
+    </script>
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
     <link rel="alternate" type="application/rss+xml" href={~p"/posts/rss.xml"} />
@@ -40,13 +41,25 @@
   <body class="bg-white dark:bg-[#121519] font-sans leading-normal tracking-normal">
     <%= @inner_content %>
   </body>
-  <footer class="h-20 text-center lg:text-left sticky bottom-0 bg-black">
-    <div class="text-gray-100 text-center p-4">
-      <span class="text-right">
+  <footer class="h:50 lg:h-30 text-left relative bottom-0 bg-black">
+    <div class="flex flex-col lg:flex-row text-gray-100 p-4 justify-between w-full">
+      <div class="flex flex-col w-full lg:w-1/3" >
+        <div class="text-left flex flex-row">
+        </div>
+      </div>
+      <div class="flex flex-row justify-start lg:justify-center items-center w-full pt-4 lg:w-1/3 lg:p-0">
+        <.link href="https://github.com/silbermm" target="_blank" class="pr-2">
+          <img src={~p(/images/github-mark-white.svg)} class="w-8 h8" />
+        </.link>
+        <.link href="https://github.com/silbermm" target="_blank" class="pl-2">
+          <img src={~p(/images/mastodon-logo.svg)} class="w-8 h8" />
+        </.link>
+      </div>
+      <div class="py-3 w-full lg:w-1/3 text-left lg:text-right">
         <.button id="dark-mode" phx-hook="ToggleColorMode">Dark</.button>
         <.button id="light-mode" phx-hook="ToggleColorMode">Light</.button>
         <.button id="system-mode" phx-hook="ToggleColorMode">System</.button>
-      </span>
+      </div>
     </div>
   </footer>
 </html>
