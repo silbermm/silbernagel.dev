@@ -5,7 +5,8 @@ config :silbernageldev,
   generators: [binary_id: true],
   rate_limits: %{
     general: 20,
-    gpg_verification: 20
+    gpg_verification: 20,
+    webmentions: 20
   },
   fail2ban_duration_hours: 24
 

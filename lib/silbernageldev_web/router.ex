@@ -12,6 +12,13 @@ defmodule SilbernageldevWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :webmention do
+    plug(:accepts, ["html"])
+    plug SilbernageldevWeb.Plugs.PlugAttack
+    plug(:put_root_layout, html: {SilbernageldevWeb.Layouts, :root})
+    plug(:put_secure_browser_headers)
+  end
+
   pipeline :webfinger do
     plug(:accepts, ["jrd", "json"])
   end
@@ -65,7 +72,12 @@ defmodule SilbernageldevWeb.Router do
   scope "/", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
     get("/gpg/download", GPGController, :download)
-    get("/webmention", WebMentionController, :receive)
+  end
+
+  scope "/", SilbernageldevWeb.Controllers do
+    pipe_through(:webmention)
+
+    post("/webmention", WebMentionController, :receive)
   end
 
   scope "/verify" do

@@ -1,6 +1,7 @@
 defmodule SilbernageldevWeb.Live.BlogLive do
   use SilbernageldevWeb, :blog_live_view
 
+  alias SilbernageldevWeb.Components.Comments
   alias Silbernageldev.Blog
   alias SilbernageldevWeb.Components.Blog.Post
 
@@ -54,6 +55,7 @@ defmodule SilbernageldevWeb.Live.BlogLive do
     <div>
       <%= unless @post == nil do %>
         <Post.show post={@post} />
+        <Comments.info />
       <% else %>
         <Post.list posts={@posts} />
       <% end %>

@@ -26,6 +26,12 @@ defmodule SilbernageldevWeb.Plugs.PlugAttack do
     end
   end
 
+  rule "throttle webmentions", conn do
+    if conn.request_path == "/webmention" do
+      fail2ban({:login, conn.remote_ip}, fail2ban_limit_per_minute(:webmentions))
+    end
+  end
+
   # The most general rule must come last, otherwise it will prevent matching other rules
   rule "throttle generic requests by ip", conn do
     throttle({:ip, conn.remote_ip}, limit_per_minute(:general))
