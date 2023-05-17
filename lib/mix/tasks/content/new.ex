@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Content.New do
   @moduledoc """
   Create new content for the site.
 
-  Pass in the content type you want to create, and properties to set: 
+  Pass in the content type you want to create, and properties to set:
 
   # Valid content-types:
     * post
@@ -11,7 +11,7 @@ defmodule Mix.Tasks.Content.New do
   # Properties:
     * --title         string                 The entry title (required)
     * --author        string                 The author of the entry
-    * --tags          comma seperated string list of tags
+    * --tags          comma separated string The List of tags
     * --description   string                 A description of the entry
     * --draft
 
@@ -55,7 +55,7 @@ defmodule Mix.Tasks.Content.New do
     filename = String.downcase(opts[:title]) |> String.replace(" ", "-")
 
     # write this string to a new file in priv 
-    folder = Path.join(File.cwd!(), "priv/#{content_type}s/#{date.year}")
+    folder = Path.join(File.cwd!(), "priv/content/#{content_type}s/#{date.year}")
     file = Path.join(folder, "#{Calendar.strftime(date, "%m-%d")}-#{filename}.md")
 
     # make sure the folder exists
