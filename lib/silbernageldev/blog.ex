@@ -1,9 +1,7 @@
 defmodule Silbernageldev.Blog do
   @moduledoc false
 
-  alias Silbernageldev.Blog.Peek
   alias Silbernageldev.Blog.Post
-  alias Silbernageldev.Repo
 
   use NimblePublisher,
     build: Post,
@@ -34,22 +32,14 @@ defmodule Silbernageldev.Blog do
       raise NotFoundError, "post with id=#{id} not found"
   end
 
+  def get_post_by_id(id) do
+    Enum.find(all_posts(), &(&1.id == id))
+  end
+
   def get_posts_by_tag!(tag) do
     case Enum.filter(all_posts(), &(tag in &1.tags)) do
       [] -> raise NotFoundError, "posts with tag=#{tag} not found"
       posts -> posts
     end
-  end
-
-  def add_peek(post_title) do
-    peek = Peek.changeset(%Peek{}, %{"post" => post_title, "count" => 49})
-
-    to_run = fn ->
-      Repo.insert(peek)
-    end
-
-    to_run.()
-
-    Repo.replicate(to_run)
   end
 end

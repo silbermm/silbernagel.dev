@@ -27,6 +27,13 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
+# In your config/config.exs file
+config :silbernageldev, WebMentions,
+  adapter: Silbernageldev.WebMentions.Adapters.Local,
+  invalid_source_urls: [
+    
+  ]
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

@@ -114,4 +114,18 @@ defmodule Silbernageldev.WebMentions do
   def hash_post(post) do
     :crypto.hash(:sha512, [post.title, post.description, post.body]) |> Base.encode64()
   end
+
+  @doc """
+  Given a source and target URL validate the webmention and
+  store it in the DB.
+  """
+  def process_webmention(_source, _target) do
+        
+  end
+
+  def valid?(source, target) do
+    adapter = Application.get_env(:silbernageldev, WebMentions)[:adapter]
+    adapter.valid?(source, target)
+  end
+
 end
