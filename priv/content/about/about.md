@@ -2,9 +2,9 @@
   title: "About",
   author: "Matt Silbernagel",
   description: "About Silbernagel.dev",
-  published: "2023-05-16",
+  published: "2023-05-24",
   updated: "",
-  draft: true
+  draft: false
 }
 ---
 ## Who Am I?
@@ -46,7 +46,7 @@ This site is built with Elixir and Phoenix and can be found on [Github](https://
 
 I use the [NimblePublisher](https://hexdocs.pm/nimble_publisher/NimblePublisher.html) library to generate static content like my [Posts](/posts) which are also syndicated in the fediverse at [@silbernagel.dev@silbernagel.dev](https://fed.brid.gy/user/silbernagel.dev) and also available via [RSS](/posts/rss.xml).
 
-Comments and likes are accepted via [WebMentions](https://www.w3.org/TR/webmention/#introduction) and are stored in a [distributed SQLite](/posts/distributed-sqlite-with-elixir) database which is hosted on [Fly.io](https://fly.io) alongside this site.
+<!-- Comments and likes are accepted via [WebMentions](https://www.w3.org/TR/webmention/#introduction) and are stored in a [distributed SQLite](/posts/distributed-sqlite-with-elixir) database which is hosted on [Fly.io](https://fly.io) alongside this site. -->
 
 ---
 
