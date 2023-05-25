@@ -58,7 +58,10 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/silbernageldev_web/(live|views)/.*(ex)$",
-      ~r"lib/silbernageldev_web/templates/.*(eex)$"
+      ~r"lib/silbernageldev_web/templates/.*(eex)$",
+      ~r"posts/*/.*(md)$",
+      ~r"notes/*/.*(md)$",
+      ~r"about/*/.*(md)$",
     ]
   ]
 

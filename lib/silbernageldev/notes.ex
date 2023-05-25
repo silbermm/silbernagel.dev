@@ -7,7 +7,7 @@ defmodule Silbernageldev.Notes do
 
   use NimblePublisher,
     build: Note,
-    from: Application.app_dir(:silbernageldev, "priv/notes/**/*.md"),
+    from: Application.app_dir(:silbernageldev, "priv/content/notes/**/*.md"),
     as: :notes,
     highlighters: [:makeup_elixir, :makeup_erlang, :makeup_html5, :makeup_eex]
 

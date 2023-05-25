@@ -40,6 +40,9 @@ defmodule SilbernageldevWeb.Router do
     live("/tags/:tag_name", Blog.TagsLive, :show)
 
     live("/gpg", GPGLive, :index)
+
+    live("/about", AboutLive, :index)
+
     live("/", HomeLive, :index)
   end
 
