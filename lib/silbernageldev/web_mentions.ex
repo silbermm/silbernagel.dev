@@ -8,21 +8,14 @@ defmodule Silbernageldev.WebMentions do
 
   alias Silbernageldev.Blog.Post
   alias Silbernageldev.Repo
-  alias Silbernageldev.WebMentions.WebMentionSupervisor
   alias Silbernageldev.WebMentions.WebMention
+  alias Silbernageldev.WebMentions.Queue
 
   require Logger
 
   @log_prefix "[WebMentions] | "
 
   trace_all(kind: :internal)
-
-  @doc """
-  Return the spec for the dynamic supervisor for web mentions
-  """
-  def supervisor_spec() do
-    WebMentionSupervisor.child_spec([])
-  end
 
   def change(changeset, params) do
     Ecto.Changeset.change(changeset, params)
@@ -116,16 +109,12 @@ defmodule Silbernageldev.WebMentions do
   end
 
   @doc """
-  Given a source and target URL validate the webmention and
-  store it in the DB.
+  Given a source and target URL queue the request
   """
-  def process_webmention(_source, _target) do
-        
-  end
+  def queue_webmention_request(source, target), do: Queue.add(source, target)
 
   def valid?(source, target) do
     adapter = Application.get_env(:silbernageldev, WebMentions)[:adapter]
     adapter.valid?(source, target)
   end
-
 end

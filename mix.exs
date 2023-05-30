@@ -71,7 +71,8 @@ defmodule Silbernageldev.MixProject do
       {:opentelemetry_phoenix, "~> 1.0"},
       {:opentelemetry_cowboy, "~> 0.2"},
       {:prom_ex, "~> 1.8"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:uuid, "~> 1.1"}
     ]
   end
 

@@ -14,7 +14,7 @@ defmodule SilbernageldevWeb.Controllers.WebMentionController do
     # validate that target is a valid resource that accepts webmentions
     with true <- valid_url?(source),
          entity when not is_nil(entity) <- valid_target_entity(target),
-         _ <- queue_for_processing() do
+         _ <- WebMentions.queue_webmention_request(source, target) do
       send_resp(conn, :created, "")
     else
       _e -> send_resp(conn, 400, "Invalid source or target url(s)")
@@ -49,5 +49,8 @@ defmodule SilbernageldevWeb.Controllers.WebMentionController do
          parsed_url.host =~ "." do
       Blog.get_post_by_id(String.trim_leading(path, "/posts/"))
     end
+  end
+
+  defp queue_for_processing() do
   end
 end

@@ -1,4 +1,4 @@
-defmodule Silbernageldev.WebMentions.WebMentionSupervisor do
+defmodule Silbernageldev.WebMentions.SenderSupervisor do
   @moduledoc false
   use DynamicSupervisor
 
@@ -16,6 +16,10 @@ defmodule Silbernageldev.WebMentions.WebMentionSupervisor do
     # already written via Tasks
     send_web_mentions()
     DynamicSupervisor.init(strategy: :one_for_one)
+  end
+
+  def queue_webmention_for_processing() do
+     
   end
 
   def send_web_mentions() do

@@ -9,7 +9,11 @@ defmodule Silbernageldev.Application do
 
     otel_setup()
 
-    children = children()
+    children =
+      children() ++
+        [
+          Silbernageldev.WebMentions.Supervisor.child_spec([])
+        ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
     Supervisor.start_link(children, opts)
@@ -25,7 +29,7 @@ defmodule Silbernageldev.Application do
       children() ++
         [
           {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
-          Silbernageldev.WebMentions.supervisor_spec()
+          Silbernageldev.WebMentions.Supervisor.child_spec([])
         ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]
