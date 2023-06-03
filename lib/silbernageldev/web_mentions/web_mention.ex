@@ -4,6 +4,8 @@ defmodule Silbernageldev.WebMentions.WebMention do
 
   alias __MODULE__
 
+  @type t :: %{}
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "web_mentions" do

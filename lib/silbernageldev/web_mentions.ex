@@ -6,7 +6,7 @@ defmodule Silbernageldev.WebMentions do
 
   use Silbernageldev.OpenTelemetry
 
-  alias SilbernageldevWeb.Components.Blog.Post
+  alias Silbernageldev.Blog.Post
   alias Silbernageldev.Repo
   alias Silbernageldev.WebMentions.WebMentionSupervisor
   alias Silbernageldev.WebMentions.WebMention
