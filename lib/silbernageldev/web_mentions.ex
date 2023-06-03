@@ -111,6 +111,7 @@ defmodule Silbernageldev.WebMentions do
   @doc """
   Given a source and target URL queue the request
   """
+  @spec queue_webmention_request(binary(), binary()) :: {:ok, map()}
   def queue_webmention_request(source, target), do: Queue.add(source, target)
 
   def valid?(source, target) do

@@ -14,9 +14,12 @@ defmodule SilbernageldevWeb.Controllers.WebMentionController do
     # validate that target is a valid resource that accepts webmentions
     with true <- valid_url?(source),
          entity when not is_nil(entity) <- valid_target_entity(target),
-         _ <- WebMentions.queue_webmention_request(source, target) do
-      send_resp(conn, :created, "")
+         {:ok, data} <- WebMentions.queue_webmention_request(source, target) do
+      conn
+      |> put_status(201)
+      |> json(%{id: data.id})
     else
+      {:error, :already_queued} -> send_resp(conn, 429, "Already queued")
       _e -> send_resp(conn, 400, "Invalid source or target url(s)")
     end
 
@@ -31,7 +34,7 @@ defmodule SilbernageldevWeb.Controllers.WebMentionController do
 
   defp valid_url?(url) do
     uri = URI.parse(url)
-    String.starts_with?(uri.scheme, "http") && uri.host =~ "."
+    String.starts_with?(uri.scheme, "http")
   end
 
   defp valid_target_entity(url) do
@@ -41,16 +44,13 @@ defmodule SilbernageldevWeb.Controllers.WebMentionController do
       Application.get_env(:silbernageldev, SilbernageldevWeb.Endpoint)[:url][:scheme] || "http"
 
     configured_uri = configured_scheme <> "://" <> configured_url
+
     parsed_url = URI.parse(url)
 
     path = parsed_url.path
 
-    if String.starts_with?(path, "/posts/") && String.starts_with?(url, configured_uri) &&
-         parsed_url.host =~ "." do
+    if String.starts_with?(path, "/posts/") && String.starts_with?(url, configured_uri) do
       Blog.get_post_by_id(String.trim_leading(path, "/posts/"))
     end
-  end
-
-  defp queue_for_processing() do
   end
 end

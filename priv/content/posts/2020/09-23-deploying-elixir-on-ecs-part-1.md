@@ -7,7 +7,7 @@
 ---
 
 * **Part 1 - using Terraform to describe and build the infrastructure**
-* [Part 2 - building and deploying a docker image to ECS](/posts/deploying-elixir-on-ecs-part-2)
+* [Part 2 - building and deploying a docker image to ECS](http://localhost:4000/posts/deploying-elixir-on-ecs-part-2)
 * [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster](/posts/deploying-elixir-on-ecs-part-3)
 
 I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
