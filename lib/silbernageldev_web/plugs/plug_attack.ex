@@ -32,7 +32,6 @@ defmodule SilbernageldevWeb.Plugs.PlugAttack do
   end
 
   defp verification_request?(conn) do
-    # TODO: Provide your own implementation
     conn.request_path == "/verify"
   end
 

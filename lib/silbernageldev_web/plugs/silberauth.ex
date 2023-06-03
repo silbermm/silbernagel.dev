@@ -1,7 +1,5 @@
 defmodule SilbernageldevWeb.Plugs.Silberauth do
-  @moduledoc """
-  # TODO:
-  """
+  @moduledoc false
   use GenServer
   use PlugGPGVerify
   use Silbernageldev.OpenTelemetry
@@ -55,7 +53,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   @impl GenServer
   def handle_call({:find_user_by_id, id}, _from, state) do
     res = Enum.find(state, &(&1.id == id))
-    # TODO: More checks here - particularly expiration of the challenge
+    # @TODO: More checks here - particularly expiration of the challenge
     case res do
       nil ->
         {:reply, {:error, :invalid}, state}

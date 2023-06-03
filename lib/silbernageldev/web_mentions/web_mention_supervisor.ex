@@ -1,4 +1,5 @@
 defmodule Silbernageldev.WebMentions.WebMentionSupervisor do
+  @moduledoc false
   use DynamicSupervisor
 
   alias Silbernageldev.Blog

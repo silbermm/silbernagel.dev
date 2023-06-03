@@ -1,4 +1,5 @@
 defmodule Silbernageldev.About do
+  @moduledoc false
   alias Silbernageldev.About.Content
 
   use NimblePublisher,

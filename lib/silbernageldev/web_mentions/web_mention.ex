@@ -1,4 +1,5 @@
 defmodule Silbernageldev.WebMentions.WebMention do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,6 +1,5 @@
 defmodule Silbernageldev.PromEx do
-  @moduledoc """
-  """
+  @moduledoc false
   use PromEx, otp_app: :silbernageldev
 
   alias PromEx.Plugins

@@ -1,4 +1,6 @@
 defmodule SilbernageldevWeb.Plugs.Authenticated do
+  @moduledoc false
+
   import Plug.Conn
 
   def init(opts), do: opts
