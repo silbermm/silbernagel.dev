@@ -6,7 +6,7 @@ defmodule SilbernageldevWeb.Plugs.Silberauth do
   use PlugGPGVerify
   use Silbernageldev.OpenTelemetry
 
-  trace_all kind: :internal
+  trace_all(kind: :internal)
 
   # my user with a generated uuid
   @users [

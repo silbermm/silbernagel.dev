@@ -21,10 +21,11 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() == :prod do
-  otel_auth = System.get_env("OTEL_AUTH") ||
-    raise """
-    OTEL_AUTH is a required variable
-    """
+  otel_auth =
+    System.get_env("OTEL_AUTH") ||
+      raise """
+      OTEL_AUTH is a required variable
+      """
 
   config :opentelemetry_exporter,
     otlp_protocol: :grpc,
