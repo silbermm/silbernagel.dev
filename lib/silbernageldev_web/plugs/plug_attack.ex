@@ -6,7 +6,7 @@ defmodule SilbernageldevWeb.Plugs.PlugAttack do
   use PlugAttack
   use Silbernageldev.OpenTelemetry
 
-  trace_all kind: :internal
+  trace_all(kind: :internal)
 
   @storage_name SilbernageldevWeb.PlugAttack.Storage
   def storage_name, do: @storage_name
@@ -32,7 +32,6 @@ defmodule SilbernageldevWeb.Plugs.PlugAttack do
   end
 
   defp verification_request?(conn) do
-    # TODO: Provide your own implementation
     conn.request_path == "/verify"
   end
 

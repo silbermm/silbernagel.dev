@@ -170,7 +170,11 @@ defmodule Silbernageldev.OpenTelemetry do
                 result
               rescue
                 exception ->
-                  Silbernageldev.OpenTelemetry.__record_errors__(exception, unquote(record_errors))
+                  Silbernageldev.OpenTelemetry.__record_errors__(
+                    exception,
+                    unquote(record_errors)
+                  )
+
                   reraise exception, __STACKTRACE__
               end
             end

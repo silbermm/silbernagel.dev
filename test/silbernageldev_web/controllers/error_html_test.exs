@@ -5,7 +5,8 @@ defmodule SilbernageldevWeb.ErrorHTMLTest do
   import Phoenix.Template
 
   test "renders 404.html" do
-    assert render_to_string(SilbernageldevWeb.ErrorHTML, "404", "html", []) == "Not Found"
+    assert render_to_string(SilbernageldevWeb.ErrorHTML, "404", "html", []) =~
+             "I'm not sure what you're looking for"
   end
 
   test "renders 500.html" do

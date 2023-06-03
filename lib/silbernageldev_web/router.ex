@@ -29,7 +29,7 @@ defmodule SilbernageldevWeb.Router do
   scope "/", SilbernageldevWeb.Controllers do
     get("/posts/rss.xml", RssController, :index)
   end
- 
+
   scope "/", SilbernageldevWeb.Live do
     pipe_through(:browser)
 

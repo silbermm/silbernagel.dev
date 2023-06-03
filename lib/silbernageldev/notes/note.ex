@@ -1,4 +1,6 @@
 defmodule Silbernageldev.Notes.Note do
+  @moduledoc false
+
   @enforce_keys [:author, :body, :datetime]
   defstruct [:author, :body, :tags, :datetime, :draft, :reply_to]
 

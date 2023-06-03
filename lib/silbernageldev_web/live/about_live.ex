@@ -27,15 +27,11 @@ defmodule SilbernageldevWeb.Live.AboutLive do
         <header>
           <h2 class="p-name">
             <.link navigate={~p"/about"} class="u-url">
-              <%= @content.title %> 
+              <%= @content.title %>
             </.link>
           </h2>
           <div class="u-author h-card hidden">
-            <img
-              src={~p"/images/avatar.jpg"}
-              class="u-photo"
-              width="40"
-            />
+            <img src={~p"/images/avatar.jpg"} class="u-photo" width="40" />
             <a href={~p"/"} class="u-url p-name">
               Matt Silbernagel
             </a>

@@ -18,8 +18,6 @@ defmodule Silbernageldev.Notes do
          |> then(fn notes ->
            unless Mix.env() == :dev do
              Enum.reject(notes, &Map.get(&1, :draft, false))
-           else
-             notes
            end
          end)
 

@@ -145,12 +145,9 @@ defmodule Silbernageldev.WebMentions.WebMentionSender do
         links_with_webmention
         |> Enum.concat(a_with_webmention)
         |> Floki.attribute("href")
-        |> Enum.map(fn l ->
-          if String.starts_with?(l, "/") do
-            orig_link <> l
-          else
-            l
-          end
+        |> Enum.map(fn
+          "/" <> rest -> orig_link <> "/" <> rest
+          link -> link
         end)
 
       {:error, reason} ->

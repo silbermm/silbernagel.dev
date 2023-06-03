@@ -1,4 +1,16 @@
 defmodule Silbernageldev.Blog.Post do
+  @moduledoc false
+
+  @type t :: %{
+          id: binary(),
+          author: binary(),
+          title: binary(),
+          body: binary(),
+          description: binary(),
+          tags: binary(),
+          date: Date.t()
+        }
+
   @enforce_keys [:id, :author, :title, :body, :description, :tags, :date]
   defstruct [:id, :author, :title, :body, :description, :tags, :date, :draft, :reply_to]
 

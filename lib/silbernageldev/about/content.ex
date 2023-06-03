@@ -1,4 +1,5 @@
 defmodule Silbernageldev.About.Content do
+  @moduledoc false
   @enforce_keys [:author, :title, :body, :description, :published]
   defstruct [:author, :title, :body, :description, :published, :draft, :updated]
 

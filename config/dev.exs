@@ -61,7 +61,7 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
       ~r"lib/silbernageldev_web/templates/.*(eex)$",
       ~r"posts/*/.*(md)$",
       ~r"notes/*/.*(md)$",
-      ~r"about/*/.*(md)$",
+      ~r"about/*/.*(md)$"
     ]
   ]
 

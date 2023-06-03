@@ -1,4 +1,6 @@
 defmodule SilbernageldevWeb.Components.Blog.Post do
+  @moduledoc false
+
   use Phoenix.Component
   alias SilbernageldevWeb.Router.Helpers, as: Routes
   import Phoenix.HTML, only: [raw: 1]

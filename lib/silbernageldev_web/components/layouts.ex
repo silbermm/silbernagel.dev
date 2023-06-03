@@ -1,4 +1,6 @@
 defmodule SilbernageldevWeb.Layouts do
+  @moduledoc false
+
   use SilbernageldevWeb, :html
 
   embed_templates "./layouts/*"
