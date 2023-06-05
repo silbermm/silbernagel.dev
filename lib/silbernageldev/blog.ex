@@ -15,6 +15,8 @@ defmodule Silbernageldev.Blog do
          |> then(fn posts ->
            unless Mix.env() == :dev do
              Enum.reject(posts, &Map.get(&1, :draft, false))
+           else
+             posts
            end
          end)
 
