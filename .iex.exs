@@ -1,0 +1,2 @@
+alias Silbernageldev.WebMentions
+alias Silbernageldev.WebMentions.Queue

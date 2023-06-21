@@ -18,10 +18,6 @@ defmodule Silbernageldev.WebMentions.SenderSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def queue_webmention_for_processing() do
-     
-  end
-
   def send_web_mentions() do
     Enum.map(Blog.all_posts(), &send_web_mentions_for/1)
   end
