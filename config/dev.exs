@@ -27,6 +27,13 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
+# configures libmention
+config :silbernageldev, :libmention,
+  outgoing: [
+    proxy: [port: 8082],
+    storage: Silbernageldev.WebMentions.WebMentionStorage
+  ]
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

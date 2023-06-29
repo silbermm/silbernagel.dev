@@ -15,7 +15,9 @@ defmodule Silbernageldev.Blog do
   # Let's further modify it by sorting all posts by descending date.
   @posts Enum.sort_by(@posts, & &1.date, {:desc, Date})
          |> then(fn posts ->
-           unless Mix.env() == :dev do
+           if Mix.env() == :dev do
+             posts
+           else
              Enum.reject(posts, &Map.get(&1, :draft, false))
            end
          end)

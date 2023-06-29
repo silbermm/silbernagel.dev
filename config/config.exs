@@ -20,6 +20,9 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
   pubsub_server: Silbernageldev.PubSub,
   live_view: [signing_salt: "yeNIpo46"]
 
+# configures libmention
+config :silbernageldev, :libmention, outgoing: []
+
 config :tailwind,
   version: "3.1.6",
   default: [
