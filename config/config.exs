@@ -21,7 +21,10 @@ config :silbernageldev, SilbernageldevWeb.Endpoint,
   live_view: [signing_salt: "yeNIpo46"]
 
 # configures libmention
-config :silbernageldev, :libmention, outgoing: []
+config :silbernageldev, :libmention,
+  outgoing: [
+    storage: Silbernageldev.WebMentions.WebMentionStorage
+  ]
 
 config :tailwind,
   version: "3.1.6",

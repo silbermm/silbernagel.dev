@@ -1,4 +1,7 @@
 defmodule Silbernageldev.WebMentions.WebMentionStorage do
+  @moduledoc """
+  Store the results of sending webmentions
+  """
   @behaviour Libmention.StorageApi
 
   import Ecto.Query
