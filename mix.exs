@@ -38,7 +38,7 @@ defmodule Silbernageldev.MixProject do
       {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 0.18.16"},
-      {:floki, ">= 0.30.0"},
+      {:floki, ">= 0.30.3"},
       {:phoenix_live_dashboard, "~> 0.7"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -54,12 +54,11 @@ defmodule Silbernageldev.MixProject do
       {:makeup_html, ">= 0.0.0"},
       {:libcluster, "~> 3.3"},
       {:tailwind, "~> 0.1.6", runtime: Mix.env() == :dev},
-      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:heroicons, "~> 0.5"},
       {:etag_plug, "~> 1.0"},
       {:req, "~> 0.3.4"},
       {:gpgmex, "~> 0.0.10"},
-      {:diceware, "~> 0.2.8"},
+      {:libmention, "~> 0.1.4"},
       {:plug_gpg_verify, "~> 0.1.0"},
       {:plug_attack, "~> 0.4.2"},
       {:logger_json, "~> 5.1"},
@@ -71,6 +70,7 @@ defmodule Silbernageldev.MixProject do
       {:opentelemetry_phoenix, "~> 1.0"},
       {:opentelemetry_cowboy, "~> 0.2"},
       {:prom_ex, "~> 1.8"},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
