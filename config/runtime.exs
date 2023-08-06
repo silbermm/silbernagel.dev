@@ -89,6 +89,20 @@ if config_env() == :prod do
       ]
     ]
 
+  cert =
+    System.get_env("ORBIT_CERTIFICATE") ||
+      raise "CERTIFICATE not available"
+
+  key = System.get_env("ORBIT_KEY") ||
+      raise "KEY not available"
+
+  config :silbernageldev, :orbit, {
+    Orbit.Capsule,
+    endpoint: SilbernageldevGem.Router,
+    cert_pem: cert,
+    key_pem: key
+  }
+
   # ## Configuring the mailer
   #
   # In production you need to configure the mailer to use a different adapter.

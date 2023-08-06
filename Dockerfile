@@ -104,15 +104,15 @@ RUN gpg --import ./silbernagel.asc
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/silbernageldev ./
-COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
+COPY --from=flyio/litefs:0.4 /usr/local/bin/litefs /usr/local/bin/litefs
 COPY litefs.yml /etc/litefs.yml
 
 COPY run.sh /scripts/run.sh
 
 RUN chmod 777 /scripts/run.sh
 
-#CMD ["/scripts/run.sh"]
-ENTRYPOINT litefs mount -- /scripts/run.sh
+CMD ["/scripts/run.sh"]
+#ENTRYPOINT litefs mount -- /scripts/run.sh
 
 # Appended by flyctl
 ENV ECTO_IPV6 true

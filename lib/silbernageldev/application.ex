@@ -11,6 +11,8 @@ defmodule Silbernageldev.Application do
     topologies = Application.get_env(:libcluster, :topologies) || []
     libmention_opts = Application.get_env(:silbernageldev, :libmention) || []
 
+    orbit = Application.get_env(:silbernageldev, :orbit)
+
     children = [
       Silbernageldev.Repo,
       Silbernageldev.PromEx,
@@ -23,7 +25,8 @@ defmodule Silbernageldev.Application do
       SilbernageldevWeb.Plugs.Silberauth,
       {Libmention.Supervisor, libmention_opts},
       {Silbernageldev.WebMentions.WebMentionSender, :posts},
-      {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]}
+      {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
+      orbit
     ]
 
     opts = [strategy: :one_for_one, name: Silbernageldev.Supervisor]

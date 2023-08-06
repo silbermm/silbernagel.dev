@@ -69,6 +69,7 @@ defmodule Silbernageldev.MixProject do
       {:opentelemetry_liveview, "~> 1.0.0-rc.4"},
       {:opentelemetry_phoenix, "~> 1.0"},
       {:opentelemetry_cowboy, "~> 0.2"},
+      {:orbit, "~> 0.2.1"},
       {:prom_ex, "~> 1.8"},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}

@@ -46,6 +46,13 @@ config :logger_json, :backend,
   json_encoder: Jason,
   formatter: LoggerJSON.Formatters.BasicLogger
 
+config :silbernageldev, :orbit, {
+  Orbit.Capsule,
+  endpoint: SilbernageldevGem.Router,
+  certfile: Path.join(["priv", "tls", "localhost.pem"]),
+  keyfile: Path.join(["priv", "tls", "localhost-key.pem"])
+}
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails
