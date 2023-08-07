@@ -1,5 +1,1 @@
-# My Awesome Application
-
 <%= @inner_content %>
-
-© 2023 Gemini Astronaut

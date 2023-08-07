@@ -61,6 +61,7 @@ defmodule Silbernageldev.MixProject do
       {:libmention, "~> 0.1.4"},
       {:plug_gpg_verify, "~> 0.1.0"},
       {:plug_attack, "~> 0.4.2"},
+      {:rambo, "~> 0.3.0"},
       {:logger_json, "~> 5.1"},
       {:opentelemetry_exporter, "~> 1.0"},
       {:opentelemetry, "~> 1.0"},

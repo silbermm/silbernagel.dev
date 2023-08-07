@@ -9,6 +9,9 @@ config :silbernageldev,
   },
   fail2ban_duration_hours: 24
 
+config :silbernageldev,
+  gemini_host: "localhost"
+
 # Configures the endpoint
 config :silbernageldev, SilbernageldevWeb.Endpoint,
   url: [host: "silbernagel.dev"],

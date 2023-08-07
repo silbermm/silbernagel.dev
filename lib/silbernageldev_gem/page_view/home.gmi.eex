@@ -1,1 +1,36 @@
-Hello, <%= @name %>! 🌎🌍🌏
+# ahappydeath
+
+```
+               dxxxd
+              ;xdll.
+          cxxxx     ,dxxd,
+          xxxxo     xxxxxx
+      oodx.    'ooodl    'xxoo.
+     'xxxx     ;xxxxo     xxxx.
+ ,,,:xxxxxd,,,      dd,,,
+:xxxxxxxxxxxxxd     .xxxx      lxxx.
+'xxxxxxxxxxxxx.      ...ld'..    .
+     ,xxxx.     llll     cxxxx;
+     .xxxx.    .xxxx'    oxxxx:
+          dc:::     looodo
+          cxxxx     :xxxxc
+              ,d,''.
+               dxxxd
+```
+
+## About Me
+
+I live in the United States (Cincinnati, OH) and I’m a Software Engineer happily writing Elixir for my day job and my hobby projects.
+
+I mostly write about technologies I’m exploring and lessons I’ve learned in hopes that I can help reduce barriers for anyone else struggling with similar problems or exploring similar ideas.
+
+You can find me in the FediVerse or at my https site.
+
+=> https://freeradical.zone/@ahappydeath Fediverse @ahappydeath@freeradical.zone
+=> https://silbernagel.dev http site
+
+## Links
+
+=> <%= @base_url %>/public_key/ My Public Key
+=> <%= @base_url %>/gemlog/ Gemlog
+

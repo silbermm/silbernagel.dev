@@ -6,7 +6,10 @@ defmodule SilbernageldevGem.Router do
 
   pipe {Orbit.Controller, :push_layout}, {LayoutView, :main}
 
-  route "/static/*path", Orbit.Static, from: "priv/static"
-
   route "/", PageController, :home
+  route "/public_key", PageController, :public_key
+  route "/gemlog", PageController, :gemlog
+  route "/gemlog/:post_id", PageController, :gemlog_post
+
+  route "/*path", Orbit.Static, from: "priv/static"
 end

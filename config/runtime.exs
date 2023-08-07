@@ -60,6 +60,9 @@ if config_env() == :prod do
   host = System.get_env("PHX_HOST") || "silbernagel.dev"
   port = String.to_integer(System.get_env("PORT") || "4000")
 
+  config :silbernageldev,
+    gemini_host: host
+
   config :silbernageldev, SilbernageldevWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
@@ -93,14 +96,13 @@ if config_env() == :prod do
     System.get_env("ORBIT_CERTIFICATE") ||
       raise "CERTIFICATE not available"
 
-  key = System.get_env("ORBIT_KEY") ||
+  key =
+    System.get_env("ORBIT_KEY") ||
       raise "KEY not available"
 
   config :silbernageldev, :orbit, {
     Orbit.Capsule,
-    endpoint: SilbernageldevGem.Router,
-    cert_pem: cert,
-    key_pem: key
+    endpoint: SilbernageldevGem.Router, cert_pem: cert, key_pem: key
   }
 
   # ## Configuring the mailer
