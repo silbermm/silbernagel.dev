@@ -1,0 +1,8 @@
+# My Gemlog
+
+<%= for post <- @posts do %>
+=> <%= @base_url %>/gemlog/<%= post.id %> 🗒<%= post.title %>
+<%= post.description %>
+<%= Calendar.strftime(post.date, "%a, %B %d %Y") %>
+<% end %>
+

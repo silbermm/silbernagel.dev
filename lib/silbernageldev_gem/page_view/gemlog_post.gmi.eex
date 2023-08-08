@@ -1,0 +1,4 @@
+# <%= @post.title %>
+Posted on <%= Calendar.strftime(@post.date, "%a, %B %d %Y") %>
+
+<%= @post.gemtext %>

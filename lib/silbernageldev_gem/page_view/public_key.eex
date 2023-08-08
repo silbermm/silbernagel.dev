@@ -1,4 +1,4 @@
-=> <%= @base_url %>/Home
+# My PGP Public Key
 
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -74,3 +74,4 @@ uu+EJTPSaBSUYgF0Cqvsgwhe
 =qLKS
 -----END PGP PUBLIC KEY BLOCK-----
 ```
+

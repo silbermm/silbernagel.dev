@@ -12,9 +12,9 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.13.4-erlang-25.0.2-debian-bullseye-20210902-slim
 #
-ARG ELIXIR_VERSION=1.14.0
-ARG OTP_VERSION=25.1
-ARG DEBIAN_VERSION=bullseye-20220801-slim
+ARG ELIXIR_VERSION=1.14.5
+ARG OTP_VERSION=25.3.2.5
+ARG DEBIAN_VERSION=bookworm-20230612-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
@@ -22,12 +22,15 @@ ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 FROM ${BUILDER_IMAGE} as builder
 
 # install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git gpg libgpgme-dev curl pkg-config \
+RUN apt-get update -y && apt-get install -y build-essential git gpg libgpgme-dev curl pkg-config golang sed \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
+
+
+RUN /bin/bash -c 'git clone https://git.sr.ht/~kota/gemgen && cd gemgen && make install'
 
 # prepare build dir
 WORKDIR /app

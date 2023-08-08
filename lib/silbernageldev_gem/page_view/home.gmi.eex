@@ -1,5 +1,3 @@
-# ahappydeath
-
 ```
                dxxxd
               ;xdll.
@@ -18,6 +16,9 @@
                dxxxd
 ```
 
+=> <%= @base_url %>/gemlog/ 💎 Gemlog
+=> <%= @base_url %>/public_key/ 🔑 My Public Key
+
 ## About Me
 
 I live in the United States (Cincinnati, OH) and I’m a Software Engineer happily writing Elixir for my day job and my hobby projects.
@@ -27,10 +28,48 @@ I mostly write about technologies I’m exploring and lessons I’ve learned in 
 You can find me in the FediVerse or at my https site.
 
 => https://freeradical.zone/@ahappydeath Fediverse @ahappydeath@freeradical.zone
-=> https://silbernagel.dev http site
+=> https://silbernagel.dev https://silbernagel.dev
 
-## Links
+## What I'm up to
 
-=> <%= @base_url %>/public_key/ My Public Key
-=> <%= @base_url %>/gemlog/ Gemlog
+Interests currently include:
+* Elixir, Rust, and Zig
+* Free/Libre Open Source software
+* Building local-first and decentralized software (**NOT** web3 or crypto) using Open Protocols
+* The Indie Web && Gemini
+
+=> https://www.inkandswitch.com/local-first/ 💻 Local-first Software
+=> https://indieweb.org/ 🕸 The Indie Web
+
+## My Setup
+
+=> https://system76.com/laptops/lemur Laptop :: System76 Lemur Pro
+=> https://pop.system76.com/ OS :: Pop!_OS
+=> https://neovim.io/ Editor :: Neovim
+=> https://ohmyz.sh/ Shell :: zsh
+=> https://alacritty.org/ 󠀾Terminal Emulator ::  Alacritty
+=> https://github.com/silbermm/dotfiles My dot files
+
+
+## How this site is built
+
+=> https://github.com/silbermm/silbernagel.dev This site is built with Elixir and can be found Github.
+
+I use the NimblePublisher library to generate static content like my Posts which are also syndicated in the fediverse, available via Gemini or via RSS.
+
+=> https://hexdocs.pm/nimble_publisher/NimblePublisher.html The NimblePublisher Library
+=> https://fed.brid.gy/user/silbernagel.dev Follow in the Fediverse at @silbernagel.dev@silbernagel.dev
+=> gemini://silbernagel.dev My Gemini Capsule
+=> https://silbernagel.dev/posts/rss.xml Subscribe to the RSS feed
+
+
+## Support
+
+If you enjoy any of my work or writings and have the means to give back, please consider dontating to your local NO KILL animal shelter or LGBTQ+ charity.
+
+Here are a few that are close to my heart:
+
+=> https://cincinnatianimalcare.org/ Cincinnati Animal Care
+=> https://www.glsen.org/chapter/greater-cincinnati Cincinnati GLSEN Chapter
+=> https://www.pflagcincinnati.org/ Cincinnati PFLAG Chapter
 

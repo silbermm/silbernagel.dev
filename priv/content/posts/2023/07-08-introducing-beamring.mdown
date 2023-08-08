@@ -7,25 +7,31 @@
 }
 ---
 
-Today I released a new project, [Beamring](https://beamring.io). It's a simple implementation of a [webring](https://en.wikipedia.org/wiki/Webring) built on the BEAM and for the BEAM community.
+Today I released a new open-source project, Beamring. It's a simple implementation of a webring built on the BEAM for the BEAM community.
 
-The source code can be [found on github](https://github.com/silbermm/beamring).
+[The Beamring site](https://beamring.io)
+
+[Introduction to Webrings](https://en.wikipedia.org/wiki/Webring)
+
+[The Source code](https://github.com/silbermm/beamring)
 
 ## Why?
 
-Before there were the big social media networks, discovery on the web was hard. Webrings were formed as a way to link similar content sites together and provided a way for people to find the content they wanted.
+Before there was reliable search engines or big social media networks, discovery on the web was hard. Webrings were formed as a way to link similar content sites together and provided a way for people to find the content they wanted. 
 
-As the walled gardens (facebook, twitter and reddit) are falling apart, the [indieweb](https://indieweb.org/) has a chance to flourish and webrings could prove to be useful once again. 
+As the walled gardens (Facebook, Twitter and Reddit) are falling apart and big search engines are less and less trustworthy, the Indieweb has a chance to flourish and webrings could prove to be useful once again. 
 
-Plus, it's fun to build small projects with a singular focus.
+[The Indieweb](https://indieweb.org/) 
 
 ## Can my site be added?
 
 I'm glad you asked!
 
-If you have a site that you feel should be added to beamring, there are two steps to take.
+If you have a site that you feel should be added to Beamring, there are two steps to take.
 
-1. First you'll need to add a small code snippet to your site, something similar to the following:
+### Step One
+First you'll need to add a small code snippet to your site, something similar to the following:
+
 ```html
 <div>
     <p>
@@ -35,14 +41,21 @@ If you have a site that you feel should be added to beamring, there are two step
     </p>
 </div>
 ```
-This is what makes the webring work. Each site does this and the links will redirect the visitor to the next or previous site in the ring.
 
-2. Fill out [this github issue](https://github.com/silbermm/beamring/issues/new?assignees=silbermm&labels=new&projects=&template=add_site.yml&title=%5BAdd%5D%3A+) with your sites information. Once I've validated that the markup is on your site and your site is somehow related to the BEAM, you'll be added.
+This is what makes the webring work. Each site that is part of the ring does this and the links will redirect the visitor to the next or previous site in the ring.
+
+### Step Two
+[Fill out this github issue](https://github.com/silbermm/beamring/issues/new?assignees=silbermm&labels=new&projects=&template=add_site.yml&title=%5BAdd%5D%3A+) 
+
+Use that link to request being added and once I've validated that the above markup is on your site, you'll be added.
 
 ## Whats Next
 
-I don't have much else planned for this tiny project, but am always happy to take feature requests on [github](https://github.com/silbermm/beamring/issues).
+I don't have much else planned for this tiny project, but am always happy to take feature requests. 
 
-Go forth and explore the [indieweb](https://indieweb.org/Getting_Started)
+[Create a github issue for feature requests](https://github.com/silbermm/beamring/issues).
+
+
+[Go forth and explore the Indieweb](https://indieweb.org/Getting_Started)
 
 [](https://fed.brid.gy/)
