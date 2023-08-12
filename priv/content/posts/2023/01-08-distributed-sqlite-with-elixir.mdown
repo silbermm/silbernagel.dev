@@ -7,26 +7,28 @@
 }
 ---
 
-I recently read about [litestream](https://litestream.io/) and wanted to try this on [Fly](https://fly.io) with [Elixir](https://elixir-lang.org/).
+I recently read about a newer SQLite database tool called Litestream which creates backups of the database in S3 compatible storage after every transaction. It will also restore from that backup, so when scaling horizontally to a new server, the latest version of the DB can be restored. Fly.io seems like the ideal platform and Elixir the perfect language for this type of a solution.
 
-[Litestream](https://litestream.io/) allows us to backup our SQLite database to any S3 compatible storage after every transaction. It will also restore from that backup. Meaning that anytime we scale our app on Fly, we can restore the latest version of the database.
+[Check out Litestream](https://litestream.io/)
+
+[Check out Fly.io](https://fly.io)
 
 ## Why
-* **fast** data access
-* **simple** local development
-* **low** maintenance
-* Elixir makes it all possible via it's distribution capabilities
+* **fast** data access because the SQLite DB will be on the same server as the application, and with Fly, the application can be close to the user
+* **simple** local development - with SQLite, DB servers DO NOT need to be installed locally
+* **low** maintenance  - SQLite doesn't require much maintenance
+* **highly** distributed - Elixir makes it all possible via it's distribution capabilities
 
 ## Getting Started
 
-See the [companion repo](https://github.com/silbermm/distributed_sqlite) for reference.
+[See the companion Repo for reference](https://github.com/silbermm/distributed_sqlite)
 
-Create a new phoenix app that uses [SQLite3](https://github.com/elixir-sqlite/ecto_sqlite3) as the database:
+Create a new phoenix app that uses SQLite as the database:
 ```bash
 $ mix phx.new distributed_sqlite --database sqlite3
 ```
 
-Launch a new fly application:
+Launch it as a new fly application:
 
 ```bash
 $ fly launch
@@ -37,7 +39,7 @@ $ fly launch
 * choose **N** when asked if you want a Redis instance
 * choose **N** to deploy now
 
-An environment varilable `DATABASE_PATH` is needed to indicate which file to use for the SQLite database. Open the `fly.toml` file and add `DATABASE_PATH = /app/distributed_sqlite.db` (use any database name you want here) under the `[env]` section and try to deploy.
+An environment variable, `DATABASE_PATH`, is needed to indicate which file to use for the SQLite database. Open the `fly.toml` file and add `DATABASE_PATH = /app/distributed_sqlite.db` (use any database name you want here) under the `[env]` section and try to deploy.
 
 ```bash
 $ flyctl deploy
@@ -102,31 +104,22 @@ Now deploy again using `flyctl deploy` and then browse to your site to validate 
 
 The next problem to deal with is that the database will be wiped on our next deploy since it's using ephemeral storage.
 
-One way to resolve this is to use a persistent volume (which should be done for production apps). But since this post is all about [litestream](https://litestream.io/) lets set that up and see how it helps us here.
+One way to resolve this is to use a persistent volume (which should be done for production apps). But since this post is all about Litestream, so lets set that up and see how can help with this.
 
-The first step is to create a bucket in some S3 compatible storage. I like to use [Digital Ocean spaces](https://www.digitalocean.com/products/spaces) for this, but you can also use AWS if you want. [See litestream docs for more options](https://litestream.io/guides/)
+The first step is to create a bucket in some S3 compatible storage. I like to use Digital Ocean Spaces for this, but you can also use AWS if you want.
 
-You'll need 3 things:
+[See Litestream docs for more options](https://litestream.io/guides/)
+
+[Setup a Digital Ocean space](https://www.digitalocean.com/products/spaces)
+
+When you have your storage setup, you'll need 3 pieces of information
 1. the bucket url
 2. the access key
 3. the secret key
 
+A configuration file, `litestream.yml`, is needed for Litestream to function. Create one in the root of the project with the following text (remember to replace the path with YOUR path):
 
-Next, add litestream to our Docker image. Add the following lines to `Dockerfile` as part of the `builder` phase:
-```
-ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
-RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
-```
-
-And in the `runner` phase add:
-```
-COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
-COPY litestream.yml /etc/litestream.yml
-```
-
-We still need to create the `litestream.yml` file, lets do that now.
-
-```
+```yaml
 access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
 secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
 
@@ -140,6 +133,18 @@ Now set the three variables in Fly to the values you recorded from when setting 
 
 ```
 $ flyctl secrets set REPLICA_URL=... LITESTREAM_ACCESS_KEY_ID=... LITESTREAM_SECRET_ACCESS_KEY=...
+```
+
+Next, add Litestream to our Docker image. Add the following lines to `Dockerfile` as part of the `builder` phase:
+```
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
+```
+
+And in the `runner` phase add:
+```
+COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
+COPY litestream.yml /etc/litestream.yml
 ```
 
 Finally, update the starting script so that the elixir release is a sub-process of litestream. The easiest way I've found to do this is to create a run script called `run.sh` with the following content:
@@ -162,7 +167,7 @@ fi
 exec litestream replicate -exec "/app/bin/server"
 ```
 
-> Be sure to remove the migration script from fly.toml since we it runs in the run.sh script now.
+> Be sure to remove the migration script from fly.toml since it runs in the run.sh script now.
 
 Now update the `Dockerfile` to use this new script to start the app:
 
@@ -173,25 +178,24 @@ RUN chmod 755 /scripts/run.sh
 CMD ["/scripts/run.sh"]
 ```
 
-Deploying should now start using litestream to restore the database on deploys and push backups when data changes. You can verify in the monitoring interface of fly. Look for something similar to the image below:
+Deploying should now start using Litestream to restore the database on deploys and push backups when data changes. You can verify in the monitoring interface of fly. Look for something similar to the image below:
 
-![Fly logs showing that litestream is running](/images/fly-logs.png "Fly Logs")
+![Fly logs showing that Litestream is running](/images/fly-logs.png "Fly Logs")
 
 ## Distributing
 
-With all of this in place, things would work great when running one instance of you app. But as soon as you add another node things get out of wack. 
-
-Lets see this in action -- Scale the app to 2 and see what happens to the data.
+With all of this in place, things would work great when running one instance of you app. But as soon as you add another node things get out of whack. Lets see this in action. Scale the app to 2 and see what happens to the data.
 
 ```
 $ flyctl scale count 2
 ```
 
-Enough refreshing or opening in different browser sessions and you'll start to see discrepencies in the view count. This is because we are not replicating the data between the instances. This is a problem Elixir is built for...
+Enough refreshing the browser or opening in different windows/tabs and you'll start to see discrepancies in the view count. This is because we are not replicating the data between the instances. This is a problem Elixir is built for...
 
-Follow the [Fly guide to Clustering Your Application](https://fly.io/docs/elixir/getting-started/clustering/) to get clustering working correctly.
+### Setup the Cluster
+[Follow the Fly guide to get clustering working correctly](https://fly.io/docs/elixir/getting-started/clustering/)
 
-Once your app is clustered, we can begin to replicate our database calls. Add a new GenServer with the following content:
+Once clustered, we can begin to replicate our database calls. Add a new GenServer with the following content:
 ```elixir
 # /lib/distributed_sqlite/repo_replication.ex
 defmodule DistributedSqlite.RepoReplication do
@@ -309,5 +313,6 @@ With all of this in place, deploy again. Your data should now be consistent no m
 
 I'm not sure how far this can be pushed and there are downsides to this approach, but I plan on continuing this journey that puts my data as close to the application as possible.
 
-There is [another approach](https://fly.io/docs/litefs/) worth exploring that removes the need to replicate the data on the application side. It is still in beta, but I plan on trying it out soon as well.
+There is another worth exploring that removes the need to replicate the data on the application side. It is still in beta, but I plan on trying it out soon as well.
 
+[Another approach - Litefs](https://fly.io/docs/litefs/)

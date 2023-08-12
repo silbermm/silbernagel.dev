@@ -62,13 +62,14 @@ config :silbernageldev, :libmention,
 config :silbernageldev, SilbernageldevWeb.Endpoint,
   live_reload: [
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg/mdown)$",
       ~r"priv/gettext/.*(po)$",
       ~r"lib/silbernageldev_web/(live|views)/.*(ex)$",
       ~r"lib/silbernageldev_web/templates/.*(eex)$",
-      ~r"posts/*/.*(md)$",
-      ~r"notes/*/.*(md)$",
-      ~r"about/*/.*(md)$"
+      ~r"lib/silbernageldev_gem/*/.*(eex)$",
+      ~r"posts/*/.*(mdown)$",
+      ~r"notes/*/.*(mdown)$",
+      ~r"about/*/.*(mdown)$"
     ]
   ]
 
