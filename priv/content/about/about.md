@@ -15,6 +15,8 @@ I use this [IndieWeb](https://indieweb.org/) site to write about technologies I'
 
 You can find me in the FediVerse at [@ahappydeath@freeradical.zone](https://freeradical.zone/@ahappydeath).
 
+The content here is also available via [Gemini](https://gemini.circumlunar.space/) at [gemini://silbernagel.dev/](gemini://silbernagel.dev/).
+
 My GPG public key is available [on this site](/gpg) and via [WKD](https://wiki.gnupg.org/WKD#What_is_a_Web_Key_Directory.3F) 
 
 ---
@@ -25,7 +27,7 @@ Interests currently include:
 * Elixir, Rust, and Zig
 * Free/Libre Open Source software
 * Building [local-first](https://www.inkandswitch.com/local-first/) and decentralized software (**NOT** web3 or crypto) using Open Protocols
-* The [IndieWeb](https://indieweb.org/)
+* The [IndieWeb](https://indieweb.org/) and [the Gemini protocol](https://gemini.circumlunar.space/)
 
 ---
 
