@@ -8,7 +8,7 @@
 ```
 <%= @inner_content %>
 
-## Links
+## My Capsule Links
 => <%= @base_url %>/ 🏠 Home
 => <%= @base_url %>/public_key/ 🔑 My Public Key
 => <%= @base_url %>/gemlog/ 💎 Gemlog
