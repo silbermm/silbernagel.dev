@@ -5,7 +5,7 @@ defmodule Silbernageldev.Repo.Migrations.UpdateWebMentionsTable do
     alter table(:web_mentions) do
       add :source_url, :string
       remove :source_id
-    end 
+    end
 
     rename table(:web_mentions), :url, to: :target_url
   end

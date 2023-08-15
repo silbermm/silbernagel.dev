@@ -5,13 +5,7 @@ defmodule SilbernageldevGem.PageControllerTest do
     test "says hello to the world with no client certificate" do
       req = request("/")
 
-      assert body(req) =~ "Hello, world!"
-    end
-
-    test "says hello to the user with a client certificate" do
-      req = request("/", client_cert: build_client_cert("Bucky"))
-      
-      assert body(req) =~ "Hello, Bucky!"
+      assert body(req) =~ "ahappydeath"
     end
   end
 end

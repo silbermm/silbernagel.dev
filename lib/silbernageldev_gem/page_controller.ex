@@ -35,8 +35,8 @@ defmodule SilbernageldevGem.PageController do
 
   def public_key(req, _params) do
     base_url = "gemini://#{Application.get_env(:silbernageldev, :gemini_host)}"
-    #response = _public_key(base_url: base_url)
-    #gmi(req, response)
+    # response = _public_key(base_url: base_url)
+    # gmi(req, response)
 
     req
     |> assign(base_url: base_url)

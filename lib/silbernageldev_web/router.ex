@@ -63,7 +63,8 @@ defmodule SilbernageldevWeb.Router do
     get("/hu/:localpart", GPGController, :binary_key)
   end
 
-  scope "/.well-known/acme-challenge/nopWVid1ovI83c7sz4E9L7lb_IuUN9I-TVXAE9NpB98", SilbernageldevWeb.Controllers do
+  scope "/.well-known/acme-challenge/nopWVid1ovI83c7sz4E9L7lb_IuUN9I-TVXAE9NpB98",
+        SilbernageldevWeb.Controllers do
     pipe_through(:browser)
     get("/", CertController, :verify)
   end
