@@ -1,6 +1,16 @@
-# My PGP Public Key
+# Public Key
 
+
+=> https://keyoxide.org/wkd/matt%40silbernagel.dev Find me on Keyoxide
+
+## Import via WKD
+```GPG command to import my key
+  gpg --locate-keys --auto-key-locate clear,nodefault,wkd matt@silbernagel.dev
 ```
+
+## My Public Key
+
+```Public Key
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mQINBGDFEK4BEACktdBDgIKkaHK66Hx6kQkxOEbXN46VlscmkI976l+7gw1XVNPH
