@@ -54,4 +54,4 @@ processes = []
 
 [mounts]
   source = "sql_data"
-  destination = "/var/lib/litefs"
+  destination = "/data/db"

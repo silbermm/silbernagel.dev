@@ -1,5 +1,5 @@
 dbs:
-  - path: /data/silbernageldev.db
+  - path: /sql_data/silbernagel.db
     replicas:
       - type: s3
         bucket: silbernageldev

@@ -25,6 +25,9 @@ FROM ${BUILDER_IMAGE} as builder
 RUN apt-get update -y && apt-get install -y build-essential git gpg libgpgme-dev curl pkg-config golang sed \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
+
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
@@ -75,7 +78,7 @@ RUN mix release
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
-RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables fuse gpg libgpgme-dev curl \
+RUN apt-get update -y && apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates iptables gpg libgpgme-dev curl \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # Set the locale
@@ -86,6 +89,11 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 ENV GNUPGHOME /data/gnupg
 ENV GNUPGBIN /usr/bin/gpg
+
+# Copy Tailscale binaries from the tailscale image on Docker Hub.
+COPY --from=docker.io/tailscale/tailscale:stable /usr/local/bin/tailscaled /app/tailscaled
+COPY --from=docker.io/tailscale/tailscale:stable /usr/local/bin/tailscale /app/tailscale
+RUN mkdir -p /var/run/tailscale /var/cache/tailscale /var/lib/tailscale
 
 WORKDIR "/app"
 RUN chown nobody /app
@@ -107,8 +115,9 @@ RUN gpg --import ./silbernagel.asc
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/silbernageldev ./
-COPY --from=flyio/litefs:0.4 /usr/local/bin/litefs /usr/local/bin/litefs
-COPY litefs.yml /etc/litefs.yml
+
+COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
+COPY litestream.yml /etc/litestream.yml
 
 COPY run.sh /scripts/run.sh
 
