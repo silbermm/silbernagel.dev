@@ -124,7 +124,6 @@ COPY run.sh /scripts/run.sh
 RUN chmod 777 /scripts/run.sh
 
 CMD ["/scripts/run.sh"]
-#ENTRYPOINT litefs mount -- /scripts/run.sh
 
 # Appended by flyctl
 ENV ECTO_IPV6 true
