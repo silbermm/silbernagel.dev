@@ -2,6 +2,7 @@ steps:
   build:
     image: hexpm/elixir:1.14.5-erlang-25.3.2.5-debian-buster-20230612-slim
     commands:
+      - mix local.hex --force
       - mix deps.get
       - mix compile --warnings-as-errors
       - mix test
