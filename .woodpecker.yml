@@ -6,8 +6,7 @@ steps:
       - mix local.rebar --force
       - mix deps.get
       - apt-get update
-      - apt-get install -y libgpgme-dev
-      - apt-get install -y curl build-essential gcc make 
+      - apt-get install -y curl build-essential gcc make pkg-config libgpgme-dev
       - curl https://sh.rustup.rs -sSf | bash -s -- -y
       - export PATH=/root/.cargo/bin:$PATH
       - rustc -V
