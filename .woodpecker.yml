@@ -5,5 +5,7 @@ steps:
       - mix local.hex --force
       - mix local.rebar --force
       - mix deps.get
+      - apt-get update
+      - apt-get install libgpgme-dev
+      - curl https://sh.rustup.rs -sSf | bash -s -- -y
       - mix compile --warnings-as-errors
-      - mix test
