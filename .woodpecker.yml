@@ -9,6 +9,6 @@ steps:
       - apt-get install -y libgpgme-dev
       - apt-get install -y curl build-essential gcc make 
       - curl https://sh.rustup.rs -sSf | bash -s -- -y
-      - source ~/.cargo/env
+      - export PATH=/root/.cargo/bin:$PATH
       - rustc -V
       - mix compile --warnings-as-errors
