@@ -8,4 +8,5 @@ steps:
       - apt-get update
       - apt-get install -y libgpgme-dev
       - curl https://sh.rustup.rs -sSf | bash -s -- -y
+      - export PATH="/root/.cargo/bin:$PATH"
       - mix compile --warnings-as-errors
