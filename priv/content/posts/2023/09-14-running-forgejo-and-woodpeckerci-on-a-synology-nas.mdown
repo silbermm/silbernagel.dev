@@ -1,0 +1,10 @@
+%{
+  title: "Running Forgejo and WoodpeckerCI on a Synology NAS",
+  author: "Matt Silbernagel",
+  tags: ~w(),
+  description: "",
+  draft: true
+}
+---
+
+

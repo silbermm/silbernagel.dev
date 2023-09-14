@@ -1,12 +1,13 @@
 steps:
   build:
-    image: hexpm/elixir:1.14.5-erlang-25.3.2.5-debian-buster-20230612-slim
+    image: hexpm/elixir:1.14.5-erlang-25.3.2.5-ubuntu-jammy-20230126
     commands:
       - mix local.hex --force
       - mix local.rebar --force
       - mix deps.get
       - apt-get update
       - apt-get install -y curl build-essential gcc make pkg-config gpg libgpgme-dev
+      - git clone https://git.sr.ht/~kota/gemgen && cd gemgen && make install
       - curl https://sh.rustup.rs -sSf | bash -s -- -y
       - export PATH=/root/.cargo/bin:$PATH
       - rustc -V
