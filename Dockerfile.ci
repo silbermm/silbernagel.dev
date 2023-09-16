@@ -1,0 +1,16 @@
+ARG ELIXIR_VERSION=1.14.5
+ARG OTP_VERSION=25.3.2.5
+ARG DEBIAN_VERSION=bookworm-20230612-slim
+
+ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
+
+FROM ${BUILDER_IMAGE}
+
+RUN apt-get update -y && apt-get install -y build-essential gpg libgpgme-dev curl pkg-config \
+    && apt-get clean && rm -f /var/lib/apt/lists/*_*
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo --help
+
+COPY ./scripts/gemgen /usr/local/bin/gemgen

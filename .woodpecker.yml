@@ -1,13 +1,8 @@
 steps:
   build:
-    image: hexpm/elixir:1.14.5-erlang-25.3.2.5-ubuntu-jammy-20230126
+    image: silbermm/silbernagel.dev:latest
     commands:
       - mix local.hex --force
       - mix local.rebar --force
       - mix deps.get
-      - apt-get update
-      - apt-get install -y curl build-essential gcc make pkg-config gpg libgpgme-dev
-      - curl https://sh.rustup.rs -sSf | bash -s -- -y
-      - export PATH=/root/.cargo/bin:./scripts:$PATH
-      - rustc -V
       - mix compile --warnings-as-errors
