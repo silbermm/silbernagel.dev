@@ -1,7 +1,7 @@
 %{
   title: "Introducing Beamring",
   author: "Matt Silbernagel",
-  tags: ~w(elixir, indieweb),
+  tags: ~w(elixir indieweb),
   description: "A new webring for the BEAM community.",
   draft: false
 }
