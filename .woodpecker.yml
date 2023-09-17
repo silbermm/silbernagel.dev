@@ -6,3 +6,13 @@ steps:
       - mix local.rebar --force
       - mix deps.get
       - mix compile
+      - mix dialyzer --plt
+      - mix dialyzer --halt-exit-status
+  deploy:
+    image: silbermm/silbernagel.dev:latest
+    secrets: [ fly_api_token ]
+    commands:
+      - flyctl deploy --remote-only
+    when:
+      branch: main
+

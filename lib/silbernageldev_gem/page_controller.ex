@@ -2,7 +2,7 @@ defmodule SilbernageldevGem.PageController do
   alias Silbernageldev.Blog
   use SilbernageldevGem, :controller
 
-  view(SilbernageldevGem.PageView)
+  view SilbernageldevGem.PageView
 
   def home(req, _params) do
     name = if req.client_cert, do: req.client_cert.common_name, else: "world"

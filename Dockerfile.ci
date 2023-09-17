@@ -13,4 +13,8 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
 
+RUN curl -L https://fly.io/install.sh | sh
+ENV FLYCTL_INSTALL="/root/.fly"
+ENV PATH="$FLYCTL_INSTALL/bin:$PATH"
+
 COPY ./scripts/gemgen /usr/local/bin/gemgen
