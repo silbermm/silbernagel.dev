@@ -56,7 +56,7 @@ defmodule Silbernageldev.MixProject do
       {:tailwind, "~> 0.1.6", runtime: Mix.env() == :dev},
       {:heroicons, "~> 0.5"},
       {:etag_plug, "~> 1.0"},
-      {:req, "~> 0.3.4"},
+      {:req, "~> 0.4"},
       {:gpgmex, "~> 0.0.10"},
       {:libmention, "~> 0.1.4"},
       {:plug_gpg_verify, "~> 0.1.0"},
