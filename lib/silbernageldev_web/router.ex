@@ -21,11 +21,6 @@ defmodule SilbernageldevWeb.Router do
     plug(:accepts, ["json"])
   end
 
-  pipeline :authenticated do
-    plug(:fetch_session)
-    plug SilbernageldevWeb.Plugs.Authenticated
-  end
-
   scope "/", SilbernageldevWeb.Controllers do
     get("/posts/rss.xml", RssController, :index)
     get("/posts/rss.xsl", RssController, :style)
@@ -75,14 +70,10 @@ defmodule SilbernageldevWeb.Router do
     get("/webmention", WebMentionController, :receive)
   end
 
-  scope "/verify" do
-    pipe_through(:api)
-    forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
-  end
-
-  scope "/api", SilbernageldevWeb.Controllers do
-    pipe_through([:api, :authenticated])
-  end
+#   scope "/verify" do
+#     pipe_through(:api)
+#     forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
+#   end
 
   # Enables LiveDashboard only for development
   #

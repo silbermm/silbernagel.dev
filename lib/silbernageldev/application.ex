@@ -22,7 +22,6 @@ defmodule Silbernageldev.Application do
       {Task.Supervisor, name: Silbernageldev.TaskSupervisor},
       {PlugAttack.Storage.Ets,
        name: SilbernageldevWeb.Plugs.PlugAttack.storage_name(), clean_period: :timer.seconds(60)},
-      SilbernageldevWeb.Plugs.Silberauth,
       {Libmention.Supervisor, libmention_opts},
       {Silbernageldev.WebMentions.WebMentionSender, :posts},
       {Cluster.Supervisor, [topologies, [name: Silbernagedev.ClusterSupervisor]]},
