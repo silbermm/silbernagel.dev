@@ -31,7 +31,7 @@ Launch it as a new fly app:
 ```bash
 $ fly launch
 ```
-* type in an app name (or just take the default)
+* type in an app name or just take the default
 * choose any region you like
 * choose 'N' when asked if you want a Postgres database
 * choose 'N' when asked if you want a Redis instance

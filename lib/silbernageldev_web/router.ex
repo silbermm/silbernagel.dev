@@ -64,16 +64,15 @@ defmodule SilbernageldevWeb.Router do
     get("/", CertController, :verify)
   end
 
+  scope "/webmentions" do
+    pipe_through(:api)
+    forward "/", Libmention.Incoming.ReceiverPlug, content_validator: Silbernageldev.WebMentions.ContentValidator
+  end
+
   scope "/", SilbernageldevWeb.Controllers do
     pipe_through(:browser)
     get("/gpg/download", GPGController, :download)
-    get("/webmention", WebMentionController, :receive)
   end
-
-#   scope "/verify" do
-#     pipe_through(:api)
-#     forward("/", PlugGPGVerify, adapter: SilbernageldevWeb.Plugs.Silberauth)
-#   end
 
   # Enables LiveDashboard only for development
   #

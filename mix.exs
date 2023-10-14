@@ -60,7 +60,7 @@ defmodule Silbernageldev.MixProject do
       {:etag_plug, "~> 1.0"},
       {:req, "~> 0.4"},
       {:gpgmex, "~> 0.1"},
-      {:libmention, "~> 0.1.4"},
+      {:libmention, path: "../libmention"},
       {:plug_attack, "~> 0.4.2"},
       {:logger_json, "~> 5.1"},
       {:opentelemetry_exporter, "~> 1.0"},
