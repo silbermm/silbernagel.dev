@@ -20,11 +20,15 @@ defmodule Silbernageldev.Blog.Post do
     [month, day, id] = String.split(month_day_id, "-", parts: 3)
     date = Date.from_iso8601!("#{year}-#{month}-#{day}")
 
-    {:ok, res} = Rambo.run("gemgen", in: body)
+    #{:ok, res} = Rambo.run("gemgen", in: body)
 
-    body = body |> Earmark.as_html!([]) |> NimblePublisher.Highlighter.highlight()
+    #body = body |> Earmark.as_html!([]) |> NimblePublisher.Highlighter.highlight()
+    html = 
+      body 
+      |> GemtextToHTML.render_to_string(components: GemtextToHTML.DefaultComponents) 
+      |> NimblePublisher.Highlighter.highlight()
 
-    struct!(__MODULE__, [id: id, date: date, body: body, gemtext: res.out] ++ Map.to_list(attrs))
+    struct!(__MODULE__, [id: id, date: date, body: html, gemtext: body] ++ Map.to_list(attrs))
   end
 
   def parse(path, contents) do

@@ -7,37 +7,35 @@
 }
 ---
 
-I recently read about a newer SQLite database tool called Litestream which creates backups of the database in S3 compatible storage after every transaction. It will also restore from that backup, so when scaling horizontally to a new server, the latest version of the DB can be restored. Fly.io seems like the ideal platform and Elixir the perfect language for this type of a solution.
+I recently read about a newer SQLite database tool called Litestream which creates backups of the database in S3 compatible storage after every transaction. Litestream restores from that backup, so when scaling horizontally to a new server, the latest version of the DB will be available. Fly.io seems like the ideal platform and Elixir the perfect language for this solution.
 
-[Check out Litestream](https://litestream.io/)
-
-[Check out Fly.io](https://fly.io)
+=> https://litestream.io/ Check out Litestream
+=> https://fly.io Check out Fly.io
 
 ## Why
-* **fast** data access because the SQLite DB will be on the same server as the application, and with Fly, the application can be close to the user
-* **simple** local development - with SQLite, DB servers DO NOT need to be installed locally
-* **low** maintenance  - SQLite doesn't require much maintenance
-* **highly** distributed - Elixir makes it all possible via it's distribution capabilities
+* fast data access - the SQLite DB resides on the same server as the app and, with Fly, the app can live close to the user
+* simple local development - with SQLite, you don't need to install DB servers locally
+* low maintenance  - SQLite doesn't require much maintenance
+* highly distributed - Elixir makes it all possible via it's distribution capabilities
 
-## Getting Started
-
-[See the companion Repo for reference](https://github.com/silbermm/distributed_sqlite)
+## Getting started
+=> https://github.com/silbermm/distributed_sqlite See the companion repository for reference
 
 Create a new phoenix app that uses SQLite as the database:
 ```bash
 $ mix phx.new distributed_sqlite --database sqlite3
 ```
 
-Launch it as a new fly application:
+Launch it as a new fly app:
 
 ```bash
 $ fly launch
 ```
 * type in an app name (or just take the default)
 * choose any region you like
-* choose **N** when asked if you want a Postgres database
-* choose **N** when asked if you want a Redis instance
-* choose **N** to deploy now
+* choose 'N' when asked if you want a Postgres database
+* choose 'N' when asked if you want a Redis instance
+* choose 'N' to deploy now
 
 An environment variable, `DATABASE_PATH`, is needed to indicate which file to use for the SQLite database. Open the `fly.toml` file and add `DATABASE_PATH = /app/distributed_sqlite.db` (use any database name you want here) under the `[env]` section and try to deploy.
 
@@ -45,10 +43,9 @@ An environment variable, `DATABASE_PATH`, is needed to indicate which file to us
 $ flyctl deploy
 ```
 
-Success! A Phoenix app running on Fly using SQLite! Now, to see it in action.
+Success. A Phoenix app running on Fly using SQLite. Now, to see it in action.
 
-## Counter Data Model
-
+## Counter data model
 Lets build a simple, naive counter that just counts the views of each page.
 
 ```bash
@@ -56,7 +53,7 @@ $ mix phx.gen.schema Counter.PageCount page_counts page:string count:integer
 $ mix ecto.migrate
 ```
 
-Add a `Counter` module where we can add page view counts
+Add a `Counter` module which can add page view counts
 
 ```elixir
 # lib/distributed_sqlite/counter.ex
@@ -80,7 +77,7 @@ defmodule DistributedSqlite.Counter do
 end
 ```
 
-and update the page_controller to count views
+Update the `page_controller` to count views
 ```elixir
   # lib/distributed_sqlite_web/controllers/page_controller.ex
   alias DistributedSqlite.Counter
@@ -91,16 +88,16 @@ and update the page_controller to count views
   end
 ```
 
-lastly, we can display the counter on our page
+Display the counter on the page
 
 ```eex
 <!-- lib/distributed_sqlite_web/templates/page/index.html.heex -->
 <h1> Page Views <%= @view_count %> </h1>
 ```
 
-Now deploy again using `flyctl deploy` and then browse to your site to validate that the count is showing and updating when refreshing.
+Now deploy again using `flyctl deploy` and then browse to your site to verify that the count shows and updates when refreshing.
 
-## Restoring the Database on Deploy
+## Restoring the DB on deploy
 
 The next problem to deal with is that the database will be wiped on our next deploy since it's using ephemeral storage.
 
@@ -108,12 +105,11 @@ One way to resolve this is to use a persistent volume (which should be done for 
 
 The first step is to create a bucket in some S3 compatible storage. I like to use Digital Ocean Spaces for this, but you can also use AWS if you want.
 
-[See Litestream docs for more options](https://litestream.io/guides/)
-
-[Setup a Digital Ocean space](https://www.digitalocean.com/products/spaces)
+=> https://litestream.io/guides/ See Litestream docs for more options
+=> https://www.digitalocean.com/products/spaces Setup a Digital Ocean space
 
 When you have your storage setup, you'll need 3 pieces of information
-1. the bucket url
+1. the bucket URL
 2. the access key
 3. the secret key
 
@@ -147,7 +143,7 @@ COPY --from=builder /usr/local/bin/litestream /usr/local/bin/litestream
 COPY litestream.yml /etc/litestream.yml
 ```
 
-Finally, update the starting script so that the elixir release is a sub-process of litestream. The easiest way I've found to do this is to create a run script called `run.sh` with the following content:
+Update the starting script so that the elixir release is a sub-process of litestream. The easiest way I've found to do this is to create a run script called `run.sh` with the following content:
 ```
 #!/bin/bash
 set -e
@@ -180,7 +176,7 @@ CMD ["/scripts/run.sh"]
 
 Deploying should now start using Litestream to restore the database on deploys and push backups when data changes. You can verify in the monitoring interface of fly. Look for something similar to the image below:
 
-![Fly logs showing that Litestream is running](/images/fly-logs.png "Fly Logs")
+=> /images/fly-logs.png Fly logs showing that Litestream is running
 
 ## Distributing
 
@@ -190,10 +186,10 @@ With all of this in place, things would work great when running one instance of 
 $ flyctl scale count 2
 ```
 
-Enough refreshing the browser or opening in different windows/tabs and you'll start to see discrepancies in the view count. This is because we are not replicating the data between the instances. This is a problem Elixir is built for...
+Enough refreshing the browser or opening in different windows/tabs and you'll start to see discrepancies in the view count. This is because we are not replicating the data between the instances. This is a problem Elixir is built for.
 
 ### Setup the Cluster
-[Follow the Fly guide to get clustering working correctly](https://fly.io/docs/elixir/getting-started/clustering/)
+=> https://fly.io/docs/elixir/getting-started/clustering/ Follow the Fly guide to get clustering working
 
 Once clustered, we can begin to replicate our database calls. Add a new GenServer with the following content:
 ```elixir
@@ -227,7 +223,7 @@ defmodule DistributedSqlite.RepoReplication do
 end
 ```
 
-and make sure to start it in the `application.ex` 
+Make sure to start it in the `application.ex` 
 
 ```elixir
 # lib/distributed_sqlite/application.ex
@@ -282,7 +278,7 @@ def replicate(schema, :insert) do
 end
 ```
 
-This gives us a function we can pipe into from an `Repo.insert` or the result of a `Repo.update`. Try this in the `DistributedSqlite.Counter` module:
+This function can be piped into from an `Repo.insert` or the result of a `Repo.update`. Try this in the `DistributedSqlite.Counter` module:
 
 ```elixir
 case page_count do
@@ -307,12 +303,14 @@ case page_count do
 end
 ```
 
-With all of this in place, deploy again. Your data should now be consistent no matter which node your traffic is served from!
+With this in place, deploy again. Your data is now consistent no matter which node serves the traffic.
 
-## Wrap Up
+## Wrap up
 
-I'm not sure how far this can be pushed and there are downsides to this approach, but I plan on continuing this journey that puts my data as close to the application as possible.
+I'm not sure how far this can be pushed and there are downsides to this approach, but I plan on continuing this journey that puts my data as close to the app as possible.
 
 There is another worth exploring that removes the need to replicate the data on the application side. It is still in beta, but I plan on trying it out soon as well.
 
-[Another approach - Litefs](https://fly.io/docs/litefs/)
+=> https://fly.io/docs/litefs/ Another approach - Litefs
+
+=> https://fed.brid.gy/ Syndicate to the Fediverse

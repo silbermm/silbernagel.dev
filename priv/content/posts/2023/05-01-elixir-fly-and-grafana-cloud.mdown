@@ -1,20 +1,22 @@
 %{
-  title: "Elixir, Fly, and Grafana Cloud",
+  title: "Elixir, Fly, and GrafanaCloud",
   author: "Matt Silbernagel",
   tags: ~w(Elixir Telemetry Observability),
-  description: "Learn how to send your Metrics, Logs and Traces to Grafana Cloud from your Elixir app hosted on Fly.io",
+  description: "Learn how to send your Metrics, Logs and Traces to GrafanaCloud from your Elixir app hosted on Fly.io",
   draft: false
 }
 ---
 
-If you have an elixir app running on Fly.io, sending your telemetry data to Grafana cloud is easy.
+If you have an elixir app running on Fly.io, it's easy to send telemetry data to GrafanaCloud.
 
 Lets start with Logs.
 
 ## Logs
-In order to ship logs to Grafana Cloud, we need to setup another application called logshipper. It is all detailed in the documentation, but the TLDR; is:
+Shipping logs to GrafanaCloud requires setup and deployment of another app called LogShipper.
 
-[Logshipper Documentation](https://fly.io/docs/going-to-production/monitoring/exporting-logs/)
+=> https://fly.io/docs/going-to-production/monitoring/exporting-logs/ LogShipper Documentation
+
+### Setting up LogShipper 
 
 * Create a new directory 
 ```
@@ -29,7 +31,7 @@ fly launch --no-deploy --image ghcr.io/superfly/fly-log-shipper:latest`
 fly secrets set ORG=personal
 fly secrets set ACCESS_TOKEN=$(fly auth token)
 ```
-* Configure your Loki credentials. These can be found in the Grafana Cloud Portal, Loki section. You may have to generate an API key, but all the data should be there for you to use here.
+* Configure your Loki credentials. Find these in the GrafanaCloud Portal, Loki section. Hint: you may have to generate an API key.
 ```
 fly secrets set LOKI_URL=
 fly secrets set LOKI_USERNAME=
@@ -46,16 +48,16 @@ fly secrets set LOKI_PASSWORD=
 flyctl deploy
 ```
 
-Once deployed, this should start sending all the logs from all your fly apps in the configured organization to Grafana Cloud.
+Once deployed, this should start sending all the logs from all your fly apps in the configured organization to GrafanaCloud.
 
-[More configuration options for the logshipper app can be found in the github repo](https://github.com/superfly/fly-log-shipper#provider-configuration)
+=> https://github.com/superfly/fly-log-shipper#provider-configuration Find all configuration options for the LogShipper app in the repository
 
-Also, I'd recommend shipping your logs in JSON format using something similar to the logger_json library. 
+Also, I'd recommend shipping your logs in JSON format using something like the `logger_json` library. 
 
-[The logger_json library](https://hex.pm/packages/logger_json)
+=> https://hex.pm/packages/logger_json The `logger_json` library
 
 ## Traces
-Traces are fairly easy to send to Grafana Cloud Tempo, but we'll need to start by adding the OpenTelemetry libraries. Depending on your needs, you may leave off some of these.
+To send Traces to GrafanaCloud Tempo, first add the OpenTelemetry libraries. Depending on your needs, you may leave off some of these.
 
 ```elixir
 # ./mix.exs
@@ -73,7 +75,7 @@ defp deps do
 end
 ```
 
-Now we need to add some configuration to the config/runtime.exs file.
+Now add some configuration to the config/runtime.exs file.
 
 
 ```elixir
@@ -93,13 +95,13 @@ end
 
 Next, setup the environment variables.
 
-* The value required for `OTLP_ENDPOINT` can be found on the Grafana Cloud Portal Tempo section, and will look something like: `https://tempo-us-central1.grafana.net/tempo` (your url may be different)
-* The value for `OTEL_AUTH` is a base64 encoded value of `{username}:{api token}` which can be easily obtained using:
+* The value required for `OTLP_ENDPOINT` can be found on the GrafanaCloud Portal Tempo section, and will look something like: `https://tempo-us-central1.grafana.net/tempo` (your URL may differ)
+* The value for `OTEL_AUTH` is a base64 encoded value of `{username}:{api token}`.
 ```
 echo -n 'username:password' | base64`
 ```
- (replace username and password with the actual vaules)
-* And you'll need the data source name (found on the same Grafana Cloud Portal page) which will be used to set the value of `OTEL_RESOURCE_ATTRIBUTES`
+ (replace username and password with the actual values)
+* And you'll need the data source name (found on the same GrafanaCloud Portal page) which will be used to set the value of `OTEL_RESOURCE_ATTRIBUTES`
 
 All of these values can be set with one command:
 ```
@@ -112,16 +114,16 @@ After setting these values and deploying the application, traces should start sh
 
 For Metrics, I really like to use Prometheus and I find the easiest way to get started with Prometheus is using prom_ex. PromEx provides excellent documentation and is worth reading, but a quick guide to get it working:
 
-[Prometheus Overview](https://prometheus.io/docs/introduction/overview/)
+=> https://prometheus.io/docs/introduction/overview/ Prometheus Overview
 
-[Documentation for prom_ex](https://hexdocs.pm/prom_ex/readme.html)
+=> https://hexdocs.pm/prom_ex/readme.html Documentation for prom_ex
 
 * Add `:prom_ex, "~> 1.8"` to your dependencies in `mix.exs` and run `mix deps.get`
 * Run the generator 
 ```
 mix prom_ex.gen.config --datasource curl`
 ```
-* Add config in `config.exs` for the metrics server
+* Add configuration in `config.exs` for the metrics server
 ```elixir
 config :your_app, YourApp.PromEx,
     metrics_server: [
@@ -143,11 +145,11 @@ def start(_type, _args) do
 ```
 * Lastly, uncomment any desired plugins in the generated `YourApp.PromEx` file.
 
-With all of that, `localhost:9091/metrics` should be available when the app is running
+Now running the app exposes the metrics at `localhost:9091/metrics`.
 
-Next, the metrics just need to be exposed so that Fly can scrape them. As documented by Fly, just add the following to your fly.toml file:
+Next, expose the metrics so that Fly can scrape them. As documented by Fly, just add the following to your fly.toml file:
 
-[Fly documentation for metrics](https://fly.io/docs/reference/metrics/#configuration)
+=> https://fly.io/docs/reference/metrics/#configuration Fly documentation for metrics
 
 ```toml
 [metrics]
@@ -155,16 +157,16 @@ port = 9091
 path = "/metrics"
 ```
 
-Finally, setup the Prometheus data source in Grafana Cloud with the following properties:
-* HTTP -> URL "https://api.fly.io/prometheus/<org-slug>/" where `org_slug` is your org
+Setup the Prometheus data source in GrafanaCloud with the following properties:
+* HTTP -> URL "https://api.fly.io/prometheus/<org-slug>/" (replace `org_slug` with your org)
 * Custom HTTP Headers -> + Add Header:
-* Header: Authorization, Value: Bearer <token> where token is the result of `flyctl auth token`
+* Header: Authorization, Value: Bearer <token> (replace `token` with the result of `flyctl auth token`
 
-You should now see all of the fly metrics and prom_ex defined metrics in Grafana!
+You should now see fly metrics and `prom_ex` defined metrics in GrafanaCloud.
 
-## Wrap Up
-I wrote this because I wanted to add observability to my Elixir/Phoenix apps that run on Fly and finding the information I needed was scattered throughout the docs. Hopefully others find this useful.
+## Wrap up
+I wrote this because I wanted to add observability to my Elixir/Phoenix apps that run on Fly and finding the information I needed was scattered throughout the docs.
 
-Happy Observing!
+Happy Observing
 
-[](https://fed.brid.gy/)
+=> https://fed.brid.gy/ Syndicate to the Fediverse
