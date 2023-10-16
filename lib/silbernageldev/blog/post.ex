@@ -20,9 +20,6 @@ defmodule Silbernageldev.Blog.Post do
     [month, day, id] = String.split(month_day_id, "-", parts: 3)
     date = Date.from_iso8601!("#{year}-#{month}-#{day}")
 
-    #{:ok, res} = Rambo.run("gemgen", in: body)
-
-    #body = body |> Earmark.as_html!([]) |> NimblePublisher.Highlighter.highlight()
     html = 
       body 
       |> GemtextToHTML.render_to_string(components: GemtextToHTML.DefaultComponents) 

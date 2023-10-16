@@ -32,9 +32,6 @@ RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo --help
 
-
-RUN /bin/bash -c 'git clone https://git.sr.ht/~kota/gemgen && cd gemgen && make install'
-
 # prepare build dir
 WORKDIR /app
 
