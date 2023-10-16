@@ -6,11 +6,10 @@
 }
 ---
 
-* [Part 1 - using Terraform to describe and build the infrastructure](/posts/deploying-elixir-on-ecs-part-1)
-* **Part 2 - building and deploying a docker image to ECS**
-* [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster](/posts/deploying-elixir-on-ecs-part-3)
+=> ./deploying-elixir-on-ecs-part-1 Part 1 - using Terraform to describe and build the infrastructure
+=> ./deploying-elixir-on-ecs-part-3 Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
 
-In [Part 1]("/posts/deploying-elixir-on-ecs-part-1") we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it.
+In Part 1 we used terraform to build all of the required ECS infrastructure in AWS. Next we'll build an image, push it to the image repo and tell ECS to run it.
 
 ## A simple project
 Start by building a simple Phoenix app or feel free to use an existing app that you want to deploy to ECS.
@@ -48,7 +47,7 @@ end
 ## Configuration
 There's a few things we'll need to update in the default phoenix configuration.
 
-First update the `prod.exs` by changeing the host to your load balancer url. This was one of the terraform outputs when we built the infrastructure, or it can also be found in the AWS web console:
+First update the `prod.exs` by changing the host to your load balancer url. This was one of the terraform outputs when we built the infrastructure, or it can also be found in the AWS web console:
 ```elixir
 config :ecs_app, EcsAppWeb.Endpoint,
   url: [host: "your-lb.us-east-1.elb.amazonaws.com", port: 4000],
@@ -66,7 +65,9 @@ config :ecs_app, EcsAppWeb.Endpoint, server: true
 This will ensure the endpoint starts up when running a release.
 
 ## Dockerfile
-The Dockerfile is rather simple and taken almost directly from the [Phoenix Documentation](https://hexdocs.pm/phoenix/releases.html#content).
+The Dockerfile is rather simple and taken almost directly from the Phoenix docs.
+
+=> https://hexdocs.pm/phoenix/releases.html#content Phoenix Dockerfile Documentation
 
 Create the file `Dockerfile` and add the following:
 
@@ -123,9 +124,9 @@ CMD ["bin/ecs_app", "start"]
 ```
 
 ## Build Configuraton
-I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in [Part 1]("deploying-elixir-to-ecs-part-1").
+I like to create a `Makefile` for building my Docker images and pushing them to ECR. Note the `your_ecr_url` is the url of your ECR that was created in Part 1.
 
-```makefile
+```Makefile
 APP_NAME ?= `grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g'`
 APP_VSN ?= `grep 'version:' mix.exs | cut -d '"' -f2`
 BUILD ?= `git rev-parse --short HEAD`
@@ -160,18 +161,22 @@ Assuming you have docker on your computer, you can now run `make build_local` an
 $ docker run -p 4000:4000 -it ecs_app:0.1.0
 ```
 
-You should be able to hit [http://localhost:4000](http://localhost:4000) now.
+You should be able to hit http://localhost:4000 now.
 
-The `push` task will require that you have the [AWS CLI](https://aws.amazon.com/cli/) installed on your computer and your AWS access_key and secret setup correctly. See [AWS Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html) to set it up locally.
+The `push` task will require that you have the AWS Cli installed on your computer and your AWS access_key and secret setup correctly. See the docs  to set it up locally.
 
-For the `deploy` step, I reference a script at `./bin/ecs-deploy`. You can get this script at [silinternational/ecs-deploy](https://github.com/silinternational/ecs-deploy). Create a folder at the root of your project called `bin` and place the `ecs-deploy` script in it. This will require the same AWS authentication as the `push` task. It also requires that you have `jq` installed on your system and may require you to set the execution bit on the file `chmod +X ./bin/ecs-deploy`.
+=> https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html AWS CLI Userguide
+
+For the `deploy` step, I reference a script at `./bin/ecs-deploy`. You can get this script on github. Create a folder at the root of your project called `bin` and place the `ecs-deploy` script in it. This will require the same AWS authentication as the `push` task. It also requires that you have `jq` installed on your system and may require you to set the execution bit on the file `chmod +X ./bin/ecs-deploy`.
+
+=> https://github.com/silinternational/ecs-deploy silinternational/ecs-deploy
 
 ## Deploy!
 
 Now that we have a simple project, lets get it deployed to ECS. Assuming you have your AWS credentials setup correctly, you should be able to run the following commands in order:
 1. `make build`  - builds and tags a docker image
 2. `make push`   - pushs that image to your private docker repository
-3. `make deploy` - instructs ECS to create a new task defifnition with your latest image and start running it
+3. `make deploy` - instructs ECS to create a new task definition with your latest image and start running it
 
 The deploy task can take some time. It trys to verify that the task is running and that the previous task is stopped. You can now browse to the ECS web console and watch the progress of your task starting.
 
@@ -269,12 +274,16 @@ jobs:
 
 You'll notice that there are references to three different `${{secrets}}`. You can set these in your Github repos Settings page. There is section there called secrets, just add the three secrets and this build will have access.
 
-Now push your code the the repo and your `ci` action should test, build and deploy your code to ECS. You can watch the progress in the Actions tab of your Github repo.
+Now push your code to the repo and your `ci` action should test, build and deploy your code to ECS. You can watch the progress in the Actions tab of your Github repo.
 
 Verify this by going to `your-lb-url.com/health` to see the version and node name of your app.
 
 ## Wrap Up
 
-Now there is a reproducable infrastructure definition, and its being deployed on a push to repository. Most projects would probably be done at this point.
+Now there is a reproducible infrastructure definition, and its being deployed on a push to repository. Most projects would probably be done at this point.
 
 In Part 3, I'll show you how to use ECS Service Discovery to build a distributed cluster on ECS.
+
+=> ./deploying-elixir-on-ecs-part-1 Part 1 - using Terraform to describe and build the infrastructure
+=> ./deploying-elixir-on-ecs-part-3 Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
+

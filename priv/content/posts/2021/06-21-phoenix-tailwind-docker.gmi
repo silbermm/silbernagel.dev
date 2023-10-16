@@ -1,15 +1,24 @@
 %{
   title: "Phoenix + Tailwind + Docker issues",
   author: "Matt Silbernagel",
-  tags: ~w(Elixir Phoenix Tailwind),
+  tags: ~w(elixir phoenix tailwind),
   description: "How to properly build Tailwind with Elixir releases in Docker"
 }
 ---
 
-## The Problem
-I was having issues with tailwind building correctly **ONLY** in production and **ONLY** when built in a Docker container.
+## Update 10-15-2023
+> This is no longer an issue since Phoenix started bundling Tailwind.
 
-I followed an [online guide](https://s2g.io/using-tailwindcss-with-phoenix) to get postcss and tailwind configured correctly so that it only builds the classes required by the application (we don't want a huge css file). My tailwind.config.js looked like this:
+
+## The problem
+I was having issues with tailwind building correctly only in production and only when built in a Docker container.
+
+I followed an article I found online to get postcss and tailwind configured correctly so that it only builds the classes required by the application (we don't want a huge css file).
+
+=> https://s2g.io/using-tailwindcss-with-phoenix Using Tailwind with Phoenix
+
+My tailwind.config.js looked like this:
+
 ```javascript
 module.exports = {
   purge: [
@@ -47,7 +56,10 @@ Here we are telling tailwind to search through our `.ex`, `.leex`, `.eex` and `.
 
 This all worked perfect in development and local testing.
 
-I add a Dockerfile to use as my production deployment stategy. I started with the [Phoenix documented](https://hexdocs.pm/phoenix/releases.html#containers) version of the Dockerfile and tweaked it a little to use the latest version of Elixir. Here is what I ended up with that was not compiling tailwind correctly:
+I add a Dockerfile to use as my production deployment stategy. I started with the version of Phoenix documented Dockerfile and tweaked it a little to use the latest version of Elixir. Here is what I ended up with that was not compiling tailwind correctly:
+
+=> https://hexdocs.pm/phoenix/releases.html#containers Phoenix documented Dockerfile
+
 ```Dockerfile
 FROM elixir:1.12.1-alpine AS build
 
@@ -96,7 +108,7 @@ ENV HOME=/app
 CMD trap 'exit' INT; ./bin/my_app eval "MyApp.Release.migrate()" && ./bin/my_app start
 ```
 
-## The Solution
+## The solution
 
 I tried many different things to fix the issue. I tried installing a specific version of node in the image - building a development build with webpack - but what it came down to was an order of operations bug.
 

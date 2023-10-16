@@ -6,10 +6,8 @@
 }
 ---
 
-* [Part 1 - using Terraform to describe and build the infrastructure](/posts/deploying-elixir-on-ecs-part-1)
-* [Part 2 - building and deploying a docker image to ECS](/posts/deploying-elixir-on-ecs-part-2)
-* **Part 3 - using ECS Service Discovery to build a distributed Elixir cluster**
-
+=> /posts/deploying-elixir-on-ecs-part-1 Part 1 - using Terraform to describe and build the infrastructure
+=> /posts/deploying-elixir-on-ecs-part-2 Part 2 - building and deploying a docker image to ECS
 
 In Parts 1 and 2, we built the infrastructure and deployed a very simple Phoenix application. We can scale up our application since it's behind a load balancer by increasing the number of Tasks in our ECS service. For a lot of use cases, that works just fine. But if we are using Phoenix Presence or anything that requires coordination between the Elixir nodes, we'll need to build a cluster.
 
@@ -22,7 +20,9 @@ In order to do this we'll need do a several things:
 
 ## Update the ECS Service
 
-ECS includes [Service Discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) that we can setup via Terraform. Add this to our previous Terraform file:
+ECS includes Service Discovery that we can setup via Terraform. Add this to our previous Terraform file:
+
+=> https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html ECS Service Discovery Documentation
 
 ```hcl
 
@@ -49,7 +49,8 @@ resource "aws_service_discovery_service" service_discovery {
 
 ```
 
-and then reference the service discovery in the `service` resource:
+Reference the service discovery in the `service` resource:
+
 ``` hcl
 resource aws_ecs_service service {
   name            = "${var.app_name}_service"
@@ -75,7 +76,7 @@ resource aws_ecs_service service {
   }
 }
 ```
-This will create a service registry and register our services ip address when it starts up. It uses Route53 to do this by creating a private DNS entry that can be called anything you like. In the above definition, we called it `ecs_app.local`. When a new task starts up, it will be registed as an `A` record under that DNS namespace.
+This will create a service registry and register our services ip address when it starts up. It uses Route53 to do this by creating a private DNS entry that can be called anything you like. In the above definition, we called it `ecs_app.local`. When a new task starts up, it will be registered as an `A` record under that DNS namespace.
 
 Make sure to run `terraform plan` and  `terraform apply`.
 
@@ -83,7 +84,9 @@ Make sure to run `terraform plan` and  `terraform apply`.
 
 ## Auto connecting nodes with libcluster
 
-Now that our nodes are registered, we need a way to connect them.  To do this, we'll use [libcluster](https://github.com/bitwalker/libcluster) which is a great small library that makes cluster auto formation very easy. It comes with several different strategys out-of-the-box including kubernetes, network gossip, using an Erlang hosts file, and the one we'll use, DNSPoll.
+Now that our nodes are registered, we need a way to connect them.  To do this, we'll use libcluster which is a great small library that makes cluster auto formation very easy. It comes with several different strategy's out-of-the-box including kubernetes, network gossip, using an Erlang hosts file, and the one we'll use, DNSPoll.
+
+=> https://github.com/bitwalker/libcluster libcluster
 
 Lets first add libcluster as a dependency.
 
@@ -102,7 +105,7 @@ defmodule EcsApp.MixProject do
 end
 ```
 
-and run `mix deps.get`
+run `mix deps.get`
 
 Now we need to configure libcluster. I like to do this in the `application.ex` file.
 ```elixir
@@ -138,7 +141,9 @@ end
 
 ## Naming the Nodes
 
-Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the [long name](https://erlang.org/doc/reference_manual/distributed.html#nodes) of our node.
+Libcluster assumes that your nodes are named a certain way - app @ ip address - for example `ecs_app@192.168.1.10`. In order to do this, we'll use a release script to set the long name of our node.
+
+=> https://erlang.org/doc/reference_manual/distributed.html#nodes Long name reference
 
 Start by generating the default templates
 ```bash
@@ -154,9 +159,11 @@ export RELEASE_NODE=<%= @release.name %>@${PUBLIC_HOSTNAME}
 ```
 
 Here is whats happening in this file.
-  * Line 2 - This gets the [Metadata](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v3.html#task-metadata-endpoint-v3-response) for the current Task, parses it using `jq` to get the IP Address and sets the variable `PUBLIC_HOSTNAME` to that ip address.
+  * Line 2 - This gets the MetaData for the current Task, parses it using `jq` to get the IP Address and sets the variable `PUBLIC_HOSTNAME` to that ip address.
   * Line 3 - This tells the Release to use the long name format
   * Line 4 - Sets the long name of the node to `app_name@ip_address` i.e `ecs_app@192.168.1.10`
+
+=> https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-metadata-endpoint-v3.html#task-metadata-endpoint-v3-response Task Metadata Documentation
 
 This script runs as part of the release, but we still need to tell Docker to include it. We also need to install `jq` and `curl` in our container.
 
@@ -235,4 +242,5 @@ Assuming everything goes well, your new Task Definition will start running.
 
 Finally, push up your latest changes and let it deploy. Once deployed, you should be able to increase the number of tasks running, and your nodes should all connect. This is usually easily verified via logging or by turning on the LiveDashboard in production.
 
-For an example application, see [this github repo](https://github.com/silbermm/ecs_example)
+=> https://github.com/silbermm/ecs_example For an example application, see this github repo
+

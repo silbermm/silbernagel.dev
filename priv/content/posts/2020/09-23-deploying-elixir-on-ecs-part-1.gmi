@@ -1,20 +1,21 @@
 %{
   title: "Deploying Elixir to ECS - Part 1",
   author: "Matt Silbernagel",
-  tags: ~w(Elixir AWS Terraform),
+  tags: ~w(elixir aws terraform),
   description: "Deploying Elixir on AWS ECS using Terraform and Github Actions. This first part deals entirely with setting up the Infrastructure using Terraform"
 }
 ---
 
-* **Part 1 - using Terraform to describe and build the infrastructure**
-* [Part 2 - building and deploying a docker image to ECS](/posts/deploying-elixir-on-ecs-part-2)
-* [Part 3 - using ECS Service Discovery to build a distributed Elixir cluster](/posts/deploying-elixir-on-ecs-part-3)
+=> ./deploying-elixir-on-ecs-part-2 Part 2 - building and deploying a docker image to ECS
+=> ./deploying-elixir-on-ecs-part-3 Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
 
-I love PaaS systems like [Heroku](https://www.heroku.com/) for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it impossible to do distrubuted clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
+I love PaaS systems for deploying simple Elixir web services. It makes the deployment relatively painless, but it limits the power of the BEAM by making it hard to impossible to do distributed clustering. For a project that requires distribution, ECS is a good option. This series of posts will layout how to build the infrastructure, setup CI/CD and connect the Elixir nodes into a distributed cluster.
 
-# The Infrastructure
+# The infrastructure
 
-Below I've split the terraform into sections and talk through each one. Installing and configuring [Terraform](https://www.terraform.io/) for your AWS account is outside the scope of this article, but [HashiCorp](https://learn.hashicorp.com/collections/terraform/aws-get-started) provides a great introduction.
+Below I've split the terraform into sections and talk through each one. Installing and configuring terraform for your AWS account is outside the scope of this article, but the HashiCorp site provides a great introduction.
+
+=> https://learn.hashicorp.com/collections/terraform/aws-get-started HashiCorp - Getting started with AWS
 
 ## Initialize Terraform
 To start with, you'll need to tell terraform that you want to use the AWS provider. Add this to a file called `main.tf` and run `terraform init`.
@@ -28,7 +29,7 @@ provider aws {
 > I typically keep my terraform files in an `infrastructure` folder in the root of my project
 
 ## Add a VPC
-One requirment for ECS is a VPC. Most likely, you'll want to build a new VPC and use that, but for brevity you can just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and also find the CIDR block.
+One requirement for ECS is a VPC. Most likely, you'll want to build a new VPC and use that, but for brevity you can just import the default VPC that comes with your AWS account. In the AWS console, go to VPC's and find your default VPC's id, it'll start with `vpc-`, and also find the CIDR block.
 
 Add to your terraform file:
 ```hcl
@@ -72,8 +73,8 @@ output repo_url {
 }
 ```
 
-This creates a place to push our images too from our CI/CD process.
-Notice the ouput is the URL of the created repository. This will be important later when we talk about deployment.
+This creates a place to push our images to from our CI/CD process.
+Notice the output is the URL of the created repository. This will be important later when we talk about deployment.
 
 ## Build the ALB (Application Load Balancer)
 This will be the public entry point to your web service, and will direct traffic to one of your many containers. To make things easier, this shows how to allow port 80 traffic, but I've commented in the locations that would require a code change for port 443.
@@ -155,7 +156,7 @@ output dns {
 ```
 
 ## Configure ECS
-And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run 1 or more instances of a Task which is defined by a TaskDefinition. The following configuration will build 1 cluster that has 1 service that runs 2 instances of a task.
+And now finally our ECS configuration. ECS has the concept of Clusters which are groups of Services which run one or more instances of a Task which is defined by a TaskDefinition. The following configuration will build one cluster that has one service that runs two instances of a task.
 
 ### Task Definition
 The Task Definition is basically a description of how to run your container. Later on when we deploy, we'll create new versions of this initial Task Definition that point to different versions of your docker image. We can then instruct the ECS service to use our new Task Definition and start new tasks with newer versions of our code.
@@ -624,4 +625,7 @@ output dns {
 With the provided terraform file, you should be able to get the infrastructure setup. Of course, there is no image to pull and run yet, so ECS will likely try several times and fail.
 
 In Part 2 we'll push a Docker container with a simple Phoenix app to our private image repo and instruct ECS to pull and run it.
+
+=> ./deploying-elixir-on-ecs-part-2 Part 2 - building and deploying a docker image to ECS
+=> ./deploying-elixir-on-ecs-part-3 Part 3 - using ECS Service Discovery to build a distributed Elixir cluster
 

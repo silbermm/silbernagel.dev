@@ -233,7 +233,7 @@ children = [
 ]
 ```
 
-Open the `DistributedSqlite.Repo` file and add a `replicate/2` function
+Open the `DistributedSqlite.Repo` module and add a `replicate/2` function
 
 ```elixir
 @doc """

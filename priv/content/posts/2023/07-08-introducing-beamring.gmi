@@ -9,11 +9,9 @@
 
 Today I released a new open-source project, Beamring. It's a simple implementation of a webring built on the BEAM for the BEAM community.
 
-=> https://beamring.io    The Beamring site
-
-=> https://en.wikipedia.org/wiki/Webring Introduction to Webrings
-
-=> https://github.com/silbermm/beamring The Source code
+=> https://beamring.io                    The Beamring site
+=> https://en.wikipedia.org/wiki/Webring  Introduction to Webrings
+=> https://github.com/silbermm/beamring   The Source code
 
 ## Why?
 
@@ -54,7 +52,5 @@ Use that link to request being added and once I've validated that the above mark
 I don't have much else planned for this tiny project, but am always happy to take feature requests. 
 
 => https://github.com/silbermm/beamring/issues Create a github issue for feature requests
-
 => https://indieweb.org/Getting_Started Go forth and explore the Indieweb
-
 => https://fed.brid.gy/ Syndicate to the Fediverse
