@@ -5,7 +5,7 @@ defmodule Silbernageldev.MixProject do
     [
       app: :silbernageldev,
       version: "0.1.0",
-      elixir: "~> 1.12",
+      elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -30,6 +30,7 @@ defmodule Silbernageldev.MixProject do
 
   defp deps do
     [
+      {:ssl_verify_fun, "~> 1.1", manager: :rebar3, override: true},
       {:atomex, "~> 0.5.1"},
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.4"},
