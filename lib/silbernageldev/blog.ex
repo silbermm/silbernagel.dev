@@ -7,7 +7,7 @@ defmodule Silbernageldev.Blog do
 
   use NimblePublisher,
     build: Post,
-    from: Application.app_dir(:silbernageldev, "priv/content/posts/**/*.m*"),
+    from: Application.app_dir(:silbernageldev, "priv/content/posts/**/*.gmi"),
     as: :posts,
     highlighters: [:makeup_elixir, :makeup_erlang, :makeup_html5, :makeup_eex]
 

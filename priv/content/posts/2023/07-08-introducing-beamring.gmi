@@ -9,11 +9,9 @@
 
 Today I released a new open-source project, Beamring. It's a simple implementation of a webring built on the BEAM for the BEAM community.
 
-[The Beamring site](https://beamring.io)
-
-[Introduction to Webrings](https://en.wikipedia.org/wiki/Webring)
-
-[The Source code](https://github.com/silbermm/beamring)
+=> https://beamring.io                    The Beamring site
+=> https://en.wikipedia.org/wiki/Webring  Introduction to Webrings
+=> https://github.com/silbermm/beamring   The Source code
 
 ## Why?
 
@@ -21,7 +19,7 @@ Before there was reliable search engines or big social media networks, discovery
 
 As the walled gardens (Facebook, Twitter and Reddit) are falling apart and big search engines are less and less trustworthy, the Indieweb has a chance to flourish and webrings could prove to be useful once again. 
 
-[The Indieweb](https://indieweb.org/) 
+=> https://indieweb.org/ The Indieweb
 
 ## Can my site be added?
 
@@ -45,7 +43,7 @@ First you'll need to add a small code snippet to your site, something similar to
 This is what makes the webring work. Each site that is part of the ring does this and the links will redirect the visitor to the next or previous site in the ring.
 
 ### Step Two
-[Fill out this github issue](https://github.com/silbermm/beamring/issues/new?assignees=silbermm&labels=new&projects=&template=add_site.yml&title=%5BAdd%5D%3A+) 
+=> https://github.com/silbermm/beamring/issues/new?assignees=silbermm&labels=new&projects=&template=add_site.yml&title=%5BAdd%5D%3A+ Fill out this github issue
 
 Use that link to request being added and once I've validated that the above markup is on your site, you'll be added.
 
@@ -53,9 +51,6 @@ Use that link to request being added and once I've validated that the above mark
 
 I don't have much else planned for this tiny project, but am always happy to take feature requests. 
 
-[Create a github issue for feature requests](https://github.com/silbermm/beamring/issues).
-
-
-[Go forth and explore the Indieweb](https://indieweb.org/Getting_Started)
-
-[](https://fed.brid.gy/)
+=> https://github.com/silbermm/beamring/issues Create a github issue for feature requests
+=> https://indieweb.org/Getting_Started Go forth and explore the Indieweb
+=> https://fed.brid.gy/ Syndicate to the Fediverse
