@@ -66,7 +66,7 @@ defmodule SilbernageldevWeb.Router do
 
   scope "/webmentions" do
     pipe_through(:api)
-    forward "/", Libmention.Incoming.ReceiverPlug, content_validator: Silbernageldev.WebMentions.ContentValidator
+    forward "/", Libmention.Incoming.ReceiverPlug, receiver: Silbernageldev.WebMentions.Receiver
   end
 
   scope "/", SilbernageldevWeb.Controllers do
